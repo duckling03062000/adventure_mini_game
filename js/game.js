@@ -975,7 +975,13 @@ function toggleMute() {
 muteBtn.addEventListener('click', () => { Sound.unlock(); toggleMute(); });
 
 function boot() {
-  startChapter(0);
+  /* ?level=2 jumps straight into a level, for testing. Levels are
+     1-based in the URL because that is how they are named on screen. */
+  const wanted = parseInt(new URLSearchParams(location.search).get('level'), 10);
+  const startAt = Number.isFinite(wanted)
+    ? Math.min(CHAPTERS.length, Math.max(1, wanted)) - 1
+    : 0;
+  startChapter(startAt);
   const kick = () => {
     Sound.unlock();
     removeEventListener('keydown', kick);
