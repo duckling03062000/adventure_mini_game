@@ -12,7 +12,7 @@ const VIEW_W = 320;          // world px visible horizontally
 const VIEW_H = 180;
 
 /* Tile legend used by the level builders */
-const SOLID = new Set(['#', 'B', 'C', 'W']);
+const SOLID = new Set(['#', 'B', 'C', 'W', 'S', 'F']);
 const ONEWAY = new Set(['=']);
 const HAZARD = new Set(['x']);
 
@@ -226,10 +226,15 @@ const TILE_STYLE = {
   'B': { fill: '#5a5064', top: '#6f637a' },   // building block
   'C': { fill: '#7a5a38', top: '#96714a' },   // crate
   'W': { fill: '#6a7183', top: '#828a9c' },   // hospital wall
-  '=': { fill: '#6b5f7a', top: '#8b7da0' }    // one-way ledge
+  '=': { fill: '#6b5f7a', top: '#8b7da0' },   // one-way ledge
+  'S': { fill: '#d9c8a8', top: '#e8dbc0' },   // school wall / ceiling
+  'F': { fill: '#8a7256', top: '#9b8163' }    // indoor floor
 };
 
 function drawTiles(ctx, level, cam) {
+  const styles = level.meta.tileStyles
+    ? { ...TILE_STYLE, ...level.meta.tileStyles }
+    : TILE_STYLE;
   const tx0 = Math.max(0, Math.floor(cam.x / TILE) - 1);
   const tx1 = Math.min(level.w - 1, Math.ceil((cam.x + VIEW_W) / TILE) + 1);
   const ty0 = Math.max(0, Math.floor(cam.y / TILE) - 1);
@@ -238,7 +243,7 @@ function drawTiles(ctx, level, cam) {
   for (let ty = ty0; ty <= ty1; ty++) {
     for (let tx = tx0; tx <= tx1; tx++) {
       const c = level.at(tx, ty);
-      const st = TILE_STYLE[c];
+      const st = styles[c];
       if (!st) continue;
       const x = tx * TILE - cam.x, y = ty * TILE - cam.y;
       ctx.fillStyle = st.fill;

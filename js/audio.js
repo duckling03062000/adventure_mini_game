@@ -142,6 +142,15 @@ const Sound = (() => {
       });
       tone(n('D3'), t, 1.2, { type: 'triangle', gain: 0.18, release: 0.5 });
     },
+    /* a school bell, two struck tones with a long tail */
+    bell() {
+      const t = ctx.currentTime;
+      [0, 0.34].forEach(off => {
+        tone(n('F#5'), t + off, 0.5, { type: 'sine', gain: 0.2, release: 0.7 });
+        tone(n('C#6'), t + off, 0.4, { type: 'sine', gain: 0.12, release: 0.6 });
+        tone(n('F#4'), t + off, 0.6, { type: 'triangle', gain: 0.12, release: 0.8 });
+      });
+    },
     /* the newborn's first cry, as a soft rising motif — not a literal cry */
     birth() {
       const t = ctx.currentTime;
@@ -176,6 +185,15 @@ const Sound = (() => {
              'F2', null, null, null, 'A2', null, null, null],
       lead: ['A4', null, 'F4', null, 'D4', null, null, null,
              'F4', null, 'A4', null, 'D5', null, null, null],
+      leadType: 'triangle'
+    },
+    /* Level 2 — morning, dry, bright. D major, walking pace. */
+    morning: {
+      bpm: 112,
+      bass: ['D2', null, 'A2', null, 'D2', null, null, null,
+             'G2', null, 'D2', null, 'A2', null, null, null],
+      lead: ['F#4', 'A4', 'D5', null, 'E5', null, 'C#5', 'D5',
+             'B4', 'D5', 'G4', null, 'A4', 'F#4', null, null],
       leadType: 'triangle'
     },
     /* The hospital, after. D major, quiet and hopeful. */

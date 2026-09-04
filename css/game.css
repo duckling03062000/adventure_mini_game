@@ -25,9 +25,15 @@
   padding:.9rem 1.1rem;
   font-family:'Press Start 2P', monospace;
   font-size:.55rem;
-  color:#e8dcf5;
-  text-shadow:0 2px 0 rgba(0,0,0,.6);
   pointer-events:none;
+}
+/* the sky behind this changes from storm-dark to bright blue, so the
+   label carries its own background rather than relying on contrast */
+#hud-act:not(:empty){
+  color:#f6f1ff;
+  background:rgba(20,16,32,.5);
+  border-radius:3px;
+  padding:.45rem .6rem;
 }
 #mute{
   pointer-events:auto;
