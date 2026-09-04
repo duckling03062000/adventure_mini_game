@@ -47,6 +47,8 @@ const Dialogue = (() => {
       portraitEl.appendChild(cv);
     }
     if (typeof Sound !== 'undefined') Sound.play('talk');
+    // a line can make something happen the moment it is spoken
+    if (line.on) line.on();
   }
 
   function advance() {

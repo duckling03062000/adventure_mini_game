@@ -461,12 +461,15 @@ const ENDINGS = {
        made before giving her anything. */
     enter() {
       bookGiven = false;
+      bookT = 0;
       Dialogue.start([
         { who: 'Aunty', char: 'tutor', text: 'Oh wow, nice! You did a great job.' },
-        { who: 'Aunty', char: 'tutor', text: 'Here is a book for you.' }
-      ], () => { bookGiven = true; bookT = 0; Sound.play('birth'); });
+        { who: 'Aunty', char: 'tutor', text: 'Here is a book for you.',
+          on() { bookGiven = true; bookT = 0; Sound.play('birth'); } }
+      ], null);
     },
-    done(t) { return bookGiven && bookT > 3.0; },
+    /* Long enough after the conversation to actually look at it. */
+    done(t) { return bookGiven && !Dialogue.active && bookT > 4.5; },
     draw(t) {
       const FLOOR = 152;
 
@@ -516,16 +519,18 @@ const ENDINGS = {
       // the book itself, only once she has actually been given it
       if (!bookGiven) return;
       bookT += 1 / 60;
-      const p = Math.min(1, bookT / 1.8);
-      const bx = 145, by = FLOOR - 34;
+      const p = Math.min(1, bookT / 0.7);
+      const bx = 145, by = FLOOR - 50;
       ctx.save();
       ctx.globalAlpha = 0.2 + 0.2 * Math.sin(t * 3);
       ctx.fillStyle = '#fff0c0';
-      ctx.beginPath(); ctx.arc(bx, by, 14 + p * 16, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(bx, by, 18 + p * 22, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
 
       if (BOOK_IMG.complete && BOOK_IMG.naturalWidth) {
-        const h = 46 + p * 10;
+        // a small overshoot so it lands rather than fades
+        const pop = p < 1 ? 1.12 - 0.12 * p : 1;
+        const h = (46 + p * 12) * pop;
         const w = h * (BOOK_IMG.naturalWidth / BOOK_IMG.naturalHeight);
         ctx.globalAlpha = Math.min(1, p / 0.6);
         ctx.fillStyle = '#241b26';
