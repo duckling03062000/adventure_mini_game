@@ -12,6 +12,7 @@ const CEIL_Y = 4;      // indoor ceiling occupies rows 0..CEIL_Y-1
 function makeBuilder(height = GRID_H) {
   const cols = [];
   const props = [];
+  const pickups = [];
   const checkpoints = [];
   let cursor = 0;
   let groundTile = '#';
@@ -103,6 +104,32 @@ function makeBuilder(height = GRID_H) {
       return api;
     },
 
+    /* A big mango tree. The trunk is scenery, but the branches are
+       one-way platforms, and the only way to the mangoes is up them.
+       Branch spacing is 2 tiles because that is exactly what a small
+       child's jump clears — no higher. */
+    mangoTree(w = 8) {
+      const startX = cursor;
+      for (let i = 0; i < w; i++) { ground(cursor); cursor++; }
+
+      const branches = [
+        { row: GROUND_Y - 2, x: startX + 1, len: 3 },
+        { row: GROUND_Y - 4, x: startX + 4, len: 3 },
+        { row: GROUND_Y - 6, x: startX + 1, len: 3 }
+      ];
+      for (const br of branches) {
+        for (let i = 0; i < br.len; i++) set(br.x + i, br.row, '=');
+        pickups.push({
+          type: 'mango',
+          x: (br.x + br.len - 0.5) * 16,
+          y: (br.row * 16) - 7,
+          got: false
+        });
+      }
+      props.push({ type: 'mangotree', x: startX, w, branches });
+      return api;
+    },
+
     /* A building frontage. The last few tiles are a covered portico,
        open at head height, so you can walk in rather than into a wall. */
     frontage(w, tile, propType, extra = {}) {
@@ -127,7 +154,7 @@ function makeBuilder(height = GRID_H) {
       if (indoor && indoorSpans.length) indoorSpans[indoorSpans.length - 1].to = cursor;
       const rows = [];
       for (let y = 0; y < height; y++) rows.push(cols.map(c => c[y]).join(''));
-      return new Level(rows, { props, checkpoints, indoorSpans, theme: 'monsoon', ...meta });
+      return new Level(rows, { props, pickups, checkpoints, indoorSpans, theme: 'monsoon', ...meta });
     }
   };
   return api;

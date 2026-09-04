@@ -12,7 +12,8 @@
    writing. SCHOOL_NAME is the one place to change it.
 ------------------------------------------------------------------- */
 
-const SCHOOL_NAME = 'SCHOOL';
+const SCHOOL_NAME = ['RYAN', 'INTERNATIONAL'];
+const LOCALITY = 'AECS LAYOUT';
 
 function buildLevel2() {
   const b = makeBuilder();
@@ -20,6 +21,7 @@ function buildLevel2() {
   /* --- the street outside home --- */
   b.prop('home', 1);
   b.flat(10);
+  b.prop('streetsign', 8);
   b.prop('tree', 6);
   b.crates(1);                    // the neighbour's compound wall
   b.flat(5);
@@ -27,9 +29,13 @@ function buildLevel2() {
   b.flat(4);
   b.gap(2);                       // an open drain
   b.flat(5);
-  b.prop('tree');
   b.checkpoint();
-  b.flat(4);
+  b.flat(3);
+
+  /* --- the mango tree --- */
+  b.mangoTree(8);
+  b.flat(6);
+
   b.steps(2);                     // kerb up
   b.flat(5);
   b.block(2, 1, 'B', 'auto');

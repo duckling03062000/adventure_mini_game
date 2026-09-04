@@ -35,6 +35,12 @@
   border-radius:3px;
   padding:.45rem .6rem;
 }
+#hud-collect:not(:empty){
+  color:#ffd8a0;
+  background:rgba(20,16,32,.5);
+  border-radius:3px;
+  padding:.45rem .6rem;
+}
 #mute{
   pointer-events:auto;
   font-family:inherit;font-size:inherit;

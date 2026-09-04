@@ -13,6 +13,7 @@ ctx.imageSmoothingEnabled = false;
 const storyEl = document.getElementById('story');
 const hudAct = document.getElementById('hud-act');
 const muteBtn = document.getElementById('mute');
+const hudCollect = document.getElementById('hud-collect');
 
 /* ============================ THE SCRIPT ==========================
    All the words in one place, so they are easy to rewrite.
@@ -76,6 +77,11 @@ const SCRIPT = {
   l2done: {
     eyebrow: 'level 2 complete', title: 'The First Day',
     text: 'The first of a great many mornings.'
+  },
+  l2mangoes: {
+    eyebrow: 'all three', title: 'Mangoes',
+    text: 'Every last one off that tree, and still at school on time.',
+    sweet: true
   }
 };
 
@@ -171,6 +177,7 @@ function startCurrentAct() {
   cam.x = 0;
   buildBackdrop(level);
   hudAct.textContent = a.hud;
+  updateCollectHud();
   Sound.playMusic(a.music);
   state = 'play';
 }
@@ -183,7 +190,9 @@ function finishAct() {
     actIdx++;
     showStory(a.outro.concat(ch.acts[actIdx].intro), startCurrentAct);
   } else {
-    showStory(a.outro, startEnding);
+    const picks = level.meta.pickups || [];
+    const all = picks.length && picks.every(p => p.got);
+    showStory(all ? a.outro.concat(SCRIPT.l2mangoes) : a.outro, startEnding);
   }
 }
 
@@ -193,6 +202,7 @@ function startEnding() {
   endingT = 0;
   endingDone = false;
   hudAct.textContent = '';
+  hudCollect.textContent = '';
   state = 'ending';
   if (ending.music) Sound.playMusic(ending.music);
   if (ending.enter) ending.enter();
@@ -544,7 +554,7 @@ function drawInteriorWalls() {
 /* =============================== PROPS ============================ */
 const FRONT_PROPS = new Set(['bus', 'auto', 'hospital', 'schoolfront', 'desk',
                              'herdesk', 'bench', 'schoolgate', 'blackboard',
-                             'noticeboard']);
+                             'noticeboard', 'streetsign', 'mangotree']);
 
 function drawProps(layer) {
   const base = GROUND_Y * TILE - cam.y;
@@ -678,7 +688,7 @@ function drawProps(layer) {
         ctx.fillStyle = '#9aa4b3';
         for (let i = 0; i < 6; i++) ctx.fillRect(sx + 8 + i * 6, base - 44, 3, 44);
         ctx.fillRect(sx + 6, base - 34, 38, 3);
-        signboard(sx + 24, base - 76, 78, SCHOOL_NAME);
+        signboard(sx + 24, base - 84, 112, SCHOOL_NAME);
         break;
       }
 
@@ -696,6 +706,67 @@ function drawProps(layer) {
         ctx.fillStyle = '#5b4a3a'; ctx.fillRect(dx - 2, base - 46, 36, 46);
         ctx.fillStyle = '#f6e8c8'; ctx.fillRect(dx, base - 43, 32, 43);
         ctx.fillStyle = '#c8b48c'; ctx.fillRect(dx + 15, base - 43, 2, 43);
+        break;
+      }
+
+      case 'streetsign': {
+        ctx.fillStyle = '#8e97a8';
+        ctx.fillRect(sx + 8, base - 40, 3, 40);
+        ctx.fillStyle = '#2f6b8f';
+        ctx.fillRect(sx - 22, base - 52, 64, 14);
+        ctx.fillStyle = '#f4f1ea';
+        ctx.font = '5px "Press Start 2P", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(LOCALITY, sx + 10, base - 42);
+        ctx.textAlign = 'left';
+        break;
+      }
+
+      case 'mangotree': {
+        const w = p.w * TILE;
+        const cxp = sx + w / 2;
+        // trunk
+        ctx.fillStyle = '#6b5236';
+        ctx.fillRect(cxp - 6, base - 96, 12, 96);
+        ctx.fillStyle = '#5a4429';
+        ctx.fillRect(cxp - 6, base - 96, 4, 96);
+        // roots
+        ctx.fillRect(cxp - 14, base - 6, 9, 6);
+        ctx.fillRect(cxp + 6, base - 6, 9, 6);
+        // limbs out to each branch platform
+        ctx.strokeStyle = '#6b5236';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        for (const br of p.branches) {
+          const bx = (br.x + br.len / 2) * TILE - cam.x;
+          const by = br.row * TILE - cam.y;
+          ctx.moveTo(cxp, by + 10);
+          ctx.lineTo(bx, by + 2);
+        }
+        ctx.stroke();
+        // the branch platforms themselves
+        for (const br of p.branches) {
+          const bx = br.x * TILE - cam.x;
+          const by = br.row * TILE - cam.y;
+          ctx.fillStyle = '#7a5f3c';
+          ctx.fillRect(bx, by, br.len * TILE, 5);
+          ctx.fillStyle = '#8f7148';
+          ctx.fillRect(bx, by, br.len * TILE, 2);
+        }
+        // canopy, drawn last so it sits over the limbs
+        ctx.fillStyle = '#3f7a3c';
+        for (const [ox, oy, r] of [[0, -104, 40], [-30, -88, 28], [32, -88, 28],
+                                   [-16, -116, 26], [18, -116, 26]]) {
+          ctx.beginPath();
+          ctx.arc(cxp + ox, base + oy, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = '#4f9448';
+        for (const [ox, oy, r] of [[-8, -120, 20], [26, -100, 18], [-34, -98, 16]]) {
+          ctx.beginPath();
+          ctx.arc(cxp + ox, base + oy, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
         break;
       }
 
@@ -747,17 +818,74 @@ function drawProps(layer) {
   }
 }
 
-/* A small white board with pixel lettering — used for every sign. */
+/* A small white board with pixel lettering. Takes one line or two —
+   a long school name needs the second line to stay legible. */
 function signboard(cx, y, w, text) {
+  const lines = Array.isArray(text) ? text : [text];
+  const h = lines.length > 1 ? 26 : 17;
   ctx.fillStyle = '#f4f1ea';
-  ctx.fillRect(cx - w / 2, y, w, 17);
+  ctx.fillRect(cx - w / 2, y, w, h);
   ctx.fillStyle = '#c8402f';
   ctx.fillRect(cx - w / 2, y, w, 3);
   ctx.fillStyle = '#1d2a44';
-  ctx.font = '7px "Press Start 2P", monospace';
   ctx.textAlign = 'center';
-  ctx.fillText(text, cx, y + 12);
+  if (lines.length > 1) {
+    ctx.font = '7px "Press Start 2P", monospace';
+    ctx.fillText(lines[0], cx, y + 13);
+    ctx.font = '5px "Press Start 2P", monospace';
+    ctx.fillText(lines[1], cx, y + 22);
+  } else {
+    ctx.font = '7px "Press Start 2P", monospace';
+    ctx.fillText(lines[0], cx, y + 12);
+  }
   ctx.textAlign = 'left';
+}
+
+/* Mangoes hang off the branches; walking into one takes it. */
+function drawPickups() {
+  for (const p of (level.meta.pickups || [])) {
+    if (p.got) continue;
+    const x = p.x - cam.x, y = p.y - cam.y;
+    if (x < -20 || x > VIEW_W + 20) continue;
+    const sway = Math.sin(performance.now() / 620 + p.x) * 1.2;
+
+    const mx = x + sway;
+    ctx.fillStyle = '#4a3a24';                       // stalk
+    ctx.fillRect(Math.round(mx), y - 6, 1, 5);
+    ctx.fillStyle = '#3f7a3c';                       // leaf
+    ctx.fillRect(Math.round(mx) + 1, y - 7, 5, 2);
+
+    ctx.save();
+    ctx.translate(mx, y + 2);
+    ctx.rotate(-0.42);
+    ctx.fillStyle = '#e8a41f';                       // the mango
+    ctx.beginPath(); ctx.ellipse(0, 0, 6.5, 4.6, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#d2611f';                       // ripe blush
+    ctx.beginPath(); ctx.ellipse(-2, -1, 3.4, 2.6, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#f7d982';                       // highlight
+    ctx.beginPath(); ctx.ellipse(2.4, 1.2, 1.8, 1.2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+}
+
+function collectPickups() {
+  const list = level.meta.pickups || [];
+  for (const p of list) {
+    if (p.got) continue;
+    if (Math.abs(p.x - player.x) < 9 &&
+        p.y > player.top - 6 && p.y < player.bottom + 4) {
+      p.got = true;
+      Sound.play('pickup');
+      updateCollectHud();
+    }
+  }
+}
+
+function updateCollectHud() {
+  const list = level.meta.pickups || [];
+  if (!list.length) { hudCollect.textContent = ''; return; }
+  const got = list.filter(p => p.got).length;
+  hudCollect.textContent = `MANGOES ${got}/${list.length}`;
 }
 
 function drawRain(dt) {
@@ -810,6 +938,7 @@ function update(dt) {
 
   controlActor(player, level, dt);
   cam.follow(player, dt);
+  collectPickups();
 
   if (player.y > level.pxH + 20) respawn();
   if (player.x >= level.meta.goalX) { state = 'transition'; finishAct(); }
@@ -827,6 +956,7 @@ function render() {
   drawProps('back');
   drawTiles(ctx, level, cam);
   drawProps('front');
+  drawPickups();
   drawActor(ctx, player, cam);
   drawRain(1);
 
