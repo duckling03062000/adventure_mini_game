@@ -9,6 +9,7 @@
 const Dialogue = (() => {
   let box, nameEl, textEl, portraitEl;
   let lines = [], idx = 0, onDone = null, active = false;
+  let locked = false, lockTimer = null;
 
   function init() {
     box = document.getElementById('dialogue');
@@ -30,6 +31,16 @@ const Dialogue = (() => {
 
   function render() {
     const line = lines[idx];
+
+    /* A locked line ignores input entirely and dismisses itself, so the
+       moment it belongs to gets to play out instead of being skipped. */
+    clearTimeout(lockTimer);
+    locked = !!line.lock;
+    box.classList.toggle('locked', locked);
+    if (locked) {
+      lockTimer = setTimeout(() => { locked = false; advance(); }, line.wait || 2800);
+    }
+
     nameEl.textContent = line.who;
     textEl.textContent = line.text;
 
@@ -52,13 +63,15 @@ const Dialogue = (() => {
   }
 
   function advance() {
-    if (!active) return;
+    if (!active || locked) return;
     idx++;
     if (idx >= lines.length) close();
     else render();
   }
 
   function close() {
+    clearTimeout(lockTimer);
+    locked = false;
     active = false;
     box.classList.add('hidden');
     const cb = onDone;

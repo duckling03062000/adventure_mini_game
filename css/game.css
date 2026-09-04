@@ -230,6 +230,8 @@
   font-family:'Nunito',sans-serif;
   font-size:1rem;line-height:1.55;color:#f0e9ff;margin:0;
 }
+.dialogue.locked{cursor:default}
+.dialogue.locked .dlg-more{visibility:hidden}
 .dlg-more{
   flex:0 0 auto;
   font-family:'Press Start 2P',monospace;

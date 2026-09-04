@@ -42,8 +42,16 @@ const Input = (() => {
 
   return {
     held: a => down.has(a),
-    /* true once per physical press */
-    tapped: a => pressed.has(a),
+    /* True once per physical press, and CONSUMED on read.
+       update() runs several times per frame on the fixed timestep while
+       the buffer is cleared only once per frame, so a non-consuming
+       version reported the same press on every substep - one ENTER
+       could advance five lines of dialogue at once. */
+    tapped(a) {
+      if (!pressed.has(a)) return false;
+      pressed.delete(a);
+      return true;
+    },
     endFrame: () => pressed.clear()
   };
 })();

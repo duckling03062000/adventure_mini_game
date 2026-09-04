@@ -465,6 +465,8 @@ const ENDINGS = {
       Dialogue.start([
         { who: 'Aunty', char: 'tutor', text: 'Oh wow, nice! You did a great job.' },
         { who: 'Aunty', char: 'tutor', text: 'Here is a book for you.',
+          /* no skipping this one — let the book actually arrive */
+          lock: true, wait: 3200,
           on() { bookGiven = true; bookT = 0; Sound.play('birth'); } }
       ], null);
     },
