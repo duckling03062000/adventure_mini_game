@@ -153,6 +153,13 @@ const Sound = (() => {
       });
       tone(n('D3'), t, 1.2, { type: 'triangle', gain: 0.38, release: 0.5 });
     },
+    /* a brush stroke — very short, very soft, so 108 of them in a row
+       stay pleasant rather than becoming a woodpecker */
+    brush() {
+      const t = ctx.currentTime;
+      noise(t, 0.045, { gain: 0.1, freq: 2200, type: 'bandpass', q: 0.8 });
+      tone(220 + Math.random() * 180, t, 0.03, { type: 'sine', gain: 0.07 });
+    },
     /* a school bell, two struck tones with a long tail */
     bell() {
       const t = ctx.currentTime;
@@ -197,6 +204,24 @@ const Sound = (() => {
       lead: ['A4', null, 'F4', null, 'D4', null, null, null,
              'F4', null, 'A4', null, 'D5', null, null, null],
       leadType: 'triangle'
+    },
+    /* Level 3, outdoors — warm, unhurried. C major, strolling. */
+    afternoon: {
+      bpm: 100,
+      bass: ['C2', null, 'G2', null, 'A2', null, null, null,
+             'F2', null, 'C2', null, 'G2', null, null, null],
+      lead: ['E4', 'G4', 'C5', null, 'B4', null, 'A4', 'G4',
+             'A4', 'C5', 'E5', null, 'D5', 'B4', null, null],
+      leadType: 'triangle'
+    },
+    /* Level 3, inside the house — quiet, sparse, someone else's home. */
+    indoors: {
+      bpm: 82,
+      bass: ['F2', null, null, null, 'C2', null, null, null,
+             'D2', null, null, null, 'Bb1', null, null, null],
+      lead: ['A4', null, null, 'C5', null, null, 'F4', null,
+             'G4', null, null, 'A4', null, null, null, null],
+      leadType: 'sine'
     },
     /* Level 2 — morning, dry, bright. D major, walking pace. */
     morning: {

@@ -239,6 +239,70 @@ const MOTHER_LEGS = {
   ]
 };
 
+/* ------------------------- LEVEL 3 · THE BOOK --------------------- */
+/* Two people who do not walk anywhere: they stand where they stand.
+   Their leg frames are all the same array, so the shared animation
+   code works on them without a special case. */
+
+/* The art teacher, at her easel on the balcony. Bun, grey at the
+   temples, an apron over her kurta. */
+const TUTOR_TOP = [
+  '......hhhh......',
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdddddds....',
+  '....saaaaaas....',
+  '....saaaaaas....',
+  '....saaaaaas....',
+  '....dddddddd....',
+  '...dddddddddd...',
+  '....pppppppp....'
+];
+const TUTOR_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....sss..sss....',
+  '....sss..sss....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* Her husband, at the computer in the front room. Thinning grey hair
+   and a pair of glasses. */
+const HUSBAND_TOP = [
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhaaeaaeaaSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '..hhssssssssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const HUSBAND_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* Same frames whichever animation asks for them. */
+const still = rows => ({ idle: rows, stride: rows, pass: rows, jump: rows });
+
 /* --------------------------------------------------------------- */
 
 const CHARACTERS = {
@@ -295,6 +359,36 @@ const CHARACTERS = {
       ...BASE,
       d: '#5b7fc4', D: '#43619b', p: '#5b7fc4', f: '#3a3040',
       b: '#3a3040', c: '#5b7fc4', a: '#e8b93c'
+    }
+  },
+
+  tutor: {
+    id: 'tutor',
+    name: 'The art teacher',
+    era: 'level 3 · at the easel',
+    note: 'Bun, grey at the temples, a paint-stained apron. Never stops working.',
+    top: TUTOR_TOP,
+    legs: still(TUTOR_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#2e2730', H: '#9a939e',
+      d: '#c98a3a', D: '#a86e28', p: '#463f56', f: '#5a4a3a',
+      a: '#e8e2d2', b: '#5a4a3a', c: '#c98a3a'
+    }
+  },
+
+  husband: {
+    id: 'husband',
+    name: 'Her husband',
+    era: 'level 3 · at the computer',
+    note: 'Thinning grey hair, glasses, and something on the screen he will not look up from.',
+    top: HUSBAND_TOP,
+    legs: still(HUSBAND_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#8f8a84', H: '#aaa49e',
+      d: '#dfe3e8', D: '#c2c7cd', p: '#4a4f5c', f: '#2a2620',
+      a: '#8a7a3a', b: '#2a2620', c: '#dfe3e8'
     }
   }
 };

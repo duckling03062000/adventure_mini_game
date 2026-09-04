@@ -117,6 +117,84 @@
 }
 .lc-hint b{color:#ffcf4d}
 
+/* ------------------------------ FADE ------------------------------- */
+/* Scenes inside one level hand over through this rather than a card. */
+#fade{
+  position:absolute;inset:0;
+  background:#0b0912;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .45s ease;
+  z-index:4;
+}
+#fade.on{opacity:1}
+
+/* ---------------------------- ART BOARD ---------------------------- */
+.artboard{
+  position:absolute;inset:0;
+  display:grid;place-items:center;
+  background:linear-gradient(165deg,#2a2233 0%,#3d3040 60%,#4a3a3f 100%);
+  padding:1.2rem;
+  overflow:auto;
+  z-index:3;
+  transition:opacity .35s ease;
+}
+.artboard.hidden{opacity:0;pointer-events:none}
+.art-inner{text-align:center;color:#f3ecff;max-width:44rem;width:100%}
+.art-eyebrow{
+  font-family:'Press Start 2P',monospace;
+  font-size:.5rem;letter-spacing:.16em;color:#ffcf4d;margin:0 0 .8rem;
+}
+.art-title{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(.9rem,2.4vw,1.25rem);margin:0 0 .8rem;color:#fff;
+}
+.art-sub{
+  font-family:'Nunito',sans-serif;font-size:.88rem;line-height:1.6;
+  color:#c9bde4;margin:0 0 1.1rem;
+}
+.art-grid{
+  display:grid;
+  gap:1px;
+  width:min(100%, 32rem);
+  margin:0 auto 1.1rem;
+  padding:8px;
+  background:#fbf6ea;
+  border:3px solid #241b26;
+  border-radius:3px;
+  box-shadow:0 8px 0 rgba(0,0,0,.35);
+  touch-action:none;
+}
+.art-cell{aspect-ratio:1;background:#fbf6ea}
+.art-cell.ink{background:#241b26}
+.art-cell.fill{
+  background:#fff;
+  outline:1px solid rgba(36,27,38,.22);
+  outline-offset:-1px;
+  cursor:crosshair;
+}
+.art-cell.fill:hover{outline-color:rgba(36,27,38,.5)}
+.art-cell.fill.done{outline-color:transparent}
+
+.art-palette{
+  display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:1rem;
+}
+.art-swatch{
+  width:2rem;height:2rem;padding:0;cursor:pointer;
+  border:2px solid rgba(255,255,255,.35);
+  border-radius:3px;background:#fff;
+}
+.art-swatch.is-on{border-color:#ffcf4d;transform:translateY(-3px)}
+.art-swatch--erase{
+  background:repeating-linear-gradient(45deg,#fff,#fff 4px,#bbb 4px,#bbb 8px);
+}
+.art-count{
+  font-family:'Press Start 2P',monospace;
+  font-size:.52rem;color:#a294c4;margin:0 0 1.1rem;
+}
+.art-ready .art-count{color:#8fe08f}
+.art-submit:disabled{opacity:.4;cursor:not-allowed}
+
 #note{
   position:absolute;
   left:0;right:0;bottom:42%;
@@ -142,6 +220,18 @@
   transition:opacity .35s ease;
 }
 .story.hidden{opacity:0;pointer-events:none}
+/* For endings whose picture is the point, the card moves out of its way. */
+.story.top{
+  align-items:start;
+  padding-top:2rem;
+  /* dark enough to read against at the top, clear enough to see the
+     picture the card is talking about at the bottom */
+  background:linear-gradient(to bottom,
+    rgba(12,10,22,.93) 0%, rgba(12,10,22,.88) 36%,
+    rgba(12,10,22,.34) 60%, rgba(12,10,22,.22) 100%);
+}
+.story.top .story-text{min-height:0}
+.story.top .story-more{margin-top:1.4rem}
 .story-card{
   max-width:34rem;text-align:center;color:#f3ecff;
 }

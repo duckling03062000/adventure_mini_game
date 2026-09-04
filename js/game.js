@@ -16,6 +16,12 @@ const muteBtn = document.getElementById('mute');
 const hudCollect = document.getElementById('hud-collect');
 const noteEl = document.getElementById('note');
 const levelCard = document.getElementById('levelcard');
+const fadeEl = document.getElementById('fade');
+const artEl = document.getElementById('artboard');
+
+/* The real cover, for the moment she is given it. */
+const BOOK_IMG = new Image();
+BOOK_IMG.src = 'assets/images/painting-nature.jpg';
 
 /* ============================ THE SCRIPT ==========================
    All the words in one place, so they are easy to rewrite.
@@ -65,6 +71,21 @@ const SCRIPT = {
   l2actdone: {
     eyebrow: 'act 1 complete', title: 'You made it to the class!',
     text: 'Bag down. Chair pulled out. She sits.'
+  },
+  l3a: {
+    eyebrow: 'act 1 · ayrisha', title: 'To the teacher\u2019s house',
+    text: 'Across town, down the lane, and up to the front door.'
+  },
+  l3book: {
+    eyebrow: 'and she means it', title: 'You made it! You got this!',
+    text: 'Painting Nature in Pen & Ink with Watercolor, by Claudia Nice. ' +
+          'Hers now.',
+    sweet: true,
+    pos: 'top'
+  },
+  l3done: {
+    eyebrow: 'level 3 complete', title: 'The Book',
+    text: 'She carried it home and did not put it down for a week.'
   },
   l2done: {
     eyebrow: 'level 2 complete', title: 'Have a great day at school',
@@ -121,6 +142,31 @@ const CHAPTERS = [
     ],
     ending: 'classroom',
     close: [SCRIPT.l2done]
+  },
+  {
+    id: 'level3',
+    number: 3,
+    title: 'The Book',
+    subtitle: 'her art teacher\u2019s house',
+    blurb: 'There is a book her art teacher keeps talking about. Today is the ' +
+           'day she is allowed to have it — if she earns it.',
+    objectives: [
+      'Make it across town to her teacher\u2019s <b>home</b>.',
+      'Go inside, past her husband at his computer, out to the balcony.',
+      'Paint the page her teacher sets you — <b>every square</b>.',
+      'Take the book.'
+    ],
+    acts: [
+      { intro: [SCRIPT.l3a], outro: [], seamless: true,
+        build: buildAct3a, char: 'child', tuning: CHILD_TUNING,
+        music: 'afternoon', hud: 'AYRISHA · to the house' },
+      { intro: [], outro: [], seamless: true,
+        build: buildAct3b, char: 'child', tuning: CHILD_TUNING,
+        music: 'indoors', hud: 'AYRISHA · find the teacher' },
+      { type: 'art', intro: [], outro: [], seamless: true, music: 'indoors' }
+    ],
+    ending: 'book',
+    close: [SCRIPT.l3book, SCRIPT.l3done]
   }
 ];
 
@@ -154,6 +200,7 @@ function renderStory() {
   storyEl.querySelector('.story-title').textContent = s.title;
   storyEl.querySelector('.story-text').textContent = s.text;
   storyEl.classList.toggle('sweet', !!s.sweet);
+  storyEl.classList.toggle('top', s.pos === 'top');
 }
 
 function advanceStory() {
@@ -165,6 +212,21 @@ function advanceStory() {
   if (fn) fn();
 }
 
+/* ============================== FADE ==============================
+   Scenes inside a level hand over through a fade, not a card, so a
+   level reads as one continuous stretch rather than a sequence.
+------------------------------------------------------------------ */
+function fadeThrough(mid, after) {
+  fadeEl.classList.add('on');
+  setTimeout(() => {
+    mid();
+    setTimeout(() => {
+      fadeEl.classList.remove('on');
+      after && after();
+    }, 60);
+  }, 470);
+}
+
 /* ========================== LEVEL LANDING =========================
    Every level opens on its own page: what it is called, what it is
    about, what you actually have to do, and a START button.
@@ -172,6 +234,7 @@ function advanceStory() {
 function showLevelCard(ch) {
   state = 'levelcard';
   storyEl.classList.add('hidden');   // the landing page owns the screen
+  artEl.classList.add('hidden');
   hudAct.textContent = '';
   hudCollect.textContent = '';
   levelCard.querySelector('.lc-num').textContent = `LEVEL ${ch.number}`;
@@ -203,6 +266,24 @@ function startChapter(i) {
 
 function startCurrentAct() {
   const a = CHAPTERS[chapterIdx].acts[actIdx];
+
+  if (a.type === 'art') {
+    level = null;
+    player = null;
+    hudAct.textContent = 'AYRISHA · paint it in';
+    hudCollect.textContent = '';
+    if (a.music) Sound.playMusic(a.music);
+    artEl.classList.remove('hidden');
+    Art.build(artEl, () => {
+      artEl.classList.add('hidden');
+      state = 'transition';
+      finishAct();
+    });
+    state = 'art';
+    return;
+  }
+
+  artEl.classList.add('hidden');
   level = a.build();
   player = new Actor(a.char, 40, GROUND_Y * TILE, a.tuning);
   spawnX = player.x;
@@ -216,15 +297,19 @@ function startCurrentAct() {
 }
 
 function finishAct() {
-  Sound.play('clear');
   const ch = CHAPTERS[chapterIdx];
   const a = ch.acts[actIdx];
-  if (actIdx < ch.acts.length - 1) {
-    actIdx++;
-    showStory(a.outro.concat(ch.acts[actIdx].intro), startCurrentAct);
-  } else {
-    showStory(a.outro, startEnding);
-  }
+  const last = actIdx === ch.acts.length - 1;
+  if (a.type !== 'art') Sound.play('clear');
+
+  const next = last ? startEnding : () => { actIdx++; startCurrentAct(); };
+  const cards = last ? a.outro : a.outro.concat(ch.acts[actIdx + 1].intro);
+
+  // a seamless act just fades into the next scene
+  if (a.seamless && !cards.length) { fadeThrough(next); return; }
+  showStory(cards, () => {
+    if (a.seamless) fadeThrough(next); else next();
+  });
 }
 
 function startEnding() {
@@ -353,6 +438,88 @@ const ENDINGS = {
     }
   },
 
+  /* ------------------------ level 3: the book --------------------- */
+  book: {
+    dur: 5.0,
+    music: 'lullaby',
+    enter() { Sound.play('birth'); },
+    draw(t) {
+      const FLOOR = 152;
+
+      // the balcony, late afternoon
+      const g = ctx.createLinearGradient(0, 0, 0, VIEW_H);
+      g.addColorStop(0, '#7fbfe0');
+      g.addColorStop(0.55, '#f0c98a');
+      g.addColorStop(1, '#f6ddb2');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+
+      ctx.fillStyle = 'rgba(255,236,170,.55)';
+      ctx.beginPath(); ctx.arc(268, 40, 15, 0, Math.PI * 2); ctx.fill();
+
+      // rooftops below the balcony
+      ctx.fillStyle = '#a98871';
+      for (let i = 0; i < 7; i++) {
+        const bx = i * 52 - 20, bh = 24 + ((i * 37) % 26);
+        ctx.fillRect(bx, FLOOR - 34 - bh, 44, bh);
+      }
+
+      // railing and floor
+      ctx.fillStyle = '#b08e70'; ctx.fillRect(0, FLOOR - 36, VIEW_W, 5);
+      ctx.fillStyle = '#c9a98a';
+      for (let x = 0; x < VIEW_W; x += 8) ctx.fillRect(x, FLOOR - 31, 3, 31);
+      ctx.fillStyle = '#9a7550'; ctx.fillRect(0, FLOOR, VIEW_W, VIEW_H - FLOOR);
+      ctx.fillStyle = '#b08a63'; ctx.fillRect(0, FLOOR, VIEW_W, 3);
+
+      // her painting, up on the easel where she left it
+      ctx.strokeStyle = '#8a6a3f'; ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(36, FLOOR); ctx.lineTo(46, FLOOR - 46);
+      ctx.moveTo(60, FLOOR); ctx.lineTo(50, FLOOR - 46);
+      ctx.stroke();
+      const [gw, gh] = Art.size;
+      const cell = 2;
+      ctx.fillStyle = '#fbf6ea';
+      ctx.fillRect(30, FLOOR - 74, gw * cell + 6, gh * cell + 6);
+      Art.drawTo(ctx, 33, FLOOR - 71, cell);
+      ctx.fillStyle = '#6b4a33'; ctx.fillRect(28, FLOOR - 46, gw * cell + 10, 4);
+
+      // the two of them
+      const bob = Math.sin(t * 2) > 0 ? 0 : 1;
+      drawCharacter(ctx, CHARACTERS.tutor, 'idle', 1, 122, FLOOR, bob);
+      drawCharacter(ctx, CHARACTERS.child, 'idle', 1, 168, FLOOR, bob);
+
+      // the book itself, arriving between them
+      const p = Math.min(1, t / 1.8);
+      const bx = 145, by = FLOOR - 34;
+      ctx.save();
+      ctx.globalAlpha = 0.2 + 0.2 * Math.sin(t * 3);
+      ctx.fillStyle = '#fff0c0';
+      ctx.beginPath(); ctx.arc(bx, by, 14 + p * 16, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      if (BOOK_IMG.complete && BOOK_IMG.naturalWidth) {
+        const h = 46 + p * 10;
+        const w = h * (BOOK_IMG.naturalWidth / BOOK_IMG.naturalHeight);
+        ctx.globalAlpha = Math.min(1, p / 0.6);
+        ctx.fillStyle = '#241b26';
+        ctx.fillRect(bx - w / 2 - 1, by - h / 2 - 1, w + 2, h + 2);
+        ctx.drawImage(BOOK_IMG, bx - w / 2, by - h / 2, w, h);
+        ctx.globalAlpha = 1;
+      }
+
+      for (let i = 0; i < 14; i++) {
+        const a = t * 0.8 + i * 0.45;
+        const r = 28 + (i % 4) * 8 + Math.sin(t * 2 + i) * 3;
+        ctx.globalAlpha = 0.3 + 0.35 * Math.sin(t * 3 + i);
+        ctx.fillStyle = '#fff3c8';
+        ctx.fillRect(Math.round(bx + Math.cos(a) * r),
+                     Math.round(by + Math.sin(a) * r * 0.6), 2, 2);
+      }
+      ctx.globalAlpha = 1;
+    }
+  },
+
   /* --------------------- level 2: the classroom ------------------- */
   classroom: {
     dur: 4.2,
@@ -442,6 +609,12 @@ const THEMES = {
     skyline: true, rain: true, windows: 'rgba(242,198,106,.55)',
     glow: 0.13, vignette: 'rgba(30,34,44,.28)'
   },
+  afternoon: {
+    sky: ['#7fbfe0', '#f0c98a', '#fae3bc'],
+    far: '#b3947a', tree: '#86a06d', near: '#8a6a58', under: '#3c302a',
+    skyline: false, rain: false, windows: 'rgba(255,224,150,.55)',
+    glow: 0.07, vignette: 'rgba(120,70,30,.18)'
+  },
   morning: {
     sky: ['#8fd3f4', '#c6e8f7', '#eaf3e0'],
     far: '#9db6a8', near: '#7d9a8a', under: '#4a4436',
@@ -510,7 +683,7 @@ function drawBackdrop() {
     if (b.tree) {
       ctx.fillStyle = '#6f5a3c';
       ctx.fillRect(sx + b.w / 2 - 2, base - b.h * 0.42, 4, b.h * 0.42);
-      ctx.fillStyle = th.far;
+      ctx.fillStyle = th.tree || th.far;
       ctx.beginPath();
       ctx.arc(sx + b.w / 2, base - b.h * 0.62, b.w * 0.52, 0, Math.PI * 2);
       ctx.arc(sx + b.w / 2 - 8, base - b.h * 0.48, b.w * 0.36, 0, Math.PI * 2);
@@ -556,13 +729,15 @@ function drawInteriorWalls() {
     const top = CEIL_Y * TILE - cam.y;
     const floor = GROUND_Y * TILE - cam.y;
 
+    const iw = level.meta.interiorWall ||
+               { top: '#cbb894', bottom: '#bda884', skirt: '#a8946f' };
     const wall = ctx.createLinearGradient(0, top, 0, floor);
-    wall.addColorStop(0, '#cbb894');
-    wall.addColorStop(1, '#bda884');
+    wall.addColorStop(0, iw.top);
+    wall.addColorStop(1, iw.bottom);
     ctx.fillStyle = wall;
     ctx.fillRect(x0, top, x1 - x0, floor - top);
 
-    ctx.fillStyle = '#a8946f';          // skirting
+    ctx.fillStyle = iw.skirt;           // skirting
     ctx.fillRect(x0, floor - 5, x1 - x0, 5);
     ctx.fillStyle = 'rgba(255,255,255,.10)';
     ctx.fillRect(x0, top, x1 - x0, 3);
@@ -586,7 +761,10 @@ function drawInteriorWalls() {
 /* =============================== PROPS ============================ */
 const FRONT_PROPS = new Set(['bus', 'auto', 'hospital', 'schoolfront', 'desk',
                              'herdesk', 'bench', 'schoolgate', 'blackboard',
-                             'noticeboard', 'streetsign', 'mangotree']);
+                             'noticeboard', 'streetsign', 'mangotree',
+                             'housefront', 'housegate', 'deskpc', 'bookshelf',
+                             'painting', 'doorway', 'railing', 'plantpot',
+                             'easel', 'rug']);
 
 function drawProps(layer) {
   const base = GROUND_Y * TILE - cam.y;
@@ -815,6 +993,137 @@ function drawProps(layer) {
         break;
       }
 
+      case 'housegate': {
+        ctx.fillStyle = '#7c6a52';
+        ctx.fillRect(sx, base - 30, 4, 30);
+        ctx.fillRect(sx + 34, base - 30, 4, 30);
+        ctx.fillStyle = '#95815f';
+        for (let i = 0; i < 5; i++) ctx.fillRect(sx + 7 + i * 6, base - 24, 3, 24);
+        ctx.fillRect(sx + 4, base - 26, 32, 3);
+        ctx.fillRect(sx + 4, base - 12, 32, 3);
+        break;
+      }
+
+      case 'housefront': {
+        const w = p.w * TILE, top = 3 * TILE - cam.y;
+        const dx = p.doorX * TILE - cam.x;
+        // sloped roof
+        ctx.fillStyle = '#8a4b3a';
+        ctx.beginPath();
+        ctx.moveTo(sx - 8, top + 4);
+        ctx.lineTo(sx + w / 2, top - 16);
+        ctx.lineTo(sx + w + 8, top + 4);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#6f3b2d';
+        ctx.fillRect(sx - 8, top + 4, w + 16, 5);
+        // the balcony she will end up on
+        ctx.fillStyle = '#b08e70';
+        ctx.fillRect(sx + 10, top + 34, 54, 4);
+        ctx.fillStyle = '#c9a98a';
+        for (let i = 0; i < 8; i++) ctx.fillRect(sx + 12 + i * 7, top + 22, 3, 12);
+        // windows
+        ctx.fillStyle = '#f5d78e';
+        ctx.fillRect(sx + w - 44, top + 20, 15, 17);
+        ctx.fillRect(sx + w - 24, top + 20, 15, 17);
+        // the front door
+        ctx.fillStyle = '#5b3a28'; ctx.fillRect(dx - 3, base - 48, 38, 48);
+        ctx.fillStyle = '#7c4f34'; ctx.fillRect(dx, base - 45, 32, 45);
+        ctx.fillStyle = '#e8c37a'; ctx.fillRect(dx + 26, base - 25, 3, 3);
+        break;
+      }
+
+      case 'rug': {
+        ctx.fillStyle = '#8a4b52'; ctx.fillRect(sx, base - 4, 74, 4);
+        ctx.fillStyle = '#a85e63'; ctx.fillRect(sx + 6, base - 4, 62, 2);
+        break;
+      }
+
+      case 'deskpc': {
+        // He stands behind the desk, which is deliberately low: at this
+        // scale a normal-height desk hides a 24px man completely.
+        drawCharacter(ctx, CHARACTERS.husband, 'idle', 1, sx + 44, base,
+                      Math.sin(performance.now() / 900) > 0 ? 0 : 1);
+        const top = base - 14;
+        ctx.fillStyle = '#6b4a33'; ctx.fillRect(sx, top, 60, 4);
+        ctx.fillStyle = '#573b28';
+        ctx.fillRect(sx + 3, top + 4, 4, 10);
+        ctx.fillRect(sx + 53, top + 4, 4, 10);
+        // a boxy old monitor, glowing, off to his left
+        ctx.fillStyle = '#d8d3c6'; ctx.fillRect(sx + 4, top - 20, 28, 20);
+        ctx.fillStyle = '#3a5b6b'; ctx.fillRect(sx + 7, top - 17, 22, 13);
+        ctx.fillStyle = 'rgba(150,220,255,.16)';
+        ctx.fillRect(sx - 4, top - 27, 44, 28);
+        ctx.fillStyle = '#b8b2a4'; ctx.fillRect(sx + 34, top - 3, 20, 3);
+        break;
+      }
+
+      case 'bookshelf': {
+        ctx.fillStyle = '#5f4128'; ctx.fillRect(sx, base - 62, 46, 62);
+        ctx.fillStyle = '#3f2b19';
+        for (let r = 0; r < 3; r++) ctx.fillRect(sx + 2, base - 58 + r * 19, 42, 3);
+        const cols = ['#c8324b', '#3f8f4a', '#3c62b4', '#ef8a3c', '#7d5bbe', '#f5cd24'];
+        for (let r = 0; r < 3; r++)
+          for (let i = 0; i < 7; i++) {
+            ctx.fillStyle = cols[(r * 7 + i) % cols.length];
+            ctx.fillRect(sx + 4 + i * 6, base - 55 + r * 19, 4, 13);
+          }
+        break;
+      }
+
+      case 'painting': {
+        ctx.fillStyle = '#7c5a34'; ctx.fillRect(sx, base - 60, 40, 32);
+        ctx.fillStyle = '#f2e6c8'; ctx.fillRect(sx + 3, base - 57, 34, 26);
+        ctx.fillStyle = '#8fb96a'; ctx.fillRect(sx + 3, base - 40, 34, 9);
+        ctx.fillStyle = '#e0894a';
+        ctx.beginPath(); ctx.arc(sx + 27, base - 48, 5, 0, Math.PI * 2); ctx.fill();
+        break;
+      }
+
+      case 'doorway': {
+        ctx.fillStyle = '#5b3a28'; ctx.fillRect(sx - 4, base - 58, 40, 58);
+        ctx.fillStyle = '#f4dfae'; ctx.fillRect(sx, base - 54, 32, 54);
+        ctx.fillStyle = 'rgba(255,224,160,.30)';
+        ctx.fillRect(sx - 10, base - 62, 52, 62);
+        break;
+      }
+
+      case 'railing': {
+        const w = (p.w || 12) * TILE;
+        ctx.fillStyle = '#b08e70'; ctx.fillRect(sx, base - 34, w, 5);
+        ctx.fillStyle = '#c9a98a';
+        for (let i = 0; i * 8 < w; i++) ctx.fillRect(sx + i * 8, base - 29, 3, 29);
+        ctx.fillStyle = '#9b7a5e'; ctx.fillRect(sx, base - 6, w, 6);
+        break;
+      }
+
+      case 'plantpot': {
+        ctx.fillStyle = '#3f8f4a';
+        for (const [ox, oy, r] of [[8, -30, 9], [1, -22, 7], [15, -22, 7]]) {
+          ctx.beginPath(); ctx.arc(sx + ox, base + oy, r, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.fillStyle = '#b1633c'; ctx.fillRect(sx + 2, base - 14, 14, 14);
+        ctx.fillStyle = '#c9754a'; ctx.fillRect(sx, base - 17, 18, 4);
+        break;
+      }
+
+      case 'easel': {
+        // she stands on the near side, facing into the canvas
+        drawCharacter(ctx, CHARACTERS.tutor, 'idle', 1, sx + 6, base,
+                      Math.sin(performance.now() / 800) > 0 ? 0 : 1);
+        ctx.strokeStyle = '#8a6a3f'; ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(sx + 26, base); ctx.lineTo(sx + 36, base - 42);
+        ctx.moveTo(sx + 50, base); ctx.lineTo(sx + 40, base - 42);
+        ctx.moveTo(sx + 38, base - 20); ctx.lineTo(sx + 47, base - 4);
+        ctx.stroke();
+        ctx.fillStyle = '#6b4a33'; ctx.fillRect(sx + 20, base - 40, 36, 4);
+        ctx.fillStyle = '#fbf6ea'; ctx.fillRect(sx + 22, base - 66, 32, 27);
+        ctx.fillStyle = '#c8324b';
+        ctx.beginPath(); ctx.arc(sx + 34, base - 54, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#3f8f4a'; ctx.fillRect(sx + 28, base - 47, 20, 5);
+        break;
+      }
+
       case 'noticeboard': {
         ctx.fillStyle = '#6b5334'; ctx.fillRect(sx, base - 52, 44, 30);
         ctx.fillStyle = '#d8cba6'; ctx.fillRect(sx + 3, base - 49, 38, 24);
@@ -1000,6 +1309,7 @@ function update(dt) {
     if (Input.tapped('confirm') || Input.tapped('jump')) advanceStory();
     return;
   }
+  if (state === 'art') return;   // the board owns the input
   if (Input.tapped('mute')) toggleMute();
 
   if (state === 'ending') {

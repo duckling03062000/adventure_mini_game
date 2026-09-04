@@ -6,7 +6,7 @@
 const CARD_W = 300, CARD_H = 250, CARD_SCALE = 7, CARD_GROUND = 226;
 const cardState = {};
 /* The growth shot is only ever the three Ayrishas; the cards show everyone. */
-const LAB_CAST = ORDER.concat(['officer', 'mother']);
+const LAB_CAST = ORDER.concat(['officer', 'mother', 'tutor', 'husband']);
 
 function buildCards() {
   const wrap = document.getElementById('cards');
@@ -16,7 +16,7 @@ function buildCards() {
     card.className = 'card';
     card.innerHTML = `
       <div class="card-stage"><canvas id="cv-${id}"></canvas></div>
-      <p class="stage-no">${i < ORDER.length ? `stage ${i + 1} of ${ORDER.length}` : 'level 1 · 2002'}</p>
+      <p class="stage-no">${i < ORDER.length ? `stage ${i + 1} of ${ORDER.length}` : (i < ORDER.length + 2 ? 'level 1 · 2002' : 'level 3')}</p>
       <h3>${char.name}</h3>
       <p class="era">${char.era}</p>
       <p class="note">${char.note}</p>
