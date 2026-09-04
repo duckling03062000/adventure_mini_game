@@ -1,0 +1,97 @@
+.is-game{
+  background:#12101c;
+  display:grid;
+  place-items:center;
+  min-height:100svh;
+  overflow:hidden;
+}
+#stage{
+  position:relative;
+  width:min(96vw, calc(96svh * 16 / 9));
+  aspect-ratio:16/9;
+}
+#game{
+  width:100%;height:100%;
+  image-rendering:pixelated;
+  border:3px solid #241b26;
+  border-radius:4px;
+  background:#0d0b16;
+  box-shadow:0 12px 40px rgba(0,0,0,.6);
+}
+
+#hud{
+  position:absolute;top:0;left:0;right:0;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.9rem 1.1rem;
+  font-family:'Press Start 2P', monospace;
+  font-size:.55rem;
+  color:#e8dcf5;
+  text-shadow:0 2px 0 rgba(0,0,0,.6);
+  pointer-events:none;
+}
+#mute{
+  pointer-events:auto;
+  font-family:inherit;font-size:inherit;
+  color:#e8dcf5;background:rgba(0,0,0,.35);
+  border:2px solid rgba(232,220,245,.35);
+  border-radius:3px;padding:.45rem .6rem;cursor:pointer;
+}
+#mute:hover{background:rgba(0,0,0,.6)}
+
+#controls-hint{
+  position:absolute;left:0;right:0;bottom:-2.6rem;
+  display:flex;gap:1.6rem;justify-content:center;
+  font-family:'Nunito',sans-serif;font-size:.82rem;color:#6d6288;
+}
+#controls-hint b{color:#a294c4}
+
+/* ------------------------------ STORY ------------------------------ */
+.story{
+  position:absolute;inset:0;
+  display:grid;place-items:center;
+  background:rgba(12,10,22,.86);
+  padding:2rem;
+  transition:opacity .35s ease;
+}
+.story.hidden{opacity:0;pointer-events:none}
+.story-card{
+  max-width:34rem;text-align:center;color:#f3ecff;
+}
+.story-eyebrow{
+  font-family:'Press Start 2P',monospace;
+  font-size:.55rem;letter-spacing:.16em;
+  color:#ffcf4d;margin:0 0 1.3rem;
+}
+.story-title{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(.9rem,2.2vw,1.3rem);
+  line-height:1.7;margin:0 0 1.5rem;color:#fff;
+}
+.story-text{
+  font-family:'Nunito',sans-serif;
+  font-size:clamp(.95rem,1.6vw,1.1rem);
+  line-height:1.85;margin:0;color:#c9bde4;
+  min-height:3.4em;
+}
+.story.sweet .story-eyebrow{color:#ff9ec4}
+.story.sweet .story-title{color:#ffd7e6}
+.story.sweet .story-text{
+  color:#ffe9f2;
+  font-size:clamp(1.1rem,2.1vw,1.4rem);
+  line-height:1.9;
+}
+.story.sweet .story-text::after{
+  content:'♥';
+  display:block;
+  color:#ff9ec4;
+  font-size:1.5rem;
+  margin-top:1.5rem;
+}
+
+.story-more{
+  font-family:'Press Start 2P',monospace;
+  font-size:.5rem;color:#7d6f9c;margin:2.2rem 0 0;
+  animation:blink 1.4s steps(2) infinite;
+}
+.story-more b{color:#ffcf4d}
+@keyframes blink{50%{opacity:.35}}

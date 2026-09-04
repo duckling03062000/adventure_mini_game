@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Character Lab — internal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="spoiler-bar">
+  <strong>Spoilers.</strong> This page is for you, not for her — it shows every stage she grows through.
+  Never share this link. The title screen (<code>index.html</code>) gives nothing away.
+</div>
+
+<main>
+<section class="section">
+  <div class="section-head">
+    <h2>Character Lab</h2>
+    <p>Three stages of the same girl. Black hair, black eyes, slim build, same face throughout &mdash;
+       only the hair and the clothes move with the years.</p>
+  </div>
+  <div class="cards" id="cards"></div>
+</section>
+
+<section class="section section--alt">
+  <div class="section-head">
+    <h2>The growing-up shot</h2>
+    <p>Same scale, same ground line. This is the reveal the whole game is built around,
+       and the reason she must not see this page.</p>
+  </div>
+  <div class="growth-wrap">
+    <canvas id="growth" class="growth"></canvas>
+    <div class="growth-controls">
+      <button class="chip is-on" data-growth="walk">Walking</button>
+      <button class="chip" data-growth="idle">Standing</button>
+      <button class="chip" data-growth="jump">Jumping</button>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>What's next</h2></div>
+  <ol class="next-list">
+    <li><span>&check;</span> Characters locked &mdash; black hair, black eyes, three hairstyles</li>
+    <li><span>&check;</span> Audio &mdash; synthesised jump, footsteps, music, level-clear</li>
+    <li><span>&check;</span> Level 1 &mdash; The Birth (Bangalore, 6 Sept 2002)</li>
+    <li><span>4</span> Level 2 &mdash; school and the first piano lesson</li>
+    <li><span>5</span> Memory pickups + the photo cards</li>
+    <li><span>6</span> The piano level, where the platforms play notes</li>
+  </ol>
+</section>
+</main>
+
+<footer class="foot"><p>Internal working page. Not part of the game.</p></footer>
+
+<script src="js/characters.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/lab.js"></script>
+</body>
+</html>

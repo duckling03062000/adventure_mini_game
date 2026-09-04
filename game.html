@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ayrisha's Adventures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/game.css">
+</head>
+<body class="is-game">
+
+<div id="stage">
+  <canvas id="game" width="960" height="540"></canvas>
+
+  <div id="hud">
+    <span id="hud-act"></span>
+    <button id="mute" type="button" title="Mute (M)">♪ on</button>
+  </div>
+
+  <div id="story" class="story">
+    <div class="story-card">
+      <p class="story-eyebrow"></p>
+      <h2 class="story-title"></h2>
+      <p class="story-text"></p>
+      <p class="story-more">press <b>ENTER</b></p>
+    </div>
+  </div>
+
+  <div id="controls-hint">
+    <span><b>&larr; &rarr;</b> move</span>
+    <span><b>SPACE</b> jump</span>
+    <span><b>M</b> mute</span>
+  </div>
+</div>
+
+<script src="js/characters.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/levels/level1.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
