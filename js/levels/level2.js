@@ -48,7 +48,8 @@ function buildLevel2() {
   b.checkpoint();
   b.flat(3);
 
-  /* --- the school gate --- */
+  /* --- the school gate: shut until she has all three mangoes --- */
+  const gateX = b.x;
   b.prop('schoolgate');
   b.flat(8);
   b.prop('flagpole', b.x - 3);
@@ -88,6 +89,8 @@ function buildLevel2() {
   return b.build({
     goalX: herDesk * 16,
     name: 'level2',
+    gateX,                    // the gate will not open without the mangoes
+    gateNote: 'Not without the mangoes!',
     theme: 'morning',
     deskRow,
     tileStyles: {

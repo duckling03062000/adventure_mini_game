@@ -18,6 +18,7 @@ const Sound = (() => {
   let nextNoteTime = 0;
   let currentSong = null;
 
+  const MASTER_LEVEL = 0.9;
   const A4 = 440;
   /* note name -> frequency, e.g. n('D4') */
   function n(name) {
@@ -32,16 +33,26 @@ const Sound = (() => {
     if (ctx) return;
     const AC = window.AudioContext || window.webkitAudioContext;
     ctx = new AC();
+    // master -> compressor -> out. The compressor lets the mix sit loud
+    // without the music and a burst of sfx clipping when they collide.
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -12;
+    comp.knee.value = 12;
+    comp.ratio.value = 4;
+    comp.attack.value = 0.004;
+    comp.release.value = 0.18;
+    comp.connect(ctx.destination);
+
     master = ctx.createGain();
-    master.gain.value = 0.9;
-    master.connect(ctx.destination);
+    master.gain.value = MASTER_LEVEL;
+    master.connect(comp);
 
     musicGain = ctx.createGain();
-    musicGain.gain.value = 0.28;
+    musicGain.gain.value = 0.5;
     musicGain.connect(master);
 
     sfxGain = ctx.createGain();
-    sfxGain.gain.value = 0.5;
+    sfxGain.gain.value = 0.95;
     sfxGain.connect(master);
   }
 
@@ -106,29 +117,29 @@ const Sound = (() => {
   const SFX = {
     jump() {
       const t = ctx.currentTime;
-      tone(n('D4'), t, 0.06, { type: 'square', gain: 0.22, slideTo: n('A5'), release: 0.05 });
+      tone(n('D4'), t, 0.06, { type: 'square', gain: 0.5, slideTo: n('A5'), release: 0.05 });
     },
     land() {
       const t = ctx.currentTime;
-      noise(t, 0.09, { gain: 0.16, freq: 420, type: 'lowpass' });
+      noise(t, 0.09, { gain: 0.34, freq: 420, type: 'lowpass' });
     },
     step() {
       const t = ctx.currentTime;
-      noise(t, 0.035, { gain: 0.05, freq: 900, type: 'bandpass', q: 1.4 });
+      noise(t, 0.035, { gain: 0.13, freq: 900, type: 'bandpass', q: 1.4 });
     },
     pickup() {
       const t = ctx.currentTime;
-      tone(n('E5'), t, 0.07, { type: 'triangle', gain: 0.22 });
-      tone(n('B5'), t + 0.07, 0.11, { type: 'triangle', gain: 0.2 });
+      tone(n('E5'), t, 0.07, { type: 'triangle', gain: 0.48 });
+      tone(n('B5'), t + 0.07, 0.11, { type: 'triangle', gain: 0.44 });
     },
     hurt() {
       const t = ctx.currentTime;
-      tone(n('A3'), t, 0.14, { type: 'sawtooth', gain: 0.18, slideTo: n('D3') });
+      tone(n('A3'), t, 0.14, { type: 'sawtooth', gain: 0.38, slideTo: n('D3') });
     },
     checkpoint() {
       const t = ctx.currentTime;
       ['D5', 'F#5', 'A5'].forEach((nn, i) =>
-        tone(n(nn), t + i * 0.07, 0.09, { type: 'triangle', gain: 0.2 }));
+        tone(n(nn), t + i * 0.07, 0.09, { type: 'triangle', gain: 0.44 }));
     },
     /* the level-clear fanfare */
     clear() {
@@ -137,25 +148,25 @@ const Sound = (() => {
       const times = [0, 0.12, 0.24, 0.38, 0.54, 0.66];
       const durs = [0.1, 0.1, 0.12, 0.14, 0.1, 0.5];
       mel.forEach((nn, i) => {
-        tone(n(nn), t + times[i], durs[i], { type: 'square', gain: 0.24, release: 0.18 });
-        tone(n(nn), t + times[i], durs[i], { type: 'triangle', gain: 0.16, detune: -6 });
+        tone(n(nn), t + times[i], durs[i], { type: 'square', gain: 0.5, release: 0.18 });
+        tone(n(nn), t + times[i], durs[i], { type: 'triangle', gain: 0.34, detune: -6 });
       });
-      tone(n('D3'), t, 1.2, { type: 'triangle', gain: 0.18, release: 0.5 });
+      tone(n('D3'), t, 1.2, { type: 'triangle', gain: 0.38, release: 0.5 });
     },
     /* a school bell, two struck tones with a long tail */
     bell() {
       const t = ctx.currentTime;
       [0, 0.34].forEach(off => {
-        tone(n('F#5'), t + off, 0.5, { type: 'sine', gain: 0.2, release: 0.7 });
-        tone(n('C#6'), t + off, 0.4, { type: 'sine', gain: 0.12, release: 0.6 });
-        tone(n('F#4'), t + off, 0.6, { type: 'triangle', gain: 0.12, release: 0.8 });
+        tone(n('F#5'), t + off, 0.5, { type: 'sine', gain: 0.44, release: 0.7 });
+        tone(n('C#6'), t + off, 0.4, { type: 'sine', gain: 0.26, release: 0.6 });
+        tone(n('F#4'), t + off, 0.6, { type: 'triangle', gain: 0.26, release: 0.8 });
       });
     },
     /* the newborn's first cry, as a soft rising motif — not a literal cry */
     birth() {
       const t = ctx.currentTime;
       ['D5', 'E5', 'F#5', 'A5', 'B5', 'D6'].forEach((nn, i) =>
-        tone(n(nn), t + i * 0.16, 0.3, { type: 'sine', gain: 0.22, release: 0.4 }));
+        tone(n(nn), t + i * 0.16, 0.3, { type: 'sine', gain: 0.46, release: 0.4 }));
     }
   };
 
@@ -216,9 +227,9 @@ const Sound = (() => {
       const i = step % 16;
       const b = song.bass[i], l = song.lead[i];
       if (b) tone(n(b), nextNoteTime, stepDur * 1.6,
-                  { type: 'triangle', gain: 0.3, dest: musicGain, release: 0.08 });
+                  { type: 'triangle', gain: 0.62, dest: musicGain, release: 0.08 });
       if (l) tone(n(l), nextNoteTime, stepDur * 0.8,
-                  { type: song.leadType, gain: 0.14, dest: musicGain, release: 0.06 });
+                  { type: song.leadType, gain: 0.32, dest: musicGain, release: 0.06 });
       nextNoteTime += stepDur;
       step++;
     }
@@ -241,10 +252,40 @@ const Sound = (() => {
 
   function setMuted(v) {
     muted = v;
-    if (master) master.gain.value = v ? 0 : 0.9;
+    if (master) master.gain.value = v ? 0 : MASTER_LEVEL;
   }
   function isMuted() { return muted; }
   function toggleMute() { setMuted(!muted); return muted; }
 
-  return { unlock, play, playMusic, stopMusic, toggleMute, isMuted, setMuted };
+  /* Peak level on the master bus, for checking the graph really is
+     producing signal rather than silently scheduling nothing. */
+  let analyser = null;
+  function meter() {
+    if (!ctx) return -1;
+    if (!analyser) {
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 2048;
+      master.connect(analyser);
+    }
+    const buf = new Float32Array(analyser.fftSize);
+    analyser.getFloatTimeDomainData(buf);
+    let peak = 0;
+    for (let i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i]));
+    return +peak.toFixed(4);
+  }
+
+  /* Diagnostics — the audio graph is otherwise invisible from outside. */
+  function debug() {
+    return {
+      ctx: !!ctx,
+      state: ctx ? ctx.state : 'none',
+      started, muted,
+      song: currentSong,
+      timer: !!songTimer,
+      now: ctx ? +ctx.currentTime.toFixed(2) : -1,
+      next: +nextNoteTime.toFixed(2)
+    };
+  }
+
+  return { unlock, play, playMusic, stopMusic, toggleMute, isMuted, setMuted, debug, meter };
 })();

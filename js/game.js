@@ -14,6 +14,7 @@ const storyEl = document.getElementById('story');
 const hudAct = document.getElementById('hud-act');
 const muteBtn = document.getElementById('mute');
 const hudCollect = document.getElementById('hud-collect');
+const noteEl = document.getElementById('note');
 
 /* ============================ THE SCRIPT ==========================
    All the words in one place, so they are easy to rewrite.
@@ -61,26 +62,23 @@ const SCRIPT = {
 
   /* ---- level 2 ---- */
   l2open: {
-    eyebrow: 'level 2', title: 'The First Day',
-    text: 'The first morning of school. A new bag, a new road, and a gate ' +
-          'at the end of it.'
+    eyebrow: 'level 2', title: "Let's go to school!",
+    text: 'Uniform on. Bag packed. The first morning of school, and a whole ' +
+          'road between here and the gate.'
   },
   l2act: {
-    eyebrow: 'act 1 · ayrisha', title: 'Walk to school',
-    text: 'Down the road, in through the gate, and find the classroom. Take ' +
-          'your time — nobody is chasing anybody today.'
+    eyebrow: 'act 1 · ayrisha', title: 'Three mangoes on the way',
+    text: 'There is a big mango tree down the road, and three ripe ones up in ' +
+          'the branches. Climb up, get all three, and then the gate.'
   },
   l2actdone: {
-    eyebrow: 'act 1 complete', title: 'She found it',
+    eyebrow: 'act 1 complete', title: 'You made it to the class!',
     text: 'Bag down. Chair pulled out. She sits.'
   },
   l2done: {
-    eyebrow: 'level 2 complete', title: 'The First Day',
-    text: 'The first of a great many mornings.'
-  },
-  l2mangoes: {
-    eyebrow: 'all three', title: 'Mangoes',
-    text: 'Every last one off that tree, and still at school on time.',
+    eyebrow: 'level 2 complete', title: 'Have a great day at school',
+    text: 'Three mangoes, one classroom, and the first of a great many ' +
+          'mornings.',
     sweet: true
   }
 };
@@ -190,9 +188,7 @@ function finishAct() {
     actIdx++;
     showStory(a.outro.concat(ch.acts[actIdx].intro), startCurrentAct);
   } else {
-    const picks = level.meta.pickups || [];
-    const all = picks.length && picks.every(p => p.got);
-    showStory(all ? a.outro.concat(SCRIPT.l2mangoes) : a.outro, startEnding);
+    showStory(a.outro, startEnding);
   }
 }
 
@@ -681,13 +677,26 @@ function drawProps(layer) {
       }
 
       case 'schoolgate': {
+        const open = allCollected();
         ctx.fillStyle = '#7a8493';
         ctx.fillRect(sx - 2, base - 52, 8, 52);
         ctx.fillRect(sx + 42, base - 52, 8, 52);
         ctx.fillStyle = '#8f99a8'; ctx.fillRect(sx - 6, base - 58, 60, 7);
         ctx.fillStyle = '#9aa4b3';
-        for (let i = 0; i < 6; i++) ctx.fillRect(sx + 8 + i * 6, base - 44, 3, 44);
-        ctx.fillRect(sx + 6, base - 34, 38, 3);
+        if (open) {
+          // both leaves folded back against their posts
+          for (let i = 0; i < 3; i++) {
+            ctx.fillRect(sx + 1 + i * 3, base - 44, 2, 44);
+            ctx.fillRect(sx + 44 + i * 3, base - 44, 2, 44);
+          }
+        } else {
+          for (let i = 0; i < 6; i++) ctx.fillRect(sx + 8 + i * 6, base - 44, 3, 44);
+          ctx.fillRect(sx + 6, base - 34, 38, 3);
+          ctx.fillStyle = '#c8a23a';                 // padlock
+          ctx.fillRect(sx + 22, base - 30, 7, 6);
+          ctx.fillStyle = '#8f99a8';
+          ctx.fillRect(sx + 24, base - 34, 3, 4);
+        }
         signboard(sx + 24, base - 84, 112, SCHOOL_NAME);
         break;
       }
@@ -881,6 +890,33 @@ function collectPickups() {
   }
 }
 
+/* Has she got everything this level asks for? */
+function allCollected() {
+  const list = level.meta.pickups || [];
+  return list.every(p => p.got);
+}
+
+/* The school gate stays shut until the mangoes are in. Enforced as a
+   soft wall so she is stopped rather than teleported. */
+function enforceGate() {
+  if (level.meta.gateX === undefined || allCollected()) return;
+  const limit = level.meta.gateX * TILE + 8;
+  if (player.x > limit) {
+    player.x = limit;
+    if (player.vx > 0) player.vx = 0;
+    showNote(level.meta.gateNote || 'Not yet!');
+  }
+}
+
+let noteTimer = null;
+function showNote(text) {
+  if (noteEl.textContent === text && noteEl.classList.contains('show')) return;
+  noteEl.textContent = text;
+  noteEl.classList.add('show');
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => noteEl.classList.remove('show'), 1800);
+}
+
 function updateCollectHud() {
   const list = level.meta.pickups || [];
   if (!list.length) { hudCollect.textContent = ''; return; }
@@ -939,6 +975,7 @@ function update(dt) {
   controlActor(player, level, dt);
   cam.follow(player, dt);
   collectPickups();
+  enforceGate();
 
   if (player.y > level.pxH + 20) respawn();
   if (player.x >= level.meta.goalX) { state = 'transition'; finishAct(); }

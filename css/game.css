@@ -57,6 +57,21 @@
 }
 #controls-hint b{color:#a294c4}
 
+#note{
+  position:absolute;
+  left:0;right:0;bottom:42%;
+  text-align:center;
+  font-family:'Press Start 2P',monospace;
+  font-size:.6rem;
+  color:#ffd166;
+  text-shadow:0 2px 0 rgba(0,0,0,.7);
+  opacity:0;
+  transform:translateY(6px);
+  transition:opacity .18s ease, transform .18s ease;
+  pointer-events:none;
+}
+#note.show{opacity:1;transform:translateY(0)}
+
 /* ------------------------------ STORY ------------------------------ */
 .story{
   position:absolute;inset:0;
