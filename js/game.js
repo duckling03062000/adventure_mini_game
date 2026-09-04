@@ -146,18 +146,12 @@ const CHAPTERS = [
   {
     id: 'level3',
     number: 3,
-    title: 'The Book',
-    subtitle: 'her art teacher\u2019s house',
-    blurb: 'There is a book her art teacher keeps talking about. Today is the ' +
-           'day she is allowed to have it — if she earns it.',
-    objectives: [
-      'Make it across town to her teacher\u2019s <b>home</b>.',
-      'Go inside, past her husband at his computer, out to the balcony.',
-      'Paint the page her teacher sets you — <b>every square</b>.',
-      'Take the book.'
-    ],
+    title: 'Let\u2019s go to art tutor!',
+    subtitle: '',
+    blurb: '',
+    objectives: [],          // nothing here gives away what she gets
     acts: [
-      { intro: [SCRIPT.l3a], outro: [], seamless: true,
+      { intro: [], outro: [], seamless: true,
         build: buildAct3a, char: 'child', tuning: CHILD_TUNING,
         music: 'afternoon', hud: 'AYRISHA · to the house' },
       { intro: [], outro: [], seamless: true,
@@ -239,18 +233,28 @@ function showLevelCard(ch) {
   hudCollect.textContent = '';
   levelCard.querySelector('.lc-num').textContent = `LEVEL ${ch.number}`;
   levelCard.querySelector('.lc-title').textContent = ch.title;
-  levelCard.querySelector('.lc-sub').textContent = ch.subtitle;
-  levelCard.querySelector('.lc-blurb').textContent = ch.blurb;
+  const sub = levelCard.querySelector('.lc-sub');
+  const blurb = levelCard.querySelector('.lc-blurb');
+  const obj = levelCard.querySelector('.lc-obj');
+  sub.textContent = ch.subtitle || '';
+  blurb.textContent = ch.blurb || '';
+  sub.hidden = !ch.subtitle;
+  blurb.hidden = !ch.blurb;
+  obj.hidden = !(ch.objectives && ch.objectives.length);
   levelCard.querySelector('.lc-list').innerHTML =
-    ch.objectives.map(o => `<li>${o}</li>`).join('');
+    (ch.objectives || []).map(o => `<li>${o}</li>`).join('');
   levelCard.classList.remove('hidden');
 }
 
 function beginLevel() {
   if (state !== 'levelcard') return;
   Sound.unlock();
+  Sound.play('confirm');
   levelCard.classList.add('hidden');
   const ch = CHAPTERS[chapterIdx];
+  // start the music here rather than after the intro cards, so the game
+  // is never silent for the first several screens
+  if (ch.acts[0].music) Sound.playMusic(ch.acts[0].music);
   showStory(ch.acts[0].intro, startCurrentAct);
 }
 
@@ -1357,7 +1361,7 @@ function render() {
 
 /* ============================== BOOT ============================== */
 function toggleMute() {
-  muteBtn.textContent = Sound.toggleMute() ? '♪ off' : '♪ on';
+  muteBtn.textContent = Sound.toggleMute() ? '♪ SOUND OFF' : '♪ SOUND ON';
 }
 muteBtn.addEventListener('click', () => { Sound.unlock(); toggleMute(); });
 

@@ -18,7 +18,7 @@ const Sound = (() => {
   let nextNoteTime = 0;
   let currentSong = null;
 
-  const MASTER_LEVEL = 0.9;
+  const MASTER_LEVEL = 1.0;
   const A4 = 440;
   /* note name -> frequency, e.g. n('D4') */
   function n(name) {
@@ -48,7 +48,7 @@ const Sound = (() => {
     master.connect(comp);
 
     musicGain = ctx.createGain();
-    musicGain.gain.value = 0.5;
+    musicGain.gain.value = 0.62;
     musicGain.connect(master);
 
     sfxGain = ctx.createGain();
@@ -152,6 +152,14 @@ const Sound = (() => {
         tone(n(nn), t + times[i], durs[i], { type: 'triangle', gain: 0.34, detune: -6 });
       });
       tone(n('D3'), t, 1.2, { type: 'triangle', gain: 0.38, release: 0.5 });
+    },
+    /* pressed START — also the first thing you should ever hear, so it
+       doubles as proof the audio actually works */
+    confirm() {
+      const t = ctx.currentTime;
+      tone(n('D5'), t, 0.09, { type: 'square', gain: 0.42 });
+      tone(n('A5'), t + 0.09, 0.16, { type: 'square', gain: 0.38, release: 0.2 });
+      tone(n('D4'), t, 0.3, { type: 'triangle', gain: 0.3, release: 0.25 });
     },
     /* a brush stroke — very short, very soft, so 108 of them in a row
        stay pleasant rather than becoming a woodpecker */
