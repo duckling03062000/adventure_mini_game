@@ -57,6 +57,66 @@
 }
 #controls-hint b{color:#a294c4}
 
+/* --------------------------- LEVEL LANDING ------------------------- */
+.levelcard{
+  position:absolute;inset:0;
+  z-index:3;
+  display:grid;place-items:center;
+  background:linear-gradient(160deg,#181430 0%,#2a1f3f 55%,#3a2b45 100%);
+  padding:1.5rem;
+  overflow:auto;
+  transition:opacity .3s ease;
+}
+.levelcard.hidden{opacity:0;pointer-events:none}
+.levelcard-inner{max-width:31rem;text-align:center;color:#f3ecff}
+.lc-num{
+  font-family:'Press Start 2P',monospace;
+  font-size:.6rem;letter-spacing:.22em;
+  color:#ffcf4d;margin:0 0 1.1rem;
+}
+.lc-title{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(1.05rem,3vw,1.7rem);
+  line-height:1.5;margin:0 0 .9rem;color:#fff;
+  text-shadow:0 4px 0 rgba(143,122,217,.4);
+}
+.lc-sub{
+  font-family:'Nunito',sans-serif;font-size:.9rem;
+  letter-spacing:.06em;color:#a294c4;margin:0 0 1.6rem;
+}
+.lc-blurb{
+  font-family:'Nunito',sans-serif;
+  font-size:1rem;line-height:1.8;color:#c9bde4;margin:0 0 1.8rem;
+}
+.lc-obj{
+  border:2px dashed rgba(255,207,77,.35);
+  border-radius:4px;
+  padding:1.1rem 1.2rem;
+  margin-bottom:2rem;
+  text-align:left;
+}
+.lc-obj-head{
+  font-family:'Press Start 2P',monospace;
+  font-size:.52rem;letter-spacing:.16em;
+  color:#ffcf4d;margin:0 0 .9rem;text-align:center;
+}
+.lc-list{margin:0;padding:0;list-style:none}
+.lc-list li{
+  font-family:'Nunito',sans-serif;
+  font-size:.98rem;line-height:1.6;color:#e6dcf7;
+  padding-left:1.5rem;position:relative;
+}
+.lc-list li + li{margin-top:.65rem}
+.lc-list li::before{
+  content:'\25B8';
+  position:absolute;left:.2rem;top:0;color:#ffcf4d;
+}
+.lc-hint{
+  font-family:'Press Start 2P',monospace;
+  font-size:.5rem;color:#7d6f9c;margin:1.5rem 0 0;
+}
+.lc-hint b{color:#ffcf4d}
+
 #note{
   position:absolute;
   left:0;right:0;bottom:42%;
@@ -75,6 +135,7 @@
 /* ------------------------------ STORY ------------------------------ */
 .story{
   position:absolute;inset:0;
+  z-index:2;
   display:grid;place-items:center;
   background:rgba(12,10,22,.86);
   padding:2rem;

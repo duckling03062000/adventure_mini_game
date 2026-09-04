@@ -21,7 +21,22 @@
     <button id="mute" type="button" title="Mute (M)">♪ on</button>
   </div>
 
-  <div id="story" class="story">
+  <div id="levelcard" class="levelcard">
+    <div class="levelcard-inner">
+      <p class="lc-num"></p>
+      <h2 class="lc-title"></h2>
+      <p class="lc-sub"></p>
+      <p class="lc-blurb"></p>
+      <div class="lc-obj">
+        <p class="lc-obj-head">Objective</p>
+        <ul class="lc-list"></ul>
+      </div>
+      <button class="btn-start" id="lc-start" type="button">START</button>
+      <p class="lc-hint">or press <b>ENTER</b></p>
+    </div>
+  </div>
+
+  <div id="story" class="story hidden">
     <div class="story-card">
       <p class="story-eyebrow"></p>
       <h2 class="story-title"></h2>

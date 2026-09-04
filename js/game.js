@@ -15,6 +15,7 @@ const hudAct = document.getElementById('hud-act');
 const muteBtn = document.getElementById('mute');
 const hudCollect = document.getElementById('hud-collect');
 const noteEl = document.getElementById('note');
+const levelCard = document.getElementById('levelcard');
 
 /* ============================ THE SCRIPT ==========================
    All the words in one place, so they are easy to rewrite.
@@ -22,11 +23,6 @@ const noteEl = document.getElementById('note');
 ------------------------------------------------------------------ */
 const SCRIPT = {
   /* ---- level 1 ---- */
-  l1open: {
-    eyebrow: 'level 1', title: 'The Birth',
-    text: '6th September, 2002. It has been raining over Bangalore, and the ' +
-          'city has not stopped moving for a second.'
-  },
   l1act1: {
     eyebrow: 'act 1 · papa', title: 'Get across the city',
     text: 'The call comes. The road is flooded, the buses have stopped dead, ' +
@@ -61,11 +57,6 @@ const SCRIPT = {
   },
 
   /* ---- level 2 ---- */
-  l2open: {
-    eyebrow: 'level 2', title: "Let's go to school!",
-    text: 'Uniform on. Bag packed. The first morning of school, and a whole ' +
-          'road between here and the gate.'
-  },
   l2act: {
     eyebrow: 'act 1 · ayrisha', title: 'Three mangoes on the way',
     text: 'There is a big mango tree down the road, and three ripe ones up in ' +
@@ -91,7 +82,16 @@ const MUMMA_TUNING  = { maxSpeed: 1.35, accel: 0.3,  friction: 0.28, jumpV: -4.9
 const CHAPTERS = [
   {
     id: 'level1',
-    open: [SCRIPT.l1open],
+    number: 1,
+    title: 'The Birth',
+    subtitle: 'Bangalore · 6th September, 2002',
+    blurb: 'It has been raining over Bangalore, and the city has not stopped ' +
+           'moving for a second.',
+    objectives: [
+      'Get <b>Papa</b> across the broken city to the hospital.',
+      'Then bring <b>Mumma</b> — she cannot run, and cannot jump the way Papa can.',
+      'Get them both inside.'
+    ],
     acts: [
       { intro: [SCRIPT.l1act1], outro: [SCRIPT.l1act1done],
         build: buildAct1, char: 'officer', tuning: PAPA_TUNING,
@@ -105,7 +105,15 @@ const CHAPTERS = [
   },
   {
     id: 'level2',
-    open: [SCRIPT.l2open],
+    number: 2,
+    title: "Let's go to school!",
+    subtitle: 'AECS Layout · the first morning',
+    blurb: 'Uniform on. Bag packed. A whole road between here and the gate.',
+    objectives: [
+      'Climb the big mango tree and take <b>all three mangoes</b>.',
+      'The school gate will not open until you have them.',
+      'Get inside and find her desk.'
+    ],
     acts: [
       { intro: [SCRIPT.l2act], outro: [SCRIPT.l2actdone],
         build: buildLevel2, char: 'child', tuning: CHILD_TUNING,
@@ -157,13 +165,40 @@ function advanceStory() {
   if (fn) fn();
 }
 
+/* ========================== LEVEL LANDING =========================
+   Every level opens on its own page: what it is called, what it is
+   about, what you actually have to do, and a START button.
+------------------------------------------------------------------ */
+function showLevelCard(ch) {
+  state = 'levelcard';
+  storyEl.classList.add('hidden');   // the landing page owns the screen
+  hudAct.textContent = '';
+  hudCollect.textContent = '';
+  levelCard.querySelector('.lc-num').textContent = `LEVEL ${ch.number}`;
+  levelCard.querySelector('.lc-title').textContent = ch.title;
+  levelCard.querySelector('.lc-sub').textContent = ch.subtitle;
+  levelCard.querySelector('.lc-blurb').textContent = ch.blurb;
+  levelCard.querySelector('.lc-list').innerHTML =
+    ch.objectives.map(o => `<li>${o}</li>`).join('');
+  levelCard.classList.remove('hidden');
+}
+
+function beginLevel() {
+  if (state !== 'levelcard') return;
+  Sound.unlock();
+  levelCard.classList.add('hidden');
+  const ch = CHAPTERS[chapterIdx];
+  showStory(ch.acts[0].intro, startCurrentAct);
+}
+
 /* ============================= CHAPTERS =========================== */
 function startChapter(i) {
   chapterIdx = i;
   actIdx = 0;
   ending = null;
-  const ch = CHAPTERS[i];
-  showStory(ch.open.concat(ch.acts[0].intro), startCurrentAct);
+  level = null;
+  Sound.stopMusic();
+  showLevelCard(CHAPTERS[i]);
 }
 
 function startCurrentAct() {
@@ -209,6 +244,7 @@ function nextChapter() {
     startChapter(chapterIdx + 1);
   } else {
     hudAct.textContent = 'TO BE CONTINUED';
+    hudCollect.textContent = '';
     state = 'end';
   }
 }
@@ -956,6 +992,10 @@ function frame(now) {
 }
 
 function update(dt) {
+  if (state === 'levelcard') {
+    if (Input.tapped('confirm') || Input.tapped('jump')) beginLevel();
+    return;
+  }
   if (state === 'story') {
     if (Input.tapped('confirm') || Input.tapped('jump')) advanceStory();
     return;
@@ -1027,6 +1067,7 @@ function boot() {
   addEventListener('keydown', kick);
   addEventListener('pointerdown', kick);
   storyEl.addEventListener('click', () => { if (state === 'story') advanceStory(); });
+  document.getElementById('lc-start').addEventListener('click', beginLevel);
   requestAnimationFrame(frame);
 }
 boot();
