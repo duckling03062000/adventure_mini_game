@@ -78,7 +78,8 @@ function buildAct3b() {
   b.flat(5);
   b.prop('rug', 2);
   b.flat(4);
-  b.prop('deskpc', b.x - 3);        // her husband, working
+  const deskX = b.x - 3;
+  b.prop('deskpc', deskX);          // Uncle, working
   b.flat(6);
   b.prop('bookshelf', b.x - 2);
   b.flat(4);
@@ -109,6 +110,18 @@ function buildAct3b() {
   return b.build({
     goalX: (easelX - 1) * 16,
     name: 'act3b',
+    /* She cannot slip past Uncle without saying hello. */
+    npc: {
+      blockX: deskX + 1,
+      char: 'husband',
+      prompt: 'Press ENTER to talk',
+      lines: [
+        { who: 'Uncle', char: 'husband',
+          text: 'Welcome home, Ayrisha. Do you want to have something?' },
+        { who: 'Uncle', char: 'husband',
+          text: 'Your auntie is in the balcony.' }
+      ]
+    },
     theme: 'afternoon',
     interiorWall: { top: '#c9a98a', bottom: '#b08e70', skirt: '#8f6f55' },
     tileStyles: {

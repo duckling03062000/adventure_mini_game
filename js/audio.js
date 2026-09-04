@@ -153,6 +153,12 @@ const Sound = (() => {
       });
       tone(n('D3'), t, 1.2, { type: 'triangle', gain: 0.38, release: 0.5 });
     },
+    /* one soft blip per line of dialogue */
+    talk() {
+      const t = ctx.currentTime;
+      tone(n('A4'), t, 0.035, { type: 'triangle', gain: 0.22, release: 0.04 });
+      tone(n('E5'), t + 0.03, 0.04, { type: 'triangle', gain: 0.15, release: 0.05 });
+    },
     /* pressed START — also the first thing you should ever hear, so it
        doubles as proof the audio actually works */
     confirm() {

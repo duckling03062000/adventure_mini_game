@@ -364,7 +364,7 @@ const CHARACTERS = {
 
   tutor: {
     id: 'tutor',
-    name: 'The art teacher',
+    name: 'Aunty',
     era: 'level 3 · at the easel',
     note: 'Bun, grey at the temples, a paint-stained apron. Never stops working.',
     top: TUTOR_TOP,
@@ -379,7 +379,7 @@ const CHARACTERS = {
 
   husband: {
     id: 'husband',
-    name: 'Her husband',
+    name: 'Uncle',
     era: 'level 3 · at the computer',
     note: 'Thinning grey hair, glasses, and something on the screen he will not look up from.',
     top: HUSBAND_TOP,

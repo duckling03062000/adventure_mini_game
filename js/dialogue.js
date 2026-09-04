@@ -1,0 +1,68 @@
+/* ------------------------------------------------------------------
+   Dialogue.
+
+   A line at a time, advanced with ENTER or a click, with the speaker's
+   own sprite beside it. While a conversation is running it swallows
+   the input, so the player cannot walk away mid-sentence.
+------------------------------------------------------------------- */
+
+const Dialogue = (() => {
+  let box, nameEl, textEl, portraitEl;
+  let lines = [], idx = 0, onDone = null, active = false;
+
+  function init() {
+    box = document.getElementById('dialogue');
+    nameEl = box.querySelector('.dlg-name');
+    textEl = box.querySelector('.dlg-text');
+    portraitEl = box.querySelector('.dlg-portrait');
+    box.addEventListener('click', advance);
+  }
+
+  function start(newLines, done) {
+    if (!box) init();
+    lines = newLines;
+    idx = 0;
+    onDone = done;
+    active = true;
+    box.classList.remove('hidden');
+    render();
+  }
+
+  function render() {
+    const line = lines[idx];
+    nameEl.textContent = line.who;
+    textEl.textContent = line.text;
+
+    portraitEl.innerHTML = '';
+    const char = CHARACTERS[line.char];
+    if (char) {
+      // the speaker's actual sprite, cropped to head and shoulders
+      const src = renderFrame(char, 'idle', 4);
+      const cv = document.createElement('canvas');
+      cv.width = src.width;
+      cv.height = Math.min(src.height, 15 * 4);
+      const c = cv.getContext('2d');
+      c.imageSmoothingEnabled = false;
+      c.drawImage(src, 0, 0);
+      portraitEl.appendChild(cv);
+    }
+    if (typeof Sound !== 'undefined') Sound.play('talk');
+  }
+
+  function advance() {
+    if (!active) return;
+    idx++;
+    if (idx >= lines.length) close();
+    else render();
+  }
+
+  function close() {
+    active = false;
+    box.classList.add('hidden');
+    const cb = onDone;
+    onDone = null;
+    if (cb) cb();
+  }
+
+  return { init, start, advance, close, get active() { return active; } };
+})();

@@ -149,14 +149,22 @@ const CHAPTERS = [
     title: 'Let\u2019s go to art tutor!',
     subtitle: '',
     blurb: '',
-    objectives: [],          // nothing here gives away what she gets
+    objectives: ['Let\u2019s do art.'],   // nothing here gives away what she gets
     acts: [
       { intro: [], outro: [], seamless: true,
         build: buildAct3a, char: 'child', tuning: CHILD_TUNING,
         music: 'afternoon', hud: 'AYRISHA · to the house' },
       { intro: [], outro: [], seamless: true,
         build: buildAct3b, char: 'child', tuning: CHILD_TUNING,
-        music: 'indoors', hud: 'AYRISHA · find the teacher' },
+        music: 'indoors', hud: 'AYRISHA · find Aunty',
+        goalLines: [
+          { who: 'Aunty', char: 'tutor',
+            text: 'Hello Ayrisha, I\u2019m glad you made it. How are you?' },
+          { who: 'Ayrisha', char: 'child',
+            text: 'Hello, good evening. I am good.' },
+          { who: 'Aunty', char: 'tutor',
+            text: 'Okay, let\u2019s get started with our art classes.' }
+        ] },
       { type: 'art', intro: [], outro: [], seamless: true, music: 'indoors' }
     ],
     ending: 'book',
@@ -176,11 +184,15 @@ let storyQueue = [];
 let ending = null;
 let endingT = 0;
 let endingDone = false;
+let bookGiven = false;
+let bookT = 0;
 let skyline = [];
 let rain = [];
 
 /* ============================== STORY ============================= */
 function showStory(entries, after) {
+  // an empty list is legitimate — a level may go straight into play
+  if (!entries || !entries.length) { if (after) after(); return; }
   storyQueue = entries.slice();
   storyQueue.after = after;
   state = 'story';
@@ -444,9 +456,17 @@ const ENDINGS = {
 
   /* ------------------------ level 3: the book --------------------- */
   book: {
-    dur: 5.0,
     music: 'lullaby',
-    enter() { Sound.play('birth'); },
+    /* She comes back out to the balcony, and Aunty looks at what she
+       made before giving her anything. */
+    enter() {
+      bookGiven = false;
+      Dialogue.start([
+        { who: 'Aunty', char: 'tutor', text: 'Oh wow, nice! You did a great job.' },
+        { who: 'Aunty', char: 'tutor', text: 'Here is a book for you.' }
+      ], () => { bookGiven = true; bookT = 0; Sound.play('birth'); });
+    },
+    done(t) { return bookGiven && bookT > 3.0; },
     draw(t) {
       const FLOOR = 152;
 
@@ -493,8 +513,10 @@ const ENDINGS = {
       drawCharacter(ctx, CHARACTERS.tutor, 'idle', 1, 122, FLOOR, bob);
       drawCharacter(ctx, CHARACTERS.child, 'idle', 1, 168, FLOOR, bob);
 
-      // the book itself, arriving between them
-      const p = Math.min(1, t / 1.8);
+      // the book itself, only once she has actually been given it
+      if (!bookGiven) return;
+      bookT += 1 / 60;
+      const p = Math.min(1, bookT / 1.8);
       const bx = 145, by = FLOOR - 34;
       ctx.save();
       ctx.globalAlpha = 0.2 + 0.2 * Math.sin(t * 3);
@@ -1295,18 +1317,23 @@ let acc = 0;
 const STEP = 1000 / 60;
 
 function frame(now) {
+  // queued first: an exception in update or render must not stop the game
+  requestAnimationFrame(frame);
   acc += Math.min(100, now - last);
   last = now;
   let steps = 0;
   while (acc >= STEP && steps < 5) { update(1); acc -= STEP; steps++; }
   render();
   Input.endFrame();
-  requestAnimationFrame(frame);
 }
 
 function update(dt) {
   if (state === 'levelcard') {
     if (Input.tapped('confirm') || Input.tapped('jump')) beginLevel();
+    return;
+  }
+  if (Dialogue.active) {
+    if (Input.tapped('confirm') || Input.tapped('jump')) Dialogue.advance();
     return;
   }
   if (state === 'story') {
@@ -1318,7 +1345,8 @@ function update(dt) {
 
   if (state === 'ending') {
     endingT += dt / 60;
-    if (endingT > ending.dur && !endingDone) {
+    const finished = ending.done ? ending.done(endingT) : endingT > ending.dur;
+    if (finished && !endingDone) {
       endingDone = true;
       showStory(CHAPTERS[chapterIdx].close, nextChapter);
     }
@@ -1332,7 +1360,31 @@ function update(dt) {
   enforceGate();
 
   if (player.y > level.pxH + 20) respawn();
-  if (player.x >= level.meta.goalX) { state = 'transition'; finishAct(); }
+
+  // someone standing in the way until she says hello
+  const npc = level.meta.npc;
+  if (npc && !npc.done) {
+    const limit = npc.blockX * TILE;
+    if (player.x > limit) {
+      player.x = limit;
+      if (player.vx > 0) player.vx = 0;
+      showNote(npc.prompt || 'Press ENTER to talk');
+    }
+    if (player.x > limit - 34 && Input.tapped('confirm')) {
+      Dialogue.start(npc.lines, () => { npc.done = true; });
+      return;
+    }
+  }
+
+  if (player.x >= level.meta.goalX) {
+    const act = CHAPTERS[chapterIdx].acts[actIdx];
+    state = 'transition';
+    if (act.goalLines) {
+      Dialogue.start(act.goalLines, finishAct);
+    } else {
+      finishAct();
+    }
+  }
 }
 
 function render() {
