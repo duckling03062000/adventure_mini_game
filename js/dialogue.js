@@ -19,12 +19,13 @@ const Dialogue = (() => {
     box.addEventListener('click', advance);
   }
 
-  function start(newLines, done) {
+  function start(newLines, done, opts = {}) {
     if (!box) init();
     lines = newLines;
     idx = 0;
     onDone = done;
     active = true;
+    box.classList.toggle('topright', opts.pos === 'topright');
     box.classList.remove('hidden');
     render();
   }

@@ -210,6 +210,19 @@
   transition:opacity .2s ease, transform .2s ease;
 }
 .dialogue.hidden{opacity:0;transform:translateY(10px);pointer-events:none}
+
+/* A guide speaks from the corner rather than across the bottom, so the
+   scene it is talking about stays visible underneath. */
+.dialogue.topright{
+  left:auto;
+  right:3%;
+  top:9%;
+  bottom:auto;
+  width:min(27rem, 56%);
+  align-items:flex-start;
+}
+.dialogue.topright.hidden{transform:translate(14px,-10px)}
+.dialogue.topright .dlg-more{align-self:flex-end}
 .dlg-portrait{
   flex:0 0 auto;
   width:3.6rem;height:3.6rem;
@@ -289,6 +302,19 @@
   transition:opacity .2s ease, transform .2s ease;
 }
 .dialogue.hidden{opacity:0;transform:translateY(10px);pointer-events:none}
+
+/* A guide speaks from the corner rather than across the bottom, so the
+   scene it is talking about stays visible underneath. */
+.dialogue.topright{
+  left:auto;
+  right:3%;
+  top:9%;
+  bottom:auto;
+  width:min(27rem, 56%);
+  align-items:flex-start;
+}
+.dialogue.topright.hidden{transform:translate(14px,-10px)}
+.dialogue.topright .dlg-more{align-self:flex-end}
 .dlg-portrait{
   flex:0 0 auto;
   width:3.6rem;height:3.6rem;

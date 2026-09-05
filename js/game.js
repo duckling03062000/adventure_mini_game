@@ -28,7 +28,8 @@ BOOK_IMG.src = 'assets/images/painting-nature.jpg';
 ------------------------------------------------------------------ */
 const SCRIPT = {
   /* Level 1 */
-  l1act1:     [{ text: 'Papa.' }],
+  l1guide:    [{ who: 'Angel', char: 'angel',
+                 text: 'Let\u2019s take Papa to the hospital.' }],
   l1act1done: [{ text: 'Act 1 complete.' }],
   l1act2:     [{ text: 'Mumma.' }],
   l1act2done: [{ text: 'Ayrisha was born.' },
@@ -59,7 +60,7 @@ const CHAPTERS = [
     blurb: '',
     objectives: [],
     acts: [
-      { intro: SCRIPT.l1act1, outro: SCRIPT.l1act1done,
+      { guide: SCRIPT.l1guide, intro: [], outro: SCRIPT.l1act1done,
         build: buildAct1, char: 'officer', tuning: PAPA_TUNING,
         music: 'rush', hud: 'PAPA' },
       { intro: SCRIPT.l1act2, outro: SCRIPT.l1act2done,
@@ -128,6 +129,56 @@ let bookGiven = false;
 let bookT = 0;
 let skyline = [];
 let rain = [];
+
+/* ============================== GUIDE =============================
+   An angel turns up at the start of a level, says its piece, and goes.
+   Unlike narration this waits for the player: ENTER moves it on.
+------------------------------------------------------------------ */
+const guide = { on: false, t: 0, fade: 0 };
+
+function showGuide(lines, after) {
+  dropFocus();
+  guide.on = true;
+  guide.t = 0;
+  guide.fade = 0;
+  Dialogue.start(lines, () => { guide.on = false; if (after) after(); },
+                 { pos: 'topright' });
+}
+
+/* Drawn in world space, hovering just off the player's shoulder. */
+function drawGuide(dt) {
+  if (!guide.on && guide.fade <= 0) return;
+  guide.t += dt / 60;
+  guide.fade += ((guide.on ? 1 : 0) - guide.fade) * 0.08;
+  if (guide.fade < 0.01) return;
+
+  const char = CHARACTERS.angel;
+  const h = frameHeight(char, 'idle');
+  const x = Math.round(player.x - cam.x + 40);
+  const y = Math.round(player.y - cam.y - 34 + Math.sin(guide.t * 2) * 3);
+
+  ctx.save();
+  ctx.globalAlpha = guide.fade;
+
+  // a soft halo of light around it
+  const glow = ctx.createRadialGradient(x, y - h / 2, 2, x, y - h / 2, 34);
+  glow.addColorStop(0, 'rgba(255,235,170,.40)');
+  glow.addColorStop(1, 'rgba(255,235,170,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(x - 40, y - h - 26, 80, h + 52);
+
+  drawCharacter(ctx, char, 'idle', 1, x, y, 0);
+
+  // a few motes drifting around it
+  for (let i = 0; i < 6; i++) {
+    const a = guide.t * 0.9 + i * 1.05;
+    ctx.globalAlpha = guide.fade * (0.25 + 0.3 * Math.sin(guide.t * 3 + i));
+    ctx.fillStyle = '#fff2c4';
+    ctx.fillRect(Math.round(x + Math.cos(a) * (14 + (i % 3) * 6)),
+                 Math.round(y - h / 2 + Math.sin(a) * 12), 2, 2);
+  }
+  ctx.restore();
+}
 
 /* ============================ NARRATION ===========================
    Between-scene text is spoken over the world in the dialogue box
@@ -213,6 +264,8 @@ function startChapter(i) {
   actIdx = 0;
   ending = null;
   level = null;
+  guide.on = false;
+  guide.fade = 0;
   Sound.stopMusic();
   showLevelCard(CHAPTERS[i]);
 }
@@ -250,8 +303,10 @@ function startCurrentAct(skipIntro) {
   updateCollectHud();
   Sound.playMusic(a.music);
   state = 'play';
-  // the scene is already on screen behind it, so this reads as a caption
-  if (!skipIntro) narrate(a.intro);
+  if (skipIntro) return;
+  // a guide waits for the player; a plain caption plays itself
+  if (a.guide) showGuide(a.guide, () => narrate(a.intro));
+  else narrate(a.intro);
 }
 
 function finishAct() {
@@ -1347,6 +1402,7 @@ function render() {
   drawProps('front');
   drawPickups();
   drawActor(ctx, player, cam);
+  drawGuide(1);
   drawRain(1);
 
   const th = theme();

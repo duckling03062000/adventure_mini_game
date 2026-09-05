@@ -303,6 +303,36 @@ const HUSBAND_LEGS_IDLE = [
 /* Same frames whichever animation asks for them. */
 const still = rows => ({ idle: rows, stride: rows, pass: rows, jump: rows });
 
+/* ----------------------------- THE ANGEL -------------------------- */
+/* Turns up at the start of a level to say what it is about, then goes.
+   Extra palette letter: w = wing. */
+const ANGEL_TOP = [
+  '....aaaaaaaa....',
+  '................',
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.ww..dddddd..ww.',
+  'www.sdddddds.www',
+  'www.sdddddds.www',
+  '.ww.sdddddds.ww.',
+  '....dddddddd....',
+  '...dddddddddd...',
+  '..dddddddddddd..',
+  '..dddddddddddd..',
+  '...DDDDDDDDDD...'
+];
+const ANGEL_LEGS_IDLE = [
+  '.....ss..ss.....', '.....ss..ss.....',
+  '....fff..fff....', '...ffff..ffff...'
+];
+
 /* --------------------------------------------------------------- */
 
 const CHARACTERS = {
@@ -389,6 +419,23 @@ const CHARACTERS = {
       h: '#8f8a84', H: '#aaa49e',
       d: '#dfe3e8', D: '#c2c7cd', p: '#4a4f5c', f: '#2a2620',
       a: '#8a7a3a', b: '#2a2620', c: '#dfe3e8'
+    }
+  },
+
+  angel: {
+    id: 'angel',
+    name: 'Angel',
+    era: 'the guide',
+    note: 'Halo, wings, and a habit of turning up at the start of things.',
+    top: ANGEL_TOP,
+    legs: still(ANGEL_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#e0be62', H: '#f6e3a8',
+      s: '#f6dcc0', S: '#e0bd9c',
+      d: '#f9f5ea', D: '#ded5c1', p: '#f9f5ea',
+      f: '#e6dcc4', w: '#c9dcf4', a: '#ffd45c',
+      b: '#e6dcc4', c: '#f9f5ea'
     }
   }
 };
