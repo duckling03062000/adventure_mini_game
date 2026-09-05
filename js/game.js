@@ -17,6 +17,7 @@ const noteEl = document.getElementById('note');
 const levelCard = document.getElementById('levelcard');
 const fadeEl = document.getElementById('fade');
 const artEl = document.getElementById('artboard');
+const pianoEl = document.getElementById('piano');
 
 /* The real cover, for the moment she is given it. */
 const BOOK_IMG = new Image();
@@ -45,7 +46,12 @@ const SCRIPT = {
   l2done:     [{ text: 'Have a great day at school.', sweet: true }],
 
   /* Level 3 */
-  l3done:     [{ who: 'Krishna ji', char: 'krishna', text: 'Level 3 complete.' }]
+  l3done:     [{ who: 'Krishna ji', char: 'krishna', text: 'Level 3 complete.' }],
+
+  /* Level 4 */
+  l4guide:    [{ who: 'Krishna ji', char: 'krishna',
+                 text: 'Hey little Ayrisha, let\u2019s go to the music classes.' }],
+  l4done:     [{ who: 'Krishna ji', char: 'krishna', text: 'Level 4 complete.' }]
 };
 
 /* ============================= CHAPTERS =========================== */
@@ -115,6 +121,33 @@ const CHAPTERS = [
     ],
     ending: 'book',
     close: SCRIPT.l3done
+  },
+  {
+    id: 'level4',
+    number: 4,
+    title: "Let's go to the music class",
+    subtitle: '',
+    blurb: '',
+    objectives: [],
+    acts: [
+      { intro: SCRIPT.l4guide, outro: [], seamless: true,
+        build: buildAct4a, char: 'child', tuning: CHILD_TUNING,
+        music: 'morning', hud: 'AYRISHA' },
+      { intro: [], outro: [], seamless: true,
+        build: buildAct4b, char: 'child', tuning: CHILD_TUNING,
+        music: 'indoors', hud: 'AYRISHA',
+        goalLines: [
+          { who: 'Teacher', char: 'musicteacher',
+            text: 'Ayrisha, hello! How was your school?' },
+          { who: 'Ayrisha', char: 'child', text: 'Yeah, my school was good.' },
+          { who: 'Teacher', char: 'musicteacher',
+            text: 'Okay, let\u2019s start with our piano lessons.' },
+          { who: 'Ayrisha', char: 'child', text: 'Yes, let\u2019s go!' }
+        ] },
+      { type: 'piano', intro: [], outro: [], seamless: true, music: 'indoors' }
+    ],
+    ending: 'bow',
+    close: SCRIPT.l4done
   }
 ];
 
@@ -130,6 +163,10 @@ let ending = null;
 let endingT = 0;
 let endingDone = false;
 let bookGiven = false;
+let bowT = 0;
+let bowing = false;
+let bowHit = false;
+let bowDone = false;
 let bookT = 0;
 let skyline = [];
 let rain = [];
@@ -264,6 +301,7 @@ function fadeThrough(mid, after) {
 function showLevelCard(ch) {
   state = 'levelcard';
   artEl.classList.add('hidden');
+  pianoEl.classList.add('hidden');
   hudAct.textContent = '';
   hudCollect.textContent = '';
   levelCard.querySelector('.lc-num').textContent = `LEVEL ${ch.number}`;
@@ -307,6 +345,23 @@ function startChapter(i) {
 function startCurrentAct(skipIntro) {
   const a = CHAPTERS[chapterIdx].acts[actIdx];
 
+  if (a.type === 'piano') {
+    level = null;
+    player = null;
+    hudAct.textContent = 'AYRISHA · piano lesson';
+    hudCollect.textContent = '';
+    if (a.music) Sound.playMusic(a.music);
+    artEl.classList.add('hidden');
+    pianoEl.classList.remove('hidden');
+    Piano.build(pianoEl, () => {
+      pianoEl.classList.add('hidden');
+      state = 'transition';
+      finishAct();
+    });
+    state = 'art';
+    return;
+  }
+
   if (a.type === 'art') {
     level = null;
     player = null;
@@ -324,6 +379,7 @@ function startCurrentAct(skipIntro) {
   }
 
   artEl.classList.add('hidden');
+  pianoEl.classList.add('hidden');
   level = a.build();
   player = new Actor(a.char, 40, GROUND_Y * TILE, a.tuning);
   spawnX = player.x;
@@ -341,7 +397,7 @@ function finishAct() {
   const ch = CHAPTERS[chapterIdx];
   const a = ch.acts[actIdx];
   const last = actIdx === ch.acts.length - 1;
-  if (a.type !== 'art') Sound.play('clear');
+  if (a.type !== 'art' && a.type !== 'piano') Sound.play('clear');
 
   const next = last ? startEnding : () => { actIdx++; startCurrentAct(); };
   // speak the closing line over the scene it belongs to, then fade
@@ -349,6 +405,8 @@ function finishAct() {
 }
 
 function startEnding() {
+  bowDone = false;
+  bowHit = false;
   const ch = CHAPTERS[chapterIdx];
   ending = ENDINGS[ch.ending];
   endingT = 0;
@@ -484,13 +542,16 @@ const ENDINGS = {
       bookGiven = false;
       bookT = 0;
       Dialogue.start([
+        { who: 'Aunty', char: 'tutor', text: 'Oh wow, you did a great job!' },
+        { who: 'Ayrisha', char: 'child',
+          text: 'Thank you, Aunty. You teach so well.' },
         { who: 'Aunty', char: 'tutor',
-          text: 'Oh wow, you did a great job \u2014 and I have a book for you.' },
-        { who: 'Aunty', char: 'tutor', text: 'Here is the book.' },
-        /* the book arrives as she thanks her, and this line cannot be
-           skipped, so the handover actually plays */
-        { who: 'Ayrisha', char: 'child', text: 'Thank you, Aunty!',
-          lock: true, wait: 3400,
+          text: 'Yeah, you are a great student. I have a book for you.' },
+        { who: 'Ayrisha', char: 'child', text: 'What is it?' },
+        /* the book arrives on this line, and it cannot be skipped, so
+           the handover actually plays */
+        { who: 'Aunty', char: 'tutor', text: 'Here is the book.',
+          lock: true, wait: 3600,
           on() { bookGiven = true; bookT = 0; Sound.play('birth'); } }
       ], null);
     },
@@ -574,6 +635,88 @@ const ENDINGS = {
                      Math.round(by + Math.sin(a) * r * 0.6), 2, 2);
       }
       ctx.globalAlpha = 1;
+    }
+  },
+
+  /* ----------------------- level 4: the bow ----------------------- */
+  bow: {
+    music: 'lullaby',
+    enter() {
+      bowT = 0;
+      bowing = false;
+      Dialogue.start([
+        { who: 'Teacher', char: 'musicteacher',
+          text: 'Oh wow, you did so great. You will make a very good musician!' },
+        /* she bows on this line, and bumps her head doing it */
+        { who: 'Ayrisha', char: 'child', text: 'Thank you!',
+          lock: true, wait: 2600,
+          on() { bowing = true; bowT = 0; } },
+        { who: 'Teacher', char: 'musicteacher', text: 'So cutely you bow down!' },
+        { who: 'Ayrisha', char: 'child', text: 'Yeah!' }
+      ], () => { bowDone = true; });
+    },
+    done() { return bowDone; },
+    draw(t) {
+      const FLOOR = 132;   // clear of the dialogue box, so the bump shows
+      const g = ctx.createLinearGradient(0, 0, 0, VIEW_H);
+      g.addColorStop(0, '#c8b6d4');
+      g.addColorStop(1, '#a692b4');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+
+      // window and a poster, so the room is somewhere
+      ctx.fillStyle = '#8b769c'; ctx.fillRect(24, 26, 60, 46);
+      ctx.fillStyle = '#bfe3ff'; ctx.fillRect(28, 30, 52, 38);
+      ctx.fillStyle = '#8b769c';
+      ctx.fillRect(52, 26, 3, 46); ctx.fillRect(24, 46, 60, 3);
+      ctx.fillStyle = '#6b5334'; ctx.fillRect(232, 30, 44, 34);
+      ctx.fillStyle = '#f2e6c8'; ctx.fillRect(235, 33, 38, 28);
+      ctx.fillStyle = '#3f8f6a';
+      for (let i = 0; i < 5; i++) ctx.fillRect(239 + i * 7, 40, 3, 14);
+
+      // floor
+      ctx.fillStyle = '#7d6a8c'; ctx.fillRect(0, FLOOR, VIEW_W, VIEW_H - FLOOR);
+      ctx.fillStyle = '#8e7a9c'; ctx.fillRect(0, FLOOR, VIEW_W, 3);
+
+      // the upright piano she has just been playing
+      drawUpright(ctx, 96, FLOOR);
+
+      const bobT = Math.sin(t * 2) > 0 ? 0 : 1;
+      drawCharacter(ctx, CHARACTERS.musicteacher, 'idle', 1, 74, FLOOR, bobT);
+
+      // her bow: she folds forward from the feet, and does not stop in time
+      if (bowing) bowT += 1 / 60;
+      // down in half a second, held while she realises, then back up
+      const bend = bowing ? Math.min(1, bowT / 0.5) : 0;
+      const back = bowing && bowT > 1.9 ? Math.min(1, (bowT - 1.9) / 0.6) : 0;
+      const angle = (bend - back) * 1.42;   // ~81 degrees over
+
+      ctx.save();
+      ctx.translate(196, FLOOR);
+      ctx.rotate(-angle);
+      drawCharacter(ctx, CHARACTERS.child, 'idle', 1, 0, 0, bowing ? 0 : bobT);
+      ctx.restore();
+
+      // the bump
+      const bump = bowing && bowT > 0.5 && bowT < 1.3;
+      if (bump) {
+        if (!bowHit) { bowHit = true; Sound.play('land'); }
+        const p = Math.min(1, (bowT - 0.5) / 0.6);
+        ctx.save();
+        ctx.globalAlpha = 1 - p;
+        ctx.strokeStyle = '#ffcf4d';
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 6; i++) {
+          const a = -0.25 - i * 0.45;
+          const r0 = 7 + p * 8, r1 = 16 + p * 14;
+          ctx.beginPath();
+          // where her head actually ends up once she is folded over
+          ctx.moveTo(171 + Math.cos(a) * r0, FLOOR - 7 + Math.sin(a) * r0);
+          ctx.lineTo(171 + Math.cos(a) * r1, FLOOR - 7 + Math.sin(a) * r1);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
     }
   },
 
@@ -821,7 +964,8 @@ const FRONT_PROPS = new Set(['bus', 'auto', 'hospital', 'schoolfront', 'desk',
                              'noticeboard', 'streetsign', 'mangotree',
                              'housefront', 'housegate', 'deskpc', 'bookshelf',
                              'painting', 'doorway', 'railing', 'plantpot',
-                             'easel', 'rug', 'mangouncle', 'guardpost', 'tv']);
+                             'easel', 'rug', 'mangouncle', 'guardpost', 'tv', 'musicfront', 'musicgate',
+                             'instrumentwall', 'musicposter', 'piano']);
 
 function drawProps(layer) {
   const base = GROUND_Y * TILE - cam.y;
@@ -1013,7 +1157,7 @@ function drawProps(layer) {
         ctx.fillStyle = '#f4f1ea';
         ctx.font = '5px "Press Start 2P", monospace';
         ctx.textAlign = 'center';
-        ctx.fillText(LOCALITY, sx + 10, base - 42);
+        ctx.fillText(p.text || LOCALITY, sx + 10, base - 42);
         ctx.textAlign = 'left';
         break;
       }
@@ -1197,6 +1341,80 @@ function drawProps(layer) {
         break;
       }
 
+      case 'musicgate': {
+        ctx.fillStyle = '#7a6a84';
+        ctx.fillRect(sx, base - 34, 5, 34);
+        ctx.fillRect(sx + 40, base - 34, 5, 34);
+        ctx.fillStyle = '#8f7d9a'; ctx.fillRect(sx - 4, base - 40, 53, 6);
+        ctx.fillStyle = '#a08cb0';
+        for (let i = 0; i < 6; i++) ctx.fillRect(sx + 8 + i * 6, base - 28, 3, 28);
+        break;
+      }
+
+      case 'musicfront': {
+        const w = p.w * TILE, top = 3 * TILE - cam.y;
+        const dx = p.doorX * TILE - cam.x;
+        ctx.fillStyle = '#8e5f7c'; ctx.fillRect(sx - 6, top - 6, w + 12, 9);
+        // windows
+        ctx.fillStyle = 'rgba(255,240,200,.6)';
+        for (let r = 0; r < 3; r++)
+          for (let c = 0; c < p.w; c += 2) {
+            const wy = top + 14 + r * 20;
+            if (wy > base - 62) continue;
+            ctx.fillRect(sx + 5 + c * TILE, wy, 9, 11);
+          }
+        // a big treble clef on the wall
+        ctx.strokeStyle = '#f6e3a8';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(sx + w - 34, base - 74, 7, 0, Math.PI * 2);
+        ctx.moveTo(sx + w - 34, base - 81);
+        ctx.lineTo(sx + w - 30, base - 108);
+        ctx.stroke();
+        signboard(sx + w / 2, base - 58, 118, MUSIC_SCHOOL_NAME);
+        // doorway
+        ctx.fillStyle = '#4a3040'; ctx.fillRect(dx - 3, base - 46, 38, 46);
+        ctx.fillStyle = '#ffdca0'; ctx.fillRect(dx, base - 43, 32, 43);
+        ctx.fillStyle = '#e0b98a'; ctx.fillRect(dx + 15, base - 43, 2, 43);
+        break;
+      }
+
+      case 'instrumentwall': {
+        // a guitar and a pair of tablas hung on the wall
+        ctx.fillStyle = '#8a5a34';
+        ctx.beginPath(); ctx.ellipse(sx + 12, base - 40, 9, 12, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#5f3d22';
+        ctx.beginPath(); ctx.arc(sx + 12, base - 42, 3.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#6b4a33'; ctx.fillRect(sx + 11, base - 68, 3, 18);
+        ctx.fillStyle = '#c9a227'; ctx.fillRect(sx + 10, base - 71, 5, 4);
+        ctx.fillStyle = '#b9793f';
+        ctx.fillRect(sx + 30, base - 44, 13, 14);
+        ctx.fillRect(sx + 46, base - 40, 11, 10);
+        ctx.fillStyle = '#efe4cf';
+        ctx.fillRect(sx + 30, base - 46, 13, 3);
+        ctx.fillRect(sx + 46, base - 42, 11, 3);
+        break;
+      }
+
+      case 'musicposter': {
+        ctx.fillStyle = '#5f4128'; ctx.fillRect(sx, base - 58, 42, 30);
+        ctx.fillStyle = '#f7f2e2'; ctx.fillRect(sx + 3, base - 55, 36, 24);
+        ctx.fillStyle = '#241b26';
+        for (let i = 0; i < 4; i++) ctx.fillRect(sx + 6, base - 50 + i * 5, 30, 1);
+        ctx.fillStyle = '#c8324b';
+        ctx.fillRect(sx + 12, base - 46, 3, 3);
+        ctx.fillRect(sx + 22, base - 41, 3, 3);
+        ctx.fillRect(sx + 30, base - 51, 3, 3);
+        break;
+      }
+
+      case 'piano': {
+        drawCharacter(ctx, CHARACTERS.musicteacher, 'idle', 1, sx + 74, base,
+                      Math.sin(performance.now() / 820) > 0 ? 0 : 1);
+        drawUpright(ctx, sx, base);
+        break;
+      }
+
       case 'tv': {
         const on = !!(level.meta.tv && level.meta.tv.on);
         const t = performance.now() / 1000;
@@ -1335,6 +1553,21 @@ function drawProps(layer) {
       }
     }
   }
+}
+
+/* An upright piano: body, lid, keys, and a stool. */
+function drawUpright(ctx, x, base) {
+  ctx.fillStyle = '#5b3f2e'; ctx.fillRect(x, base - 46, 58, 46);
+  ctx.fillStyle = '#6f4e39'; ctx.fillRect(x, base - 46, 58, 5);
+  ctx.fillStyle = '#4a3226'; ctx.fillRect(x + 4, base - 39, 50, 16);
+  ctx.fillStyle = '#fdf8ec'; ctx.fillRect(x + 4, base - 21, 50, 8);
+  ctx.fillStyle = '#241b26';
+  for (let i = 0; i < 9; i++) ctx.fillRect(x + 8 + i * 5.4, base - 21, 2, 5);
+  ctx.fillStyle = '#3a2820'; ctx.fillRect(x + 4, base - 13, 50, 3);
+  ctx.fillStyle = '#6b4a33';
+  ctx.fillRect(x + 22, base - 9, 16, 3);
+  ctx.fillRect(x + 24, base - 6, 2, 6);
+  ctx.fillRect(x + 34, base - 6, 2, 6);
 }
 
 /* A small white board with pixel lettering. Takes one line or two —

@@ -394,6 +394,35 @@ const GUARD_LEGS_IDLE = [
   '...ffff..ffff...'
 ];
 
+/* -------------------------- LEVEL 4 · MUSIC ----------------------- */
+/* The music teacher. Bun, glasses, green kurta. */
+const MUSICT_TOP = [
+  '......hhhh......',
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhaaeaaeaaSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '..hhssssssssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....dddddddd....',
+  '...dddddddddd...',
+  '....pppppppp....'
+];
+const MUSICT_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....sss..sss....',
+  '....sss..sss....', '....fff..fff....', '...ffff..ffff...'
+];
+
 /* --------------------------------------------------------------- */
 
 const CHARACTERS = {
@@ -510,6 +539,21 @@ const CHARACTERS = {
       h: '#241f1a', H: '#3d352c',
       d: '#a89666', D: '#8a7a4e', p: '#8a7a4e', f: '#2a2620',
       b: '#3a3026', c: '#8a7a4e', a: '#c9a227'
+    }
+  },
+
+  musicteacher: {
+    id: 'musicteacher',
+    name: 'Music teacher',
+    era: 'level 4 · the piano room',
+    note: 'Bun, glasses, green kurta. Counts you in and never rushes you.',
+    top: MUSICT_TOP,
+    legs: still(MUSICT_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#2b2430', H: '#5a4f60',
+      d: '#3f8f6a', D: '#2f6f52', p: '#3a3550', f: '#4a3f36',
+      a: '#c9a227', b: '#4a3f36', c: '#3f8f6a'
     }
   },
 

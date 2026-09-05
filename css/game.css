@@ -271,6 +271,49 @@
   animation:blink 1.4s steps(2) infinite;
 }
 
+/* ---------------------------- THE PIANO ---------------------------- */
+.piano-strip{
+  display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center;
+  margin:0 auto 1.4rem;max-width:34rem;
+}
+.piano-note{
+  font-family:'Press Start 2P',monospace;
+  font-size:.55rem;
+  width:1.9rem;height:1.9rem;
+  display:grid;place-items:center;
+  border:2px solid rgba(255,255,255,.18);
+  border-radius:3px;
+  color:#a294c4;
+}
+.piano-note.done{color:#8fe08f;border-color:rgba(143,224,143,.5)}
+.piano-note.now{
+  color:#241b26;background:#ffcf4d;border-color:#ffcf4d;
+  transform:translateY(-3px);
+}
+.piano-keys{
+  display:flex;gap:3px;justify-content:center;
+  margin:0 auto 1.2rem;max-width:34rem;
+}
+.piano-key{
+  flex:1 1 0;
+  min-width:0;
+  aspect-ratio:1 / 3.1;
+  display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+  gap:.4rem;padding:0 0 .6rem;
+  background:linear-gradient(#fffdf8,#ece6d8);
+  border:2px solid #241b26;
+  border-radius:0 0 4px 4px;
+  box-shadow:0 5px 0 rgba(0,0,0,.35);
+  cursor:pointer;
+  transition:transform .06s, background .1s;
+}
+.pk-note{font-family:'Press Start 2P',monospace;font-size:.5rem;color:#6b5a7a}
+.pk-key{font-family:'Nunito',sans-serif;font-size:.62rem;color:#a9a094}
+.piano-key.is-next{background:linear-gradient(#fff2c0,#ffd977)}
+.piano-key.is-next .pk-note{color:#7a5a12}
+.piano-key.is-hit{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.35)}
+.piano-key.is-off{background:linear-gradient(#ffd7d7,#f0b3b3)}
+
 #note{
   position:absolute;
   left:0;right:0;bottom:42%;
@@ -361,6 +404,49 @@
   font-size:.45rem;color:#7d6f9c;margin:0;align-self:flex-end;
   animation:blink 1.4s steps(2) infinite;
 }
+
+/* ---------------------------- THE PIANO ---------------------------- */
+.piano-strip{
+  display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center;
+  margin:0 auto 1.4rem;max-width:34rem;
+}
+.piano-note{
+  font-family:'Press Start 2P',monospace;
+  font-size:.55rem;
+  width:1.9rem;height:1.9rem;
+  display:grid;place-items:center;
+  border:2px solid rgba(255,255,255,.18);
+  border-radius:3px;
+  color:#a294c4;
+}
+.piano-note.done{color:#8fe08f;border-color:rgba(143,224,143,.5)}
+.piano-note.now{
+  color:#241b26;background:#ffcf4d;border-color:#ffcf4d;
+  transform:translateY(-3px);
+}
+.piano-keys{
+  display:flex;gap:3px;justify-content:center;
+  margin:0 auto 1.2rem;max-width:34rem;
+}
+.piano-key{
+  flex:1 1 0;
+  min-width:0;
+  aspect-ratio:1 / 3.1;
+  display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+  gap:.4rem;padding:0 0 .6rem;
+  background:linear-gradient(#fffdf8,#ece6d8);
+  border:2px solid #241b26;
+  border-radius:0 0 4px 4px;
+  box-shadow:0 5px 0 rgba(0,0,0,.35);
+  cursor:pointer;
+  transition:transform .06s, background .1s;
+}
+.pk-note{font-family:'Press Start 2P',monospace;font-size:.5rem;color:#6b5a7a}
+.pk-key{font-family:'Nunito',sans-serif;font-size:.62rem;color:#a9a094}
+.piano-key.is-next{background:linear-gradient(#fff2c0,#ffd977)}
+.piano-key.is-next .pk-note{color:#7a5a12}
+.piano-key.is-hit{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.35)}
+.piano-key.is-off{background:linear-gradient(#ffd7d7,#f0b3b3)}
 
 #note{
   position:absolute;

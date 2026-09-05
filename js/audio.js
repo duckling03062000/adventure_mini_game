@@ -191,6 +191,16 @@ const Sound = (() => {
     }
   };
 
+  /* A struck note: bright attack, quick decay, a fifth underneath. */
+  function note(name) {
+    if (!started || muted || !ctx) return;
+    const t = ctx.currentTime;
+    const f = n(name);
+    tone(f, t, 0.32, { type: 'triangle', gain: 0.5, release: 0.45 });
+    tone(f * 2, t, 0.16, { type: 'sine', gain: 0.2, release: 0.25 });
+    tone(f / 2, t, 0.4, { type: 'sine', gain: 0.16, release: 0.5 });
+  }
+
   function play(name) {
     if (!started || muted || !ctx) return;
     if (SFX[name]) SFX[name]();
@@ -326,5 +336,5 @@ const Sound = (() => {
     };
   }
 
-  return { unlock, play, playMusic, stopMusic, toggleMute, isMuted, setMuted, debug, meter };
+  return { unlock, play, playMusic, stopMusic, toggleMute, isMuted, setMuted, debug, meter, note };
 })();
