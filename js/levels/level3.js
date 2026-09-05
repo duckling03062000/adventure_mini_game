@@ -82,7 +82,10 @@ function buildAct3b() {
   b.prop('deskpc', deskX);          // Uncle, working
   b.flat(6);
   b.prop('bookshelf', b.x - 2);
-  b.flat(4);
+  b.flat(5);
+  const tvX = b.x;
+  b.prop('tv', tvX);                // she stops here for a bit of cartoon
+  b.flat(6);
   b.crates(1, 1, 'C');              // a stool in the way
   b.flat(5);
   b.checkpoint();
@@ -110,16 +113,28 @@ function buildAct3b() {
   return b.build({
     goalX: (easelX - 1) * 16,
     name: 'act3b',
+    /* The television. She stops, watches, and then carries on. */
+    tv: {
+      x: tvX + 2,
+      promptOn: 'Press ENTER to watch',
+      promptOff: 'Press ENTER to carry on'
+    },
     /* She cannot slip past Uncle without saying hello. */
     npc: {
       blockX: deskX + 1,
       char: 'husband',
       prompt: 'Press ENTER to talk',
       lines: [
+        { who: 'Uncle', char: 'husband', text: 'Hi Ayrisha! How was your school?' },
+        { who: 'Ayrisha', char: 'child', text: 'It was nice, uncle.' },
         { who: 'Uncle', char: 'husband',
-          text: 'Welcome home, Ayrisha. Do you want to have something?' },
+          text: 'You have come to do art classes with Aunty?' },
+        { who: 'Ayrisha', char: 'child', text: 'Yes, I am looking for Aunty.' },
+        { who: 'Uncle', char: 'husband', text: 'Do you want to watch some TV?' },
+        { who: 'Ayrisha', char: 'child', text: 'Yes, I love that!' },
         { who: 'Uncle', char: 'husband',
-          text: 'Your auntie is in the balcony.' }
+          text: 'Aunty is in the balcony. Go ahead, meet her \u2014 have a great time.' },
+        { who: 'Ayrisha', char: 'child', text: 'Thank you, uncle. You also!' }
       ]
     },
     theme: 'afternoon',

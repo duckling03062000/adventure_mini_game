@@ -30,7 +30,9 @@ const SCRIPT = {
   /* Level 1 */
   l1act1:     [{ who: 'Krishna ji', char: 'krishna', text: 'Let\u2019s take Papa to the hospital.' }],
   l1act1done: [{ who: 'Krishna ji', char: 'krishna', text: 'Act 1 complete.' }],
-  l1act2:     [{ who: 'Krishna ji', char: 'krishna', text: 'Mumma.' }],
+  l1act2:     [{ who: 'Krishna ji', char: 'krishna',
+                 text: 'Let\u2019s take Mumma to the hospital. Be gentle \u2014 ' +
+                       'she cannot walk fast.' }],
   /* Nothing here: reaching the hospital just fades into the birth. */
   l1act2done: [],
   /* Said after the birth has actually played, not before it. */
@@ -43,8 +45,7 @@ const SCRIPT = {
   l2done:     [{ text: 'Have a great day at school.', sweet: true }],
 
   /* Level 3 */
-  l3book:     [{ text: 'You made it! You got this!', sweet: true }],
-  l3done:     [{ text: 'Level 3 complete.' }]
+  l3done:     [{ who: 'Krishna ji', char: 'krishna', text: 'Level 3 complete.' }]
 };
 
 /* ============================= CHAPTERS =========================== */
@@ -113,7 +114,7 @@ const CHAPTERS = [
       { type: 'art', intro: [], outro: [], seamless: true, music: 'indoors' }
     ],
     ending: 'book',
-    close: SCRIPT.l3book.concat(SCRIPT.l3done)
+    close: SCRIPT.l3done
   }
 ];
 
@@ -483,10 +484,13 @@ const ENDINGS = {
       bookGiven = false;
       bookT = 0;
       Dialogue.start([
-        { who: 'Aunty', char: 'tutor', text: 'Oh wow, nice! You did a great job.' },
-        { who: 'Aunty', char: 'tutor', text: 'Here is a book for you.',
-          /* no skipping this one — let the book actually arrive */
-          lock: true, wait: 3200,
+        { who: 'Aunty', char: 'tutor',
+          text: 'Oh wow, you did a great job \u2014 and I have a book for you.' },
+        { who: 'Aunty', char: 'tutor', text: 'Here is the book.' },
+        /* the book arrives as she thanks her, and this line cannot be
+           skipped, so the handover actually plays */
+        { who: 'Ayrisha', char: 'child', text: 'Thank you, Aunty!',
+          lock: true, wait: 3400,
           on() { bookGiven = true; bookT = 0; Sound.play('birth'); } }
       ], null);
     },
@@ -817,7 +821,7 @@ const FRONT_PROPS = new Set(['bus', 'auto', 'hospital', 'schoolfront', 'desk',
                              'noticeboard', 'streetsign', 'mangotree',
                              'housefront', 'housegate', 'deskpc', 'bookshelf',
                              'painting', 'doorway', 'railing', 'plantpot',
-                             'easel', 'rug', 'mangouncle', 'guardpost']);
+                             'easel', 'rug', 'mangouncle', 'guardpost', 'tv']);
 
 function drawProps(layer) {
   const base = GROUND_Y * TILE - cam.y;
@@ -1193,6 +1197,98 @@ function drawProps(layer) {
         break;
       }
 
+      case 'tv': {
+        const on = !!(level.meta.tv && level.meta.tv.on);
+        const t = performance.now() / 1000;
+        // stand
+        ctx.fillStyle = '#5f4128';
+        ctx.fillRect(sx + 4, base - 14, 46, 4);
+        ctx.fillRect(sx + 8, base - 10, 5, 10);
+        ctx.fillRect(sx + 41, base - 10, 5, 10);
+        // set
+        ctx.fillStyle = '#d6cfc0';
+        ctx.fillRect(sx + 2, base - 48, 50, 34);
+        ctx.fillStyle = '#b9b1a1';
+        ctx.fillRect(sx + 40, base - 45, 9, 28);
+        ctx.fillStyle = '#8f8778';
+        ctx.beginPath(); ctx.arc(sx + 44, base - 38, 2.4, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(sx + 44, base - 30, 2.4, 0, Math.PI * 2); ctx.fill();
+        // antenna
+        ctx.strokeStyle = '#9a9284';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(sx + 18, base - 48); ctx.lineTo(sx + 10, base - 62);
+        ctx.moveTo(sx + 24, base - 48); ctx.lineTo(sx + 34, base - 60);
+        ctx.stroke();
+
+        const px = sx + 6, py = base - 44, pw = 32, ph = 26;
+        if (!on) {
+          ctx.fillStyle = '#2e2b31';
+          ctx.fillRect(px, py, pw, ph);
+          ctx.fillStyle = 'rgba(255,255,255,.05)';
+          ctx.fillRect(px + 2, py + 2, 10, ph - 4);
+        } else {
+          // Kid vs Kat: Coop running, Mr Kat right behind him
+          const t2 = performance.now() / 1000;
+          ctx.fillStyle = '#cfd8e4';
+          ctx.fillRect(px, py, pw, ph);
+          ctx.fillStyle = '#b6c2d2';
+          ctx.fillRect(px, py, pw, 8);
+          ctx.fillStyle = '#8a7a5c';
+          ctx.fillRect(px, py + ph - 5, pw, 5);
+
+          const floor = py + ph - 5;
+          const run = (t2 * 15) % (pw + 30);
+          const bob = Math.abs(Math.sin(t2 * 11)) * 1.5;
+          const coopX = Math.round(px + pw + 10 - run);
+          const katX = coopX + 13;
+
+          // Coop
+          if (coopX > px - 10 && coopX < px + pw) {
+            const by = Math.round(floor - bob);
+            ctx.fillStyle = '#2e3550';
+            ctx.fillRect(coopX + 1, by - 3, 2, 3);
+            ctx.fillRect(coopX + 4, by - 3, 2, 3);
+            ctx.fillStyle = '#3f7fbf';
+            ctx.fillRect(coopX, by - 8, 7, 5);
+            ctx.fillStyle = '#f2c9a0';
+            ctx.fillRect(coopX + 1, by - 12, 5, 4);
+            ctx.fillStyle = '#c0562e';                 // his red hair
+            ctx.fillRect(coopX, by - 13, 7, 2);
+            ctx.fillRect(coopX, by - 12, 1, 2);
+            ctx.fillStyle = '#241b26';
+            ctx.fillRect(coopX + 4, by - 11, 1, 1);
+          }
+
+          // Mr Kat — hairless, big ears, green eyes
+          if (katX > px - 12 && katX < px + pw) {
+            const by = Math.round(floor - Math.abs(Math.sin(t2 * 11 + 1)) * 1.5);
+            ctx.fillStyle = '#8d8fa8';
+            ctx.fillRect(katX + 8, by - 8, 3, 1);      // tail
+            ctx.fillRect(katX + 10, by - 10, 1, 2);
+            ctx.fillRect(katX + 1, by - 6, 7, 5);      // body
+            ctx.fillRect(katX + 1, by - 1, 2, 1);
+            ctx.fillRect(katX + 5, by - 1, 2, 1);
+            ctx.fillRect(katX, by - 12, 7, 6);         // head
+            ctx.fillRect(katX, by - 14, 2, 2);         // ears
+            ctx.fillRect(katX + 5, by - 14, 2, 2);
+            ctx.fillStyle = '#7fe04a';                 // green eyes
+            ctx.fillRect(katX + 1, by - 11, 2, 2);
+            ctx.fillRect(katX + 4, by - 11, 2, 2);
+            ctx.fillStyle = '#241b26';
+            ctx.fillRect(katX + 2, by - 10, 1, 1);
+            ctx.fillRect(katX + 5, by - 10, 1, 1);
+          }
+
+          // scanlines and a bit of glow into the room
+          ctx.fillStyle = 'rgba(0,0,0,.10)';
+          for (let yy = 0; yy < ph; yy += 3) ctx.fillRect(px, py + yy, pw, 1);
+          ctx.fillStyle = 'rgba(150,210,255,.14)';
+          ctx.fillRect(px - 12, py - 10, pw + 24, ph + 26);
+        }
+        break;
+      }
+
       case 'noticeboard': {
         ctx.fillStyle = '#6b5334'; ctx.fillRect(sx, base - 52, 44, 30);
         ctx.fillStyle = '#d8cba6'; ctx.fillRect(sx + 3, base - 49, 38, 24);
@@ -1443,6 +1539,26 @@ function update(dt) {
       Dialogue.start(npc.lines, () => { npc.done = true; });
       return;
     }
+  }
+
+  // the television: she stops, watches, then carries on
+  const tv = level.meta.tv;
+  if (tv && !tv.done) {
+    const limit = tv.x * TILE;
+    if (player.x > limit) {
+      player.x = limit;
+      if (player.vx > 0) player.vx = 0;
+    }
+    if (player.x > limit - 48) {
+      if (!tv.on) {
+        showNote(tv.promptOn);
+        if (Input.tapped('confirm')) { tv.on = true; Sound.play('pickup'); }
+      } else {
+        showNote(tv.promptOff);
+        if (Input.tapped('confirm')) { tv.done = true; }
+      }
+    }
+    if (!tv.done) return;
   }
 
   if (player.x >= level.meta.goalX) {
