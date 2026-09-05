@@ -25,7 +25,10 @@ const Dialogue = (() => {
     idx = 0;
     onDone = done;
     active = true;
-    box.classList.toggle('topright', opts.pos === 'topright');
+    // position is per conversation: a guide speaks from a corner, a
+    // face-to-face conversation from across the bottom
+    box.classList.remove('topright', 'bottomright');
+    if (opts.pos) box.classList.add(opts.pos);
     box.classList.remove('hidden');
     render();
   }

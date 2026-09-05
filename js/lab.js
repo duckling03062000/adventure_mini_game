@@ -6,7 +6,7 @@
 const CARD_W = 300, CARD_H = 250, CARD_SCALE = 7, CARD_GROUND = 226;
 const cardState = {};
 /* The growth shot is only ever the three Ayrishas; the cards show everyone. */
-const LAB_CAST = ORDER.concat(['officer', 'mother', 'tutor', 'husband']);
+const LAB_CAST = ORDER.concat(['officer', 'mother', 'tutor', 'husband', 'krishna']);
 
 function buildCards() {
   const wrap = document.getElementById('cards');

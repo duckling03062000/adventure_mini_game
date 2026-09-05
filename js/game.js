@@ -28,7 +28,7 @@ BOOK_IMG.src = 'assets/images/painting-nature.jpg';
 ------------------------------------------------------------------ */
 const SCRIPT = {
   /* Level 1 */
-  l1guide:    [{ who: 'Angel', char: 'angel',
+  l1guide:    [{ who: 'Krishna ji', char: 'krishna',
                  text: 'Let\u2019s take Papa to the hospital.' }],
   l1act1done: [{ text: 'Act 1 complete.' }],
   l1act2:     [{ text: 'Mumma.' }],
@@ -131,8 +131,12 @@ let skyline = [];
 let rain = [];
 
 /* ============================== GUIDE =============================
-   An angel turns up at the start of a level, says its piece, and goes.
-   Unlike narration this waits for the player: ENTER moves it on.
+   Krishna ji appears at the start of a level to say what it is about.
+
+   He is drawn at the centre of the screen rather than beside the
+   player: he is a vision, not a companion walking along. Unlike the
+   between-scene captions this waits for the player - ENTER moves it
+   on, because it is being said to her.
 ------------------------------------------------------------------ */
 const guide = { on: false, t: 0, fade: 0 };
 
@@ -142,40 +146,55 @@ function showGuide(lines, after) {
   guide.t = 0;
   guide.fade = 0;
   Dialogue.start(lines, () => { guide.on = false; if (after) after(); },
-                 { pos: 'topright' });
+                 { pos: 'bottomright' });
 }
 
-/* Drawn in world space, hovering just off the player's shoulder. */
 function drawGuide(dt) {
   if (!guide.on && guide.fade <= 0) return;
   guide.t += dt / 60;
-  guide.fade += ((guide.on ? 1 : 0) - guide.fade) * 0.08;
+  guide.fade += ((guide.on ? 1 : 0) - guide.fade) * 0.07;
   if (guide.fade < 0.01) return;
 
-  const char = CHARACTERS.angel;
+  const char = CHARACTERS.krishna;
   const h = frameHeight(char, 'idle');
-  const x = Math.round(player.x - cam.x + 40);
-  const y = Math.round(player.y - cam.y - 34 + Math.sin(guide.t * 2) * 3);
+  const x = Math.round(VIEW_W / 2);
+  const y = Math.round(VIEW_H * 0.60 + Math.sin(guide.t * 1.6) * 2.5);
+  const rise = (1 - guide.fade) * 14;   // settles down into place
 
   ctx.save();
   ctx.globalAlpha = guide.fade;
+  ctx.translate(0, rise);
 
-  // a soft halo of light around it
-  const glow = ctx.createRadialGradient(x, y - h / 2, 2, x, y - h / 2, 34);
-  glow.addColorStop(0, 'rgba(255,235,170,.40)');
-  glow.addColorStop(1, 'rgba(255,235,170,0)');
+  // the whole screen dims a little so he reads as a vision
+  ctx.fillStyle = `rgba(20,16,34,${0.34 * guide.fade})`;
+  ctx.fillRect(-VIEW_W, -VIEW_H, VIEW_W * 3, VIEW_H * 3);
+
+  // aura
+  const cy = y - h / 2;
+  const glow = ctx.createRadialGradient(x, cy, 4, x, cy, 62);
+  glow.addColorStop(0, 'rgba(255,236,170,.55)');
+  glow.addColorStop(0.45, 'rgba(255,214,120,.20)');
+  glow.addColorStop(1, 'rgba(255,214,120,0)');
   ctx.fillStyle = glow;
-  ctx.fillRect(x - 40, y - h - 26, 80, h + 52);
+  ctx.fillRect(x - 70, cy - 70, 140, 140);
+
+  // a slow ring of light behind him
+  ctx.strokeStyle = `rgba(255,229,150,${0.30 * guide.fade})`;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(x, cy, 34 + Math.sin(guide.t * 1.2) * 2, 0, Math.PI * 2);
+  ctx.stroke();
 
   drawCharacter(ctx, char, 'idle', 1, x, y, 0);
 
-  // a few motes drifting around it
-  for (let i = 0; i < 6; i++) {
-    const a = guide.t * 0.9 + i * 1.05;
-    ctx.globalAlpha = guide.fade * (0.25 + 0.3 * Math.sin(guide.t * 3 + i));
-    ctx.fillStyle = '#fff2c4';
-    ctx.fillRect(Math.round(x + Math.cos(a) * (14 + (i % 3) * 6)),
-                 Math.round(y - h / 2 + Math.sin(a) * 12), 2, 2);
+  // petals drifting around him
+  for (let i = 0; i < 10; i++) {
+    const a = guide.t * 0.7 + i * 0.63;
+    const r = 30 + (i % 4) * 8;
+    ctx.globalAlpha = guide.fade * (0.25 + 0.3 * Math.sin(guide.t * 2.4 + i));
+    ctx.fillStyle = i % 3 ? '#ffe9a8' : '#f6c9d8';
+    ctx.fillRect(Math.round(x + Math.cos(a) * r),
+                 Math.round(cy + Math.sin(a) * r * 0.7), 2, 2);
   }
   ctx.restore();
 }

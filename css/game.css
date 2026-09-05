@@ -212,17 +212,16 @@
 .dialogue.hidden{opacity:0;transform:translateY(10px);pointer-events:none}
 
 /* A guide speaks from the corner rather than across the bottom, so the
-   scene it is talking about stays visible underneath. */
-.dialogue.topright{
+   middle of the screen stays clear for whoever is speaking. */
+.dialogue.bottomright{
   left:auto;
   right:3%;
-  top:9%;
-  bottom:auto;
+  bottom:5%;
   width:min(27rem, 56%);
   align-items:flex-start;
 }
-.dialogue.topright.hidden{transform:translate(14px,-10px)}
-.dialogue.topright .dlg-more{align-self:flex-end}
+.dialogue.bottomright.hidden{transform:translate(14px,10px)}
+.dialogue.bottomright .dlg-more{align-self:flex-end}
 .dlg-portrait{
   flex:0 0 auto;
   width:3.6rem;height:3.6rem;
@@ -304,17 +303,16 @@
 .dialogue.hidden{opacity:0;transform:translateY(10px);pointer-events:none}
 
 /* A guide speaks from the corner rather than across the bottom, so the
-   scene it is talking about stays visible underneath. */
-.dialogue.topright{
+   middle of the screen stays clear for whoever is speaking. */
+.dialogue.bottomright{
   left:auto;
   right:3%;
-  top:9%;
-  bottom:auto;
+  bottom:5%;
   width:min(27rem, 56%);
   align-items:flex-start;
 }
-.dialogue.topright.hidden{transform:translate(14px,-10px)}
-.dialogue.topright .dlg-more{align-self:flex-end}
+.dialogue.bottomright.hidden{transform:translate(14px,10px)}
+.dialogue.bottomright .dlg-more{align-self:flex-end}
 .dlg-portrait{
   flex:0 0 auto;
   width:3.6rem;height:3.6rem;

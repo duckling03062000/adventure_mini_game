@@ -303,34 +303,39 @@ const HUSBAND_LEGS_IDLE = [
 /* Same frames whichever animation asks for them. */
 const still = rows => ({ idle: rows, stride: rows, pass: rows, jump: rows });
 
-/* ----------------------------- THE ANGEL -------------------------- */
-/* Turns up at the start of a level to say what it is about, then goes.
-   Extra palette letter: w = wing. */
-const ANGEL_TOP = [
+/* ---------------------------- KRISHNA JI --------------------------- */
+/* The guide. Appears at the start of a level to say what it is about.
+   Read top to bottom: peacock feather, crown, blue skin, garland,
+   flute, and a yellow dhoti.
+   Extra palette letters: k = skin, g = garland, b = flute. */
+const KRISHNA_TOP = [
+  '.......pp.......',
+  '......pppp......',
+  '.......pp.......',
   '....aaaaaaaa....',
-  '................',
-  '.....hhhhhh.....',
   '...hhhhhhhhhh...',
-  '..hhssssssssHh..',
-  '..hhseesseesSh..',
-  '..hhssssssssSh..',
-  '..hhsssmmsssSh..',
-  '...hhssssssSh...',
-  '....hssssssh....',
-  '......ssss......',
-  '.ww..dddddd..ww.',
-  'www.sdddddds.www',
-  'www.sdddddds.www',
-  '.ww.sdddddds.ww.',
+  '..hhhhhhhhhhhh..',
+  '..hhkkkkkkkkKh..',
+  '..hhkeekkeekKh..',
+  '..hhkkkkkkkkKh..',
+  '..hhkkkmmkkkKh..',
+  '...hhkkkkkkKh...',
+  '....hkkkkkkh....',
+  '......kkkk......',
+  '...gggkkkkggg...',
+  '..kkkkkkkkkkkk..',
+  '..kbbbbbbbbbbk..',
+  '..kkgkkkkkkgkk..',
+  '...kkkkkkkkkk...',
   '....dddddddd....',
   '...dddddddddd...',
   '..dddddddddddd..',
   '..dddddddddddd..',
   '...DDDDDDDDDD...'
 ];
-const ANGEL_LEGS_IDLE = [
-  '.....ss..ss.....', '.....ss..ss.....',
-  '....fff..fff....', '...ffff..ffff...'
+const KRISHNA_LEGS_IDLE = [
+  '.....kk..kk.....', '.....kk..kk.....',
+  '....kkk..kkk....', '...kkkk..kkkk...'
 ];
 
 /* --------------------------------------------------------------- */
@@ -422,20 +427,22 @@ const CHARACTERS = {
     }
   },
 
-  angel: {
-    id: 'angel',
-    name: 'Angel',
+  krishna: {
+    id: 'krishna',
+    name: 'Krishna ji',
     era: 'the guide',
-    note: 'Halo, wings, and a habit of turning up at the start of things.',
-    top: ANGEL_TOP,
-    legs: still(ANGEL_LEGS_IDLE),
+    note: 'Peacock feather, crown, flute and garland. Opens every level.',
+    top: KRISHNA_TOP,
+    legs: still(KRISHNA_LEGS_IDLE),
     palette: {
       ...BASE,
-      h: '#e0be62', H: '#f6e3a8',
-      s: '#f6dcc0', S: '#e0bd9c',
-      d: '#f9f5ea', D: '#ded5c1', p: '#f9f5ea',
-      f: '#e6dcc4', w: '#c9dcf4', a: '#ffd45c',
-      b: '#e6dcc4', c: '#f9f5ea'
+      k: '#7fa3e0', K: '#6285c4',
+      h: '#1a1726', H: '#332c44',
+      e: '#141019', m: '#c0555c',
+      a: '#f2c53d', p: '#2f9c8f',
+      d: '#f5c542', D: '#d9a51f',
+      g: '#f6efdd', b: '#dcb877',
+      s: '#7fa3e0', S: '#6285c4', f: '#7fa3e0', c: '#f5c542'
     }
   }
 };
