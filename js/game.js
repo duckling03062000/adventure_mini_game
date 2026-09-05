@@ -28,13 +28,15 @@ BOOK_IMG.src = 'assets/images/painting-nature.jpg';
 ------------------------------------------------------------------ */
 const SCRIPT = {
   /* Level 1 */
-  l1guide:    [{ who: 'Krishna ji', char: 'krishna',
-                 text: 'Let\u2019s take Papa to the hospital.' }],
-  l1act1done: [{ text: 'Act 1 complete.' }],
-  l1act2:     [{ text: 'Mumma.' }],
-  l1act2done: [{ text: 'Ayrisha was born.' },
-               { text: 'Our kuchupuchu precious bacha.', sweet: true }],
-  l1done:     [{ text: 'Level 1 complete.' }],
+  l1act1:     [{ who: 'Krishna ji', char: 'krishna', text: 'Let\u2019s take Papa to the hospital.' }],
+  l1act1done: [{ who: 'Krishna ji', char: 'krishna', text: 'Act 1 complete.' }],
+  l1act2:     [{ who: 'Krishna ji', char: 'krishna', text: 'Mumma.' }],
+  /* Nothing here: reaching the hospital just fades into the birth. */
+  l1act2done: [],
+  /* Said after the birth has actually played, not before it. */
+  l1done:     [{ who: 'Krishna ji', char: 'krishna', text: 'Ayrisha was born.' },
+               { who: 'Krishna ji', char: 'krishna', text: 'Our kuchupuchu precious bacha.', sweet: true },
+               { who: 'Krishna ji', char: 'krishna', text: 'Level 1 complete.' }],
 
   /* Level 2 */
   l2mango:    [{ text: 'Three ripe mangoes up there. Take all of them.' }],
@@ -60,7 +62,7 @@ const CHAPTERS = [
     blurb: '',
     objectives: [],
     acts: [
-      { guide: SCRIPT.l1guide, intro: [], outro: SCRIPT.l1act1done,
+      { intro: SCRIPT.l1act1, outro: SCRIPT.l1act1done,
         build: buildAct1, char: 'officer', tuning: PAPA_TUNING,
         music: 'rush', hud: 'PAPA' },
       { intro: SCRIPT.l1act2, outro: SCRIPT.l1act2done,
@@ -151,6 +153,7 @@ function showGuide(lines, after) {
 
 function drawGuide(dt) {
   if (!guide.on && guide.fade <= 0) return;
+  if (!level || !cam || ending) return;
   guide.t += dt / 60;
   guide.fade += ((guide.on ? 1 : 0) - guide.fade) * 0.07;
   if (guide.fade < 0.01) return;
@@ -158,7 +161,8 @@ function drawGuide(dt) {
   const char = CHARACTERS.krishna;
   const h = frameHeight(char, 'idle');
   const x = Math.round(VIEW_W / 2);
-  // standing on the ground, centre of the screen — not hovering
+  // standing on the ground, centre of the screen — not hovering.
+  // During an ending there is no camera, so fall back to the floor line.
   const y = Math.round(GROUND_Y * TILE - cam.y);
   const rise = (1 - guide.fade) * 10;   // steps into place as he appears
 
@@ -216,6 +220,14 @@ function dropFocus() {
 /* Long enough to read without dawdling. */
 function readingTime(text) {
   return Math.max(1500, Math.min(4200, 900 + text.length * 55));
+}
+
+/* A line with a speaker is delivered by them; a line without one is a
+   caption that plays itself. */
+function say(lines, after) {
+  if (!lines || !lines.length) { if (after) after(); return; }
+  if (lines[0].char) showGuide(lines, after);
+  else narrate(lines, after);
 }
 
 function narrate(lines, after) {
@@ -323,10 +335,7 @@ function startCurrentAct(skipIntro) {
   updateCollectHud();
   Sound.playMusic(a.music);
   state = 'play';
-  if (skipIntro) return;
-  // a guide waits for the player; a plain caption plays itself
-  if (a.guide) showGuide(a.guide, () => narrate(a.intro));
-  else narrate(a.intro);
+  if (!skipIntro) say(a.intro);
 }
 
 function finishAct() {
@@ -337,7 +346,7 @@ function finishAct() {
 
   const next = last ? startEnding : () => { actIdx++; startCurrentAct(); };
   // speak the closing line over the scene it belongs to, then fade
-  narrate(a.outro, () => fadeThrough(next));
+  say(a.outro, () => fadeThrough(next));
 }
 
 function startEnding() {
@@ -1364,7 +1373,7 @@ function update(dt) {
     const finished = ending.done ? ending.done(endingT) : endingT > ending.dur;
     if (finished && !endingDone) {
       endingDone = true;
-      narrate(CHAPTERS[chapterIdx].close, () => fadeThrough(nextChapter));
+      say(CHAPTERS[chapterIdx].close, () => fadeThrough(nextChapter));
     }
     return;
   }
@@ -1413,6 +1422,8 @@ function render() {
   ctx.imageSmoothingEnabled = false;
 
   // once an ending has begun it stays on screen behind the story cards
+  // During an ending he speaks from the box only: the scene is the
+  // point, and standing him in the middle of it covers the family.
   if (ending) { ending.draw(endingT); return; }
   if (!level) return;
 
