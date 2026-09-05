@@ -275,7 +275,9 @@
     rgba(12,10,22,.34) 60%, rgba(12,10,22,.22) 100%);
 }
 .story.top .story-text{min-height:0}
-.story.top .story-more{margin-top:1.4rem}
+.story.top .story.auto{cursor:default}
+.story.auto .story-more{visibility:hidden}
+.story-more{margin-top:1.4rem}
 .story-card{
   max-width:34rem;text-align:center;color:#f3ecff;
 }
@@ -310,6 +312,8 @@
   margin-top:1.5rem;
 }
 
+.story.auto{cursor:default}
+.story.auto .story-more{visibility:hidden}
 .story-more{
   font-family:'Press Start 2P',monospace;
   font-size:.5rem;color:#7d6f9c;margin:2.2rem 0 0;

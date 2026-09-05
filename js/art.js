@@ -50,9 +50,11 @@ const ART = {
 const Art = (() => {
   let board, cells, painted, fillable, chosen, onDone;
   let dragging = false;
+  let submitted = false;
 
   function build(container, done) {
     onDone = done;
+    submitted = false;
     board = container;
     painted = new Map();
     fillable = 0;
@@ -152,7 +154,11 @@ const Art = (() => {
   }
 
   function submit() {
-    if (painted.size !== fillable) return;
+    if (submitted || painted.size !== fillable) return;
+    submitted = true;
+    // The button keeps keyboard focus after the board is hidden, so a
+    // later ENTER would re-fire it and restart the ending. Let it go.
+    board.querySelector('.art-submit').blur();
     if (typeof Sound !== 'undefined') Sound.play('clear');
     onDone && onDone();
   }

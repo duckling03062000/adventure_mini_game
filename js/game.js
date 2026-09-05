@@ -81,11 +81,13 @@ const SCRIPT = {
     text: 'Painting Nature in Pen & Ink with Watercolor, by Claudia Nice. ' +
           'Hers now.',
     sweet: true,
-    pos: 'top'
+    pos: 'top',
+    auto: 5200
   },
   l3done: {
     eyebrow: 'level 3 complete', title: 'The Book',
-    text: 'She carried it home and did not put it down for a week.'
+    text: 'She carried it home and did not put it down for a week.',
+    auto: 4200
   },
   l2done: {
     eyebrow: 'level 2 complete', title: 'Have a great day at school',
@@ -184,23 +186,39 @@ let storyQueue = [];
 let ending = null;
 let endingT = 0;
 let endingDone = false;
+let storyAuto = false;
 let bookGiven = false;
 let bookT = 0;
 let skyline = [];
 let rain = [];
 
-/* ============================== STORY ============================= */
+/* ============================== STORY =============================
+   Any control that still holds keyboard focus will steal ENTER, so
+   focus is dropped whenever the game takes the screen back.
+------------------------------------------------------------------ */
+function dropFocus() {
+  const el = document.activeElement;
+  if (el && el !== document.body && typeof el.blur === 'function') el.blur();
+}
+
 function showStory(entries, after) {
   // an empty list is legitimate — a level may go straight into play
   if (!entries || !entries.length) { if (after) after(); return; }
+  dropFocus();
   storyQueue = entries.slice();
   storyQueue.after = after;
   state = 'story';
   renderStory();
 }
 
+let storyTimer = null;
+
 function renderStory() {
   const s = storyQueue[0];
+  clearTimeout(storyTimer);
+  storyAuto = !!s.auto;
+  storyEl.classList.toggle('auto', storyAuto);
+  if (storyAuto) storyTimer = setTimeout(() => { storyAuto = false; advanceStory(); }, s.auto);
   storyEl.classList.remove('hidden');
   storyEl.querySelector('.story-eyebrow').textContent = s.eyebrow;
   storyEl.querySelector('.story-title').textContent = s.title;
@@ -210,6 +228,7 @@ function renderStory() {
 }
 
 function advanceStory() {
+  clearTimeout(storyTimer);
   storyQueue.shift();
   if (storyQueue.length) { renderStory(); return; }
   storyEl.classList.add('hidden');
@@ -333,6 +352,7 @@ function startEnding() {
   ending = ENDINGS[ch.ending];
   endingT = 0;
   endingDone = false;
+  dropFocus();
   hudAct.textContent = '';
   hudCollect.textContent = '';
   state = 'ending';
@@ -1344,7 +1364,8 @@ function update(dt) {
     return;
   }
   if (state === 'story') {
-    if (Input.tapped('confirm') || Input.tapped('jump')) advanceStory();
+    // an auto card plays out on its own and ignores input
+    if (!storyAuto && (Input.tapped('confirm') || Input.tapped('jump'))) advanceStory();
     return;
   }
   if (state === 'art') return;   // the board owns the input
@@ -1439,7 +1460,9 @@ function boot() {
   };
   addEventListener('keydown', kick);
   addEventListener('pointerdown', kick);
-  storyEl.addEventListener('click', () => { if (state === 'story') advanceStory(); });
+  storyEl.addEventListener('click', () => {
+    if (state === 'story' && !storyAuto) advanceStory();
+  });
   document.getElementById('lc-start').addEventListener('click', beginLevel);
   requestAnimationFrame(frame);
 }
