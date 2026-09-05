@@ -158,8 +158,9 @@ function drawGuide(dt) {
   const char = CHARACTERS.krishna;
   const h = frameHeight(char, 'idle');
   const x = Math.round(VIEW_W / 2);
-  const y = Math.round(VIEW_H * 0.60 + Math.sin(guide.t * 1.6) * 2.5);
-  const rise = (1 - guide.fade) * 14;   // settles down into place
+  // standing on the ground, centre of the screen — not hovering
+  const y = Math.round(GROUND_Y * TILE - cam.y);
+  const rise = (1 - guide.fade) * 10;   // steps into place as he appears
 
   ctx.save();
   ctx.globalAlpha = guide.fade;
