@@ -39,7 +39,7 @@ canvas{display:block;image-rendering:pixelated}
 .hero-inner{
   position:relative;
   text-align:center;
-  padding:6rem 1.5rem 0;
+  padding:0 1.5rem;
   max-width:52rem;
 }
 .kicker{
@@ -69,6 +69,7 @@ canvas{display:block;image-rendering:pixelated}
   color:#5b4a6b;
   max-width:34rem;
 }
+.hero .btn-start{margin-top:3rem}
 .btn-start{
   display:inline-block;
   cursor:pointer;

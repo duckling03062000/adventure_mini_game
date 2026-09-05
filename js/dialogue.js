@@ -31,6 +31,8 @@ const Dialogue = (() => {
 
   function render() {
     const line = lines[idx];
+    box.classList.toggle('narration', !line.who);
+    box.classList.toggle('sweet', !!line.sweet);
 
     /* A locked line ignores input entirely and dismisses itself, so the
        moment it belongs to gets to play out instead of being skipped. */

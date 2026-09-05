@@ -33,6 +33,7 @@ function buildLevel2() {
   b.flat(3);
 
   /* --- the mango tree --- */
+  const treeX = b.x;
   b.mangoTree(8);
   b.flat(6);
 
@@ -89,6 +90,7 @@ function buildLevel2() {
   return b.build({
     goalX: herDesk * 16,
     name: 'level2',
+    treeX,
     gateX,                    // the gate will not open without the mangoes
     gateNote: 'Not without the mangoes!',
     theme: 'morning',

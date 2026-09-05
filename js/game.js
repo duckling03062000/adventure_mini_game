@@ -10,7 +10,6 @@ const cv = document.getElementById('game');
 const ctx = cv.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
-const storyEl = document.getElementById('story');
 const hudAct = document.getElementById('hud-act');
 const muteBtn = document.getElementById('mute');
 const hudCollect = document.getElementById('hud-collect');
@@ -28,73 +27,22 @@ BOOK_IMG.src = 'assets/images/painting-nature.jpg';
    Nothing here asserts a detail we do not actually know.
 ------------------------------------------------------------------ */
 const SCRIPT = {
-  /* ---- level 1 ---- */
-  l1act1: {
-    eyebrow: 'act 1 · papa', title: 'Get across the city',
-    text: 'The call comes. The road is flooded, the buses have stopped dead, ' +
-          'and the hospital is all the way across Bangalore. Get Papa there.'
-  },
-  l1act1done: {
-    eyebrow: 'act 1 complete', title: 'Papa made it',
-    text: 'Soaked through, still in uniform. But Ayrisha is not here yet.'
-  },
-  l1act2: {
-    eyebrow: 'act 2 · mumma', title: 'Now bring Mumma',
-    text: 'Mumma cannot run, and cannot jump the way Papa can. Take it ' +
-          'slowly. Take it carefully. Just get Mumma there.'
-  },
-  l1act2done: {
-    eyebrow: 'act 2 complete', title: 'Both of them, inside',
-    text: 'The doors close behind Mumma. The rain keeps going without them.'
-  },
-  l1birth: {
-    eyebrow: '6 september 2002', title: 'And then there were three',
-    text: 'At the end of a very long wait, in a hospital across the city, ' +
-          'Ayrisha arrives.'
-  },
-  l1gudiya: {
-    eyebrow: 'and there she is', title: 'Our gudiya',
-    text: 'And then comes our gudiya, our kuchupuchu precious bacha.',
-    sweet: true
-  },
-  l1done: {
-    eyebrow: 'level 1 complete', title: 'The Birth',
-    text: 'Ayrisha is here. Everything after this is her story.'
-  },
+  /* Level 1 */
+  l1act1:     [{ text: 'Papa.' }],
+  l1act1done: [{ text: 'Act 1 complete.' }],
+  l1act2:     [{ text: 'Mumma.' }],
+  l1act2done: [{ text: 'Ayrisha was born.' },
+               { text: 'Our kuchupuchu precious bacha.', sweet: true }],
+  l1done:     [{ text: 'Level 1 complete.' }],
 
-  /* ---- level 2 ---- */
-  l2act: {
-    eyebrow: 'act 1 · ayrisha', title: 'Three mangoes on the way',
-    text: 'There is a big mango tree down the road, and three ripe ones up in ' +
-          'the branches. Climb up, get all three, and then the gate.'
-  },
-  l2actdone: {
-    eyebrow: 'act 1 complete', title: 'You made it to the class!',
-    text: 'Bag down. Chair pulled out. She sits.'
-  },
-  l3a: {
-    eyebrow: 'act 1 · ayrisha', title: 'To the teacher\u2019s house',
-    text: 'Across town, down the lane, and up to the front door.'
-  },
-  l3book: {
-    eyebrow: 'and she means it', title: 'You made it! You got this!',
-    text: 'Painting Nature in Pen & Ink with Watercolor, by Claudia Nice. ' +
-          'Hers now.',
-    sweet: true,
-    pos: 'top',
-    auto: 5200
-  },
-  l3done: {
-    eyebrow: 'level 3 complete', title: 'The Book',
-    text: 'She carried it home and did not put it down for a week.',
-    auto: 4200
-  },
-  l2done: {
-    eyebrow: 'level 2 complete', title: 'Have a great day at school',
-    text: 'Three mangoes, one classroom, and the first of a great many ' +
-          'mornings.',
-    sweet: true
-  }
+  /* Level 2 */
+  l2mango:    [{ text: 'Three ripe mangoes up there. Take all of them.' }],
+  l2done1:    [{ text: 'You made it to the class!' }],
+  l2done:     [{ text: 'Have a great day at school.', sweet: true }],
+
+  /* Level 3 */
+  l3book:     [{ text: 'You made it! You got this!', sweet: true }],
+  l3done:     [{ text: 'Level 3 complete.' }]
 };
 
 /* ============================= CHAPTERS =========================== */
@@ -106,44 +54,35 @@ const CHAPTERS = [
   {
     id: 'level1',
     number: 1,
-    title: 'The Birth',
-    subtitle: 'Bangalore · 6th September, 2002',
-    blurb: 'It has been raining over Bangalore, and the city has not stopped ' +
-           'moving for a second.',
-    objectives: [
-      'Get <b>Papa</b> across the broken city to the hospital.',
-      'Then bring <b>Mumma</b> — she cannot run, and cannot jump the way Papa can.',
-      'Get them both inside.'
-    ],
+    title: 'Bangalore',
+    subtitle: '6th September, 2002',
+    blurb: '',
+    objectives: [],
     acts: [
-      { intro: [SCRIPT.l1act1], outro: [SCRIPT.l1act1done],
+      { intro: SCRIPT.l1act1, outro: SCRIPT.l1act1done,
         build: buildAct1, char: 'officer', tuning: PAPA_TUNING,
-        music: 'rush', hud: 'PAPA · to the hospital' },
-      { intro: [SCRIPT.l1act2], outro: [SCRIPT.l1act2done],
+        music: 'rush', hud: 'PAPA' },
+      { intro: SCRIPT.l1act2, outro: SCRIPT.l1act2done,
         build: buildAct2, char: 'mother', tuning: MUMMA_TUNING,
-        music: 'careful', hud: 'MUMMA · to the hospital' }
+        music: 'careful', hud: 'MUMMA' }
     ],
     ending: 'birth',
-    close: [SCRIPT.l1birth, SCRIPT.l1gudiya, SCRIPT.l1done]
+    close: SCRIPT.l1done
   },
   {
     id: 'level2',
     number: 2,
-    title: "Let's go to school!",
-    subtitle: 'AECS Layout · the first morning',
-    blurb: 'Uniform on. Bag packed. A whole road between here and the gate.',
-    objectives: [
-      'Climb the big mango tree and take <b>all three mangoes</b>.',
-      'The school gate will not open until you have them.',
-      'Get inside and find her desk.'
-    ],
+    title: "Let's go to school",
+    subtitle: '',
+    blurb: '',
+    objectives: [],
     acts: [
-      { intro: [SCRIPT.l2act], outro: [SCRIPT.l2actdone],
+      { intro: [], outro: SCRIPT.l2done1,
         build: buildLevel2, char: 'child', tuning: CHILD_TUNING,
-        music: 'morning', hud: 'AYRISHA · first day' }
+        music: 'morning', hud: 'AYRISHA' }
     ],
     ending: 'classroom',
-    close: [SCRIPT.l2done]
+    close: SCRIPT.l2done
   },
   {
     id: 'level3',
@@ -155,10 +94,10 @@ const CHAPTERS = [
     acts: [
       { intro: [], outro: [], seamless: true,
         build: buildAct3a, char: 'child', tuning: CHILD_TUNING,
-        music: 'afternoon', hud: 'AYRISHA · to the house' },
+        music: 'afternoon', hud: 'AYRISHA' },
       { intro: [], outro: [], seamless: true,
         build: buildAct3b, char: 'child', tuning: CHILD_TUNING,
-        music: 'indoors', hud: 'AYRISHA · find Aunty',
+        music: 'indoors', hud: 'AYRISHA',
         goalLines: [
           { who: 'Aunty', char: 'tutor',
             text: 'Hello Ayrisha, I\u2019m glad you made it. How are you?' },
@@ -170,7 +109,7 @@ const CHAPTERS = [
       { type: 'art', intro: [], outro: [], seamless: true, music: 'indoors' }
     ],
     ending: 'book',
-    close: [SCRIPT.l3book, SCRIPT.l3done]
+    close: SCRIPT.l3book.concat(SCRIPT.l3done)
   }
 ];
 
@@ -182,18 +121,20 @@ let cam = null;
 let spawnX = 0;
 let chapterIdx = 0;
 let actIdx = 0;
-let storyQueue = [];
 let ending = null;
 let endingT = 0;
 let endingDone = false;
-let storyAuto = false;
 let bookGiven = false;
 let bookT = 0;
 let skyline = [];
 let rain = [];
 
-/* ============================== STORY =============================
-   Any control that still holds keyboard focus will steal ENTER, so
+/* ============================ NARRATION ===========================
+   Between-scene text is spoken over the world in the dialogue box
+   rather than on a card that stops the game. Lines play themselves,
+   timed to their length, so a transition never waits on a keypress.
+
+   Any control that still holds keyboard focus would steal ENTER, so
    focus is dropped whenever the game takes the screen back.
 ------------------------------------------------------------------ */
 function dropFocus() {
@@ -201,40 +142,19 @@ function dropFocus() {
   if (el && el !== document.body && typeof el.blur === 'function') el.blur();
 }
 
-function showStory(entries, after) {
-  // an empty list is legitimate — a level may go straight into play
-  if (!entries || !entries.length) { if (after) after(); return; }
+/* Long enough to read without dawdling. */
+function readingTime(text) {
+  return Math.max(1500, Math.min(4200, 900 + text.length * 55));
+}
+
+function narrate(lines, after) {
   dropFocus();
-  storyQueue = entries.slice();
-  storyQueue.after = after;
-  state = 'story';
-  renderStory();
-}
-
-let storyTimer = null;
-
-function renderStory() {
-  const s = storyQueue[0];
-  clearTimeout(storyTimer);
-  storyAuto = !!s.auto;
-  storyEl.classList.toggle('auto', storyAuto);
-  if (storyAuto) storyTimer = setTimeout(() => { storyAuto = false; advanceStory(); }, s.auto);
-  storyEl.classList.remove('hidden');
-  storyEl.querySelector('.story-eyebrow').textContent = s.eyebrow;
-  storyEl.querySelector('.story-title').textContent = s.title;
-  storyEl.querySelector('.story-text').textContent = s.text;
-  storyEl.classList.toggle('sweet', !!s.sweet);
-  storyEl.classList.toggle('top', s.pos === 'top');
-}
-
-function advanceStory() {
-  clearTimeout(storyTimer);
-  storyQueue.shift();
-  if (storyQueue.length) { renderStory(); return; }
-  storyEl.classList.add('hidden');
-  const fn = storyQueue.after;
-  storyQueue.after = null;
-  if (fn) fn();
+  if (!lines || !lines.length) { if (after) after(); return; }
+  Dialogue.start(lines.map(l => ({
+    ...l,
+    lock: true,
+    wait: l.wait || readingTime(l.text)
+  })), after);
 }
 
 /* ============================== FADE ==============================
@@ -258,7 +178,6 @@ function fadeThrough(mid, after) {
 ------------------------------------------------------------------ */
 function showLevelCard(ch) {
   state = 'levelcard';
-  storyEl.classList.add('hidden');   // the landing page owns the screen
   artEl.classList.add('hidden');
   hudAct.textContent = '';
   hudCollect.textContent = '';
@@ -283,10 +202,9 @@ function beginLevel() {
   Sound.play('confirm');
   levelCard.classList.add('hidden');
   const ch = CHAPTERS[chapterIdx];
-  // start the music here rather than after the intro cards, so the game
-  // is never silent for the first several screens
+  // music from the START press, so the game is never silent
   if (ch.acts[0].music) Sound.playMusic(ch.acts[0].music);
-  showStory(ch.acts[0].intro, startCurrentAct);
+  startCurrentAct();
 }
 
 /* ============================= CHAPTERS =========================== */
@@ -299,7 +217,7 @@ function startChapter(i) {
   showLevelCard(CHAPTERS[i]);
 }
 
-function startCurrentAct() {
+function startCurrentAct(skipIntro) {
   const a = CHAPTERS[chapterIdx].acts[actIdx];
 
   if (a.type === 'art') {
@@ -320,6 +238,9 @@ function startCurrentAct() {
 
   artEl.classList.add('hidden');
   level = a.build();
+  if (level.meta.treeX !== undefined) {
+    level.meta.triggers = [{ x: level.meta.treeX - 4, lines: SCRIPT.l2mango }];
+  }
   player = new Actor(a.char, 40, GROUND_Y * TILE, a.tuning);
   spawnX = player.x;
   cam = new Camera(level);
@@ -329,6 +250,8 @@ function startCurrentAct() {
   updateCollectHud();
   Sound.playMusic(a.music);
   state = 'play';
+  // the scene is already on screen behind it, so this reads as a caption
+  if (!skipIntro) narrate(a.intro);
 }
 
 function finishAct() {
@@ -338,13 +261,8 @@ function finishAct() {
   if (a.type !== 'art') Sound.play('clear');
 
   const next = last ? startEnding : () => { actIdx++; startCurrentAct(); };
-  const cards = last ? a.outro : a.outro.concat(ch.acts[actIdx + 1].intro);
-
-  // a seamless act just fades into the next scene
-  if (a.seamless && !cards.length) { fadeThrough(next); return; }
-  showStory(cards, () => {
-    if (a.seamless) fadeThrough(next); else next();
-  });
+  // speak the closing line over the scene it belongs to, then fade
+  narrate(a.outro, () => fadeThrough(next));
 }
 
 function startEnding() {
@@ -1363,11 +1281,6 @@ function update(dt) {
     if (Input.tapped('confirm') || Input.tapped('jump')) Dialogue.advance();
     return;
   }
-  if (state === 'story') {
-    // an auto card plays out on its own and ignores input
-    if (!storyAuto && (Input.tapped('confirm') || Input.tapped('jump'))) advanceStory();
-    return;
-  }
   if (state === 'art') return;   // the board owns the input
   if (Input.tapped('mute')) toggleMute();
 
@@ -1376,7 +1289,7 @@ function update(dt) {
     const finished = ending.done ? ending.done(endingT) : endingT > ending.dur;
     if (finished && !endingDone) {
       endingDone = true;
-      showStory(CHAPTERS[chapterIdx].close, nextChapter);
+      narrate(CHAPTERS[chapterIdx].close, () => fadeThrough(nextChapter));
     }
     return;
   }
@@ -1388,6 +1301,11 @@ function update(dt) {
   enforceGate();
 
   if (player.y > level.pxH + 20) respawn();
+
+  // one-shot lines that fire when she walks into somewhere
+  for (const tr of (level.meta.triggers || [])) {
+    if (!tr.done && player.x > tr.x * TILE) { tr.done = true; narrate(tr.lines); }
+  }
 
   // someone standing in the way until she says hello
   const npc = level.meta.npc;
@@ -1460,9 +1378,6 @@ function boot() {
   };
   addEventListener('keydown', kick);
   addEventListener('pointerdown', kick);
-  storyEl.addEventListener('click', () => {
-    if (state === 'story' && !storyAuto) advanceStory();
-  });
   document.getElementById('lc-start').addEventListener('click', beginLevel);
   requestAnimationFrame(frame);
 }

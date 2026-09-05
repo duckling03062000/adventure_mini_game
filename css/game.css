@@ -231,7 +231,106 @@
   font-size:1rem;line-height:1.55;color:#f0e9ff;margin:0;
 }
 .dialogue.locked{cursor:default}
-.dialogue.locked .dlg-more{visibility:hidden}
+.dialogue.locked /* A narrated line has no speaker: no name, no portrait, just the words. */
+.dialogue.narration .dlg-portrait{display:none}
+.dialogue.narration .dlg-name{display:none}
+.dialogue.narration .dlg-more{display:none}
+.dialogue.narration .dlg-text{
+  text-align:center;
+  font-size:1.05rem;
+  color:#ffe9c2;
+}
+.dialogue.sweet .dlg-text{color:#ffd7e6}
+.dlg-more{visibility:hidden}
+/* A narrated line has no speaker: no name, no portrait, just the words. */
+.dialogue.narration .dlg-portrait{display:none}
+.dialogue.narration .dlg-name{display:none}
+.dialogue.narration .dlg-more{display:none}
+.dialogue.narration .dlg-text{
+  text-align:center;
+  font-size:1.05rem;
+  color:#ffe9c2;
+}
+.dialogue.sweet .dlg-text{color:#ffd7e6}
+.dlg-more{
+  flex:0 0 auto;
+  font-family:'Press Start 2P',monospace;
+  font-size:.45rem;color:#7d6f9c;margin:0;align-self:flex-end;
+  animation:blink 1.4s steps(2) infinite;
+}
+
+#note{
+  position:absolute;
+  left:0;right:0;bottom:42%;
+  text-align:center;
+  font-family:'Press Start 2P',monospace;
+  font-size:.6rem;
+  color:#ffd166;
+  text-shadow:0 2px 0 rgba(0,0,0,.7);
+  opacity:0;
+  transform:translateY(6px);
+  transition:opacity .18s ease, transform .18s ease;
+  pointer-events:none;
+}
+#note.show{opacity:1;transform:translateY(0)}
+
+/* ---------------------------- DIALOGUE ----------------------------- */
+.dialogue{
+  position:absolute;
+  left:4%;right:4%;bottom:5%;
+  display:flex;align-items:center;gap:1rem;
+  padding:1rem 1.2rem;
+  background:rgba(16,13,28,.94);
+  border:3px solid #241b26;
+  border-radius:4px;
+  box-shadow:0 8px 0 rgba(0,0,0,.45);
+  z-index:3;
+  cursor:pointer;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.dialogue.hidden{opacity:0;transform:translateY(10px);pointer-events:none}
+.dlg-portrait{
+  flex:0 0 auto;
+  width:3.6rem;height:3.6rem;
+  display:grid;place-items:start center;
+  overflow:hidden;
+  background:rgba(255,255,255,.06);
+  border:2px solid rgba(255,255,255,.15);
+  border-radius:3px;
+}
+.dlg-portrait canvas{width:100%;height:auto;image-rendering:pixelated}
+.dlg-body{flex:1 1 auto;min-width:0}
+.dlg-name{
+  font-family:'Press Start 2P',monospace;
+  font-size:.55rem;letter-spacing:.1em;
+  color:#ffcf4d;margin:0 0 .55rem;
+}
+.dlg-text{
+  font-family:'Nunito',sans-serif;
+  font-size:1rem;line-height:1.55;color:#f0e9ff;margin:0;
+}
+.dialogue.locked{cursor:default}
+.dialogue.locked /* A narrated line has no speaker: no name, no portrait, just the words. */
+.dialogue.narration .dlg-portrait{display:none}
+.dialogue.narration .dlg-name{display:none}
+.dialogue.narration .dlg-more{display:none}
+.dialogue.narration .dlg-text{
+  text-align:center;
+  font-size:1.05rem;
+  color:#ffe9c2;
+}
+.dialogue.sweet .dlg-text{color:#ffd7e6}
+.dlg-more{visibility:hidden}
+/* A narrated line has no speaker: no name, no portrait, just the words. */
+.dialogue.narration .dlg-portrait{display:none}
+.dialogue.narration .dlg-name{display:none}
+.dialogue.narration .dlg-more{display:none}
+.dialogue.narration .dlg-text{
+  text-align:center;
+  font-size:1.05rem;
+  color:#ffe9c2;
+}
+.dialogue.sweet .dlg-text{color:#ffd7e6}
 .dlg-more{
   flex:0 0 auto;
   font-family:'Press Start 2P',monospace;
