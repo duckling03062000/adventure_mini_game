@@ -18,7 +18,7 @@ const levelCard = document.getElementById('levelcard');
 const fadeEl = document.getElementById('fade');
 const artEl = document.getElementById('artboard');
 const pianoEl = document.getElementById('piano');
-const harpEl = document.getElementById('harmonica');
+const harmEl = document.getElementById('harmonium');
 
 /* The real cover, for the moment she is given it. */
 const BOOK_IMG = new Image();
@@ -52,12 +52,24 @@ const SCRIPT = {
   /* Level 4 */
   l4guide:    [{ who: 'Krishna ji', char: 'krishna',
                  text: 'Hey little Ayrisha, let\u2019s go to the music classes.' }],
-  l4done:     [{ who: 'Krishna ji', char: 'krishna', text: 'Level 4 complete.' }]
+  l4done:     [{ who: 'Krishna ji', char: 'krishna', text: 'Level 4 complete.' }],
+
+  /* The growing-up interlude */
+  growEnd:    [{ text: 'And she was not little any more.', sweet: true }],
+
+  /* Level 5 */
+  l5guide: [{ who: 'Krishna ji', char: 'krishna',
+              text: 'Kota. Two years of it. Let\u2019s get to class.' }],
+  l5bazar: [{ who: 'Anam', char: 'anam', text: 'Chalo, cold coffee? My treat.' },
+            { who: 'Ayrisha', char: 'teen', text: 'Only if it is a big one.' }],
+  l5test:  [{ text: 'Sunday. The test.' }],
+  l5done:  [{ who: 'Krishna ji', char: 'krishna', text: 'Level 5 complete.' }]
 };
 
 /* ============================= CHAPTERS =========================== */
 const CHILD_TUNING  = { maxSpeed: 1.7,  accel: 0.36, jumpV: -5.6, w: 8 };
 const PAPA_TUNING   = { maxSpeed: 2.15, accel: 0.5,  jumpV: -7.4, w: 10 };
+const TEEN_TUNING   = { maxSpeed: 1.95, accel: 0.42, jumpV: -6.4, w: 9 };
 const MUMMA_TUNING  = { maxSpeed: 1.35, accel: 0.3,  friction: 0.28, jumpV: -4.9, w: 11 };
 
 const CHAPTERS = [
@@ -159,12 +171,67 @@ const CHAPTERS = [
           { who: 'Teacher', char: 'musicteacher',
             text: 'So cutely you bow down! Gently next time.' },
           { who: 'Teacher', char: 'musicteacher',
-            text: 'Now \u2014 let us start the harmonica.' }
+            text: 'Now \u2014 let us start the harmonium.' }
         ] },
-      { type: 'harmonica', intro: [], outro: [], seamless: true, music: 'indoors' }
+      { type: 'harmonium', intro: [], outro: [], seamless: true, music: 'indoors' }
     ],
     ending: 'musicdone',
     close: SCRIPT.l4done
+  },
+  {
+    id: 'growing',
+    interlude: true,          // no landing page; it just happens
+    number: 0,
+    title: '',
+    subtitle: '', blurb: '', objectives: [],
+    acts: [
+      { intro: [], outro: SCRIPT.growEnd, seamless: true,
+        build: buildGrowing, char: 'child', tuning: CHILD_TUNING,
+        autoWalk: true, music: 'afternoon', hud: '' }
+    ],
+    ending: null,
+    close: []
+  },
+  {
+    id: 'level5',
+    number: 5,
+    title: 'College entrance exams',
+    subtitle: 'Kota, Rajasthan',
+    blurb: '', objectives: [],
+    acts: [
+      { intro: SCRIPT.l5guide, outro: [], seamless: true,
+        build: buildAct5a, char: 'teen', tuning: TEEN_TUNING,
+        music: 'afternoon', hud: 'AYRISHA' },
+      { intro: [], outro: [], seamless: true,
+        build: buildAct5b, char: 'teen', tuning: TEEN_TUNING,
+        music: 'indoors', hud: 'AYRISHA',
+        goalLines: [
+          { who: 'Anam', char: 'anam', text: 'You are up too. Every night, na?' },
+          { who: 'Ayrisha', char: 'teen', text: 'Every night. I am Ayrisha.' },
+          { who: 'Anam', char: 'anam', text: 'Anam. Room 214. Same floor as you.' },
+          { who: 'Ayrisha', char: 'teen',
+            text: 'Then I am never studying alone again.' },
+          { who: 'Anam', char: 'anam', text: 'Chalo \u2014 cold coffee. Friends Bazar.' }
+        ] },
+      { intro: [], outro: [], seamless: true,
+        build: buildAct5c, char: 'teen', tuning: TEEN_TUNING,
+        music: 'morning', hud: 'AYRISHA · with Anam',
+        goalLines: [
+          { who: 'Anam', char: 'anam', text: 'Two cold coffees, bhaiya. Big ones.' },
+          { who: 'Ayrisha', char: 'teen',
+            text: 'This is the best thing that has happened all week.' },
+          { who: 'Anam', char: 'anam', text: 'It is Tuesday, Ayrisha.' },
+          { who: 'Ayrisha', char: 'teen', text: 'I know.' }
+        ] },
+      { intro: SCRIPT.l5test, outro: [], seamless: true,
+        build: buildAct5d, char: 'teen', tuning: TEEN_TUNING,
+        music: 'careful', hud: 'AYRISHA · the test',
+        goalLines: [
+          { text: 'Three hours. Then the long walk back, and sleep.' }
+        ] }
+    ],
+    ending: 'kotahome',
+    close: SCRIPT.l5done
   }
 ];
 
@@ -181,9 +248,38 @@ let endingT = 0;
 let endingDone = false;
 let bookGiven = false;
 let musicDone = false;
+let kotaDone = false;
 let bookT = 0;
 let skyline = [];
 let rain = [];
+
+/* --------------------------- GROWING UP --------------------------
+   She changes sprite mid-stride. Her feet stay where they are and the
+   extra height goes upward, so it reads as growing rather than as a
+   swap.
+------------------------------------------------------------------ */
+let growFlash = 0;
+
+function growUp() {
+  player.char = CHARACTERS.teen;
+  player.h = frameHeight(player.char, 'idle');
+  growFlash = 1;
+  Sound.play('checkpoint');
+}
+
+function drawGrowFlash() {
+  if (growFlash <= 0.01) return;
+  growFlash *= 0.94;
+  const x = player.x - cam.x, y = player.y - cam.y - player.h / 2;
+  ctx.save();
+  ctx.globalAlpha = growFlash * 0.8;
+  const g = ctx.createRadialGradient(x, y, 2, x, y, 46);
+  g.addColorStop(0, 'rgba(255,247,214,.9)');
+  g.addColorStop(1, 'rgba(255,231,150,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(x - 50, y - 50, 100, 100);
+  ctx.restore();
+}
 
 /* ============================ THE BOW =============================
    She folds forward from the feet and puts her head in the floor. It
@@ -364,7 +460,7 @@ function showLevelCard(ch) {
   state = 'levelcard';
   artEl.classList.add('hidden');
   pianoEl.classList.add('hidden');
-  harpEl.classList.add('hidden');
+  harmEl.classList.add('hidden');
   hudAct.textContent = '';
   hudCollect.textContent = '';
   levelCard.querySelector('.lc-num').textContent = `LEVEL ${ch.number}`;
@@ -403,23 +499,32 @@ function startChapter(i) {
   guide.fade = 0;
   pbow.on = false;
   Sound.stopMusic();
-  showLevelCard(CHAPTERS[i]);
+  const ch = CHAPTERS[i];
+  if (ch.interlude) {
+    // it skips the landing page, so it has to dismiss it itself
+    levelCard.classList.add('hidden');
+    Sound.unlock();
+    if (ch.acts[0].music) Sound.playMusic(ch.acts[0].music);
+    startCurrentAct();
+    return;
+  }
+  showLevelCard(ch);
 }
 
 function startCurrentAct(skipIntro) {
   const a = CHAPTERS[chapterIdx].acts[actIdx];
 
-  if (a.type === 'harmonica') {
+  if (a.type === 'harmonium') {
     level = null;
     player = null;
-    hudAct.textContent = 'AYRISHA · harmonica';
+    hudAct.textContent = 'AYRISHA · harmonium';
     hudCollect.textContent = '';
     if (a.music) Sound.playMusic(a.music);
     artEl.classList.add('hidden');
     pianoEl.classList.add('hidden');
-    harpEl.classList.remove('hidden');
-    Harmonica.build(harpEl, () => {
-      harpEl.classList.add('hidden');
+    harmEl.classList.remove('hidden');
+    Harmonium.build(harmEl, () => {
+      harmEl.classList.add('hidden');
       state = 'transition';
       finishAct();
     });
@@ -434,7 +539,7 @@ function startCurrentAct(skipIntro) {
     hudCollect.textContent = '';
     if (a.music) Sound.playMusic(a.music);
     artEl.classList.add('hidden');
-    harpEl.classList.add('hidden');
+    harmEl.classList.add('hidden');
     pianoEl.classList.remove('hidden');
     Piano.build(pianoEl, () => {
       pianoEl.classList.add('hidden');
@@ -463,9 +568,10 @@ function startCurrentAct(skipIntro) {
 
   artEl.classList.add('hidden');
   pianoEl.classList.add('hidden');
-  harpEl.classList.add('hidden');
+  harmEl.classList.add('hidden');
   level = a.build();
   player = new Actor(a.char, 40, GROUND_Y * TILE, a.tuning);
+  player.auto = !!a.autoWalk;
   spawnX = player.x;
   cam = new Camera(level);
   cam.x = 0;
@@ -490,7 +596,13 @@ function finishAct() {
 
 function startEnding() {
   musicDone = false;
+  kotaDone = false;
   const ch = CHAPTERS[chapterIdx];
+  // an interlude has no ending scene: say its last line and move on
+  if (!ch.ending) {
+    say(ch.close, () => fadeThrough(nextChapter));
+    return;
+  }
   ending = ENDINGS[ch.ending];
   endingT = 0;
   endingDone = false;
@@ -718,6 +830,61 @@ const ENDINGS = {
                      Math.round(by + Math.sin(a) * r * 0.6), 2, 2);
       }
       ctx.globalAlpha = 1;
+    }
+  },
+
+  /* ------------------------ level 5: home ------------------------- */
+  kotahome: {
+    music: 'lullaby',
+    enter() {
+      kotaDone = false;
+      Dialogue.start([
+        { text: 'Home. It has not been an easy year.' },
+        { who: 'Uncle', char: 'husband',
+          text: 'That gudiya \u2014 this time will teach you very much, ' +
+                'which will be useful for your whole life.' },
+        { who: 'Krishna ji', char: 'krishna',
+          text: 'You are very smart. You are intelligent. You can work hard also.' },
+        { who: 'Krishna ji', char: 'krishna',
+          text: 'You will do great in your life. Let\u2019s go to college now, ' +
+                'and have a good time.' }
+      ], () => { kotaDone = true; });
+    },
+    done() { return kotaDone; },
+    draw(t) {
+      const FLOOR = 150;
+      const g = ctx.createLinearGradient(0, 0, 0, VIEW_H);
+      g.addColorStop(0, '#4a3d52');
+      g.addColorStop(1, '#7a6472');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+
+      // a window with the evening outside
+      ctx.fillStyle = '#3b3344'; ctx.fillRect(24, 28, 58, 46);
+      ctx.fillStyle = '#8d7fa0'; ctx.fillRect(28, 32, 50, 38);
+      ctx.fillStyle = '#3b3344';
+      ctx.fillRect(51, 28, 3, 46); ctx.fillRect(24, 50, 58, 3);
+
+      ctx.fillStyle = '#6b5334'; ctx.fillRect(226, 34, 46, 32);
+      ctx.fillStyle = '#efe3c8'; ctx.fillRect(229, 37, 40, 26);
+
+      ctx.fillStyle = '#5e4d58'; ctx.fillRect(0, FLOOR, VIEW_W, VIEW_H - FLOOR);
+      ctx.fillStyle = '#6e5b67'; ctx.fillRect(0, FLOOR, VIEW_W, 3);
+
+      // her bag, put down by the door
+      ctx.fillStyle = '#c4536a'; ctx.fillRect(48, FLOOR - 11, 15, 11);
+      ctx.fillStyle = '#9c3d52'; ctx.fillRect(48, FLOOR - 11, 15, 4);
+
+      const bob = Math.sin(t * 2) > 0 ? 0 : 1;
+      drawCharacter(ctx, CHARACTERS.husband, 'idle', 1, 118, FLOOR, bob);
+      drawCharacter(ctx, CHARACTERS.teen, 'idle', 1, 168, FLOOR, bob);
+
+      // a warm light over the two of them
+      const gl = ctx.createRadialGradient(143, FLOOR - 26, 6, 143, FLOOR - 26, 74);
+      gl.addColorStop(0, 'rgba(255,226,160,.20)');
+      gl.addColorStop(1, 'rgba(255,226,160,0)');
+      ctx.fillStyle = gl;
+      ctx.fillRect(60, FLOOR - 100, 170, 110);
     }
   },
 
@@ -1019,7 +1186,10 @@ const FRONT_PROPS = new Set(['bus', 'auto', 'hospital', 'schoolfront', 'desk',
                              'painting', 'doorway', 'railing', 'plantpot',
                              'easel', 'rug', 'mangouncle', 'guardpost', 'tv', 'musicfront', 'musicgate',
                              'instrumentwall', 'musicposter', 'piano',
-                             'harmonicaspot']);
+                             'harmoniumspot', 'mallyasign', 'harmonium',
+                             'flute', 'degree', 'kotasign', 'allenfront',
+                             'hostelbed', 'studydesk', 'wallclock', 'anamspot',
+                             'coffeestall', 'examdesk', 'herexamdesk']);
 
 function drawProps(layer) {
   const base = GROUND_Y * TILE - cam.y;
@@ -1450,20 +1620,199 @@ function drawProps(layer) {
         break;
       }
 
-      case 'harmonicaspot': {
+      case 'allenfront': {
+        const w = p.w * TILE, top = 3 * TILE - cam.y;
+        const dx = p.doorX * TILE - cam.x;
+        ctx.fillStyle = '#9c5f3c'; ctx.fillRect(sx - 6, top - 6, w + 12, 9);
+        ctx.fillStyle = 'rgba(255,240,200,.55)';
+        for (let r = 0; r < 3; r++)
+          for (let c = 0; c < p.w; c += 2) {
+            const wy = top + 14 + r * 20;
+            if (wy > base - 62) continue;
+            ctx.fillRect(sx + 5 + c * TILE, wy, 9, 11);
+          }
+        signboard(sx + w / 2, base - 58, 108, ['ALLEN', 'KOTA']);
+        ctx.fillStyle = '#4a3040'; ctx.fillRect(dx - 3, base - 46, 38, 46);
+        ctx.fillStyle = '#ffdca0'; ctx.fillRect(dx, base - 43, 32, 43);
+        ctx.fillStyle = '#e0b98a'; ctx.fillRect(dx + 15, base - 43, 2, 43);
+        break;
+      }
+
+      case 'hostelbed': {
+        ctx.fillStyle = '#7d6a55'; ctx.fillRect(sx, base - 20, 4, 20);
+        ctx.fillRect(sx + 58, base - 16, 4, 16);
+        ctx.fillStyle = '#cdbfa6'; ctx.fillRect(sx, base - 14, 62, 8);
+        ctx.fillStyle = '#e8dfcc'; ctx.fillRect(sx + 4, base - 19, 18, 6);
+        ctx.fillStyle = '#8a6f8f'; ctx.fillRect(sx + 24, base - 15, 36, 3);
+        break;
+      }
+
+      case 'studydesk': {
+        ctx.fillStyle = '#6b4a33'; ctx.fillRect(sx, base - 17, 58, 4);
+        ctx.fillStyle = '#573b28';
+        ctx.fillRect(sx + 3, base - 13, 4, 13);
+        ctx.fillRect(sx + 51, base - 13, 4, 13);
+        // books, papers, and a lamp burning
+        ctx.fillStyle = '#c8324b'; ctx.fillRect(sx + 6, base - 24, 7, 7);
+        ctx.fillStyle = '#3c62b4'; ctx.fillRect(sx + 14, base - 22, 7, 5);
+        ctx.fillStyle = '#f7f2e2'; ctx.fillRect(sx + 24, base - 19, 18, 2);
+        ctx.fillStyle = '#8e97a8'; ctx.fillRect(sx + 47, base - 30, 2, 13);
+        ctx.fillStyle = '#e8b93c'; ctx.fillRect(sx + 42, base - 35, 12, 5);
+        const gl = ctx.createRadialGradient(sx + 48, base - 30, 3, sx + 48, base - 30, 34);
+        gl.addColorStop(0, 'rgba(255,226,140,.30)');
+        gl.addColorStop(1, 'rgba(255,226,140,0)');
+        ctx.fillStyle = gl;
+        ctx.fillRect(sx + 12, base - 64, 74, 66);
+        break;
+      }
+
+      case 'wallclock': {
+        ctx.fillStyle = '#e8ddd0';
+        ctx.beginPath(); ctx.arc(sx + 10, base - 54, 11, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#3b2d33'; ctx.lineWidth = 1;
+        const tt = performance.now() / 1000;
+        ctx.beginPath();
+        ctx.moveTo(sx + 10, base - 54);
+        ctx.lineTo(sx + 10 + Math.cos(tt - 1.6) * 7, base - 54 + Math.sin(tt - 1.6) * 7);
+        ctx.moveTo(sx + 10, base - 54);
+        ctx.lineTo(sx + 10 + Math.cos(tt / 12 - 1.6) * 4.5,
+                   base - 54 + Math.sin(tt / 12 - 1.6) * 4.5);
+        ctx.stroke();
+        break;
+      }
+
+      case 'anamspot': {
+        drawCharacter(ctx, CHARACTERS.anam, 'idle', 1, sx + 10, base,
+                      Math.sin(performance.now() / 780) > 0 ? 0 : 1);
+        break;
+      }
+
+      case 'coffeestall': {
+        // a roadside stall with a board and two glasses on the counter
+        ctx.fillStyle = '#7c4f34'; ctx.fillRect(sx - 6, base - 34, 74, 6);
+        ctx.fillStyle = '#5b3a26';
+        ctx.fillRect(sx - 4, base - 28, 5, 28);
+        ctx.fillRect(sx + 62, base - 28, 5, 28);
+        ctx.fillStyle = '#c8a06a'; ctx.fillRect(sx, base - 20, 62, 5);
+        ctx.fillStyle = '#f4f1ea'; ctx.fillRect(sx + 8, base - 50, 46, 15);
+        ctx.fillStyle = '#5b3a26';
+        ctx.font = '5px "Press Start 2P", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('COLD COFFEE', sx + 31, base - 40);
+        ctx.textAlign = 'left';
+        for (const gx of [sx + 14, sx + 40]) {
+          ctx.fillStyle = '#e8e4da'; ctx.fillRect(gx, base - 32, 9, 12);
+          ctx.fillStyle = '#6b4a33'; ctx.fillRect(gx + 1, base - 28, 7, 8);
+          ctx.fillStyle = '#f7f2e2'; ctx.fillRect(gx + 1, base - 30, 7, 2);
+        }
+        break;
+      }
+
+      case 'examdesk':
+      case 'herexamdesk': {
+        const w = 2 * TILE;
+        ctx.fillStyle = '#a8814f'; ctx.fillRect(sx, base - 16, w, 5);
+        ctx.fillStyle = '#8a6a3f';
+        ctx.fillRect(sx + 3, base - 11, 4, 11);
+        ctx.fillRect(sx + w - 7, base - 11, 4, 11);
+        // an OMR sheet and a pencil
+        ctx.fillStyle = '#f7f2e2'; ctx.fillRect(sx + 6, base - 18, 14, 2);
+        ctx.fillStyle = '#c8324b'; ctx.fillRect(sx + 22, base - 18, 6, 1);
+        if (p.type === 'herexamdesk') {
+          ctx.save();
+          ctx.globalAlpha = 0.3 + 0.15 * Math.sin(performance.now() / 400);
+          ctx.fillStyle = '#ffd166';
+          ctx.fillRect(sx - 4, base - 42, w + 8, 28);
+          ctx.restore();
+        }
+        break;
+      }
+
+      case 'mallyasign': {
+        ctx.fillStyle = '#6a7f8f';
+        ctx.fillRect(sx + 6, base - 46, 5, 46);
+        ctx.fillRect(sx + 38, base - 46, 5, 46);
+        signboard(sx + 24, base - 74, 116, ['MALLYA ADITI', 'INTERNATIONAL']);
+        break;
+      }
+
+      case 'harmonium': {
+        // box body, bellows at the back, keys along the front
+        ctx.fillStyle = '#6b4a33'; ctx.fillRect(sx, base - 22, 54, 22);
+        ctx.fillStyle = '#8a6242'; ctx.fillRect(sx, base - 26, 54, 4);
+        ctx.fillStyle = '#5a3d29'; ctx.fillRect(sx + 40, base - 40, 14, 18);
+        ctx.fillStyle = '#c9a227';
+        for (let i = 0; i < 3; i++) ctx.fillRect(sx + 42, base - 37 + i * 5, 10, 2);
+        ctx.fillStyle = '#fdf8ec'; ctx.fillRect(sx + 3, base - 20, 34, 6);
+        ctx.fillStyle = '#241b26';
+        for (let i = 0; i < 6; i++) ctx.fillRect(sx + 6 + i * 5.4, base - 20, 2, 4);
+        break;
+      }
+
+      case 'flute': {
+        // a bansuri on a small stand
+        ctx.fillStyle = '#6b5334';
+        ctx.fillRect(sx + 4, base - 26, 3, 26);
+        ctx.fillRect(sx + 30, base - 26, 3, 26);
+        ctx.fillStyle = '#d9b06a';
+        ctx.fillRect(sx - 2, base - 30, 44, 5);
+        ctx.fillStyle = '#a8813f';
+        for (let i = 0; i < 6; i++) ctx.fillRect(sx + 6 + i * 5, base - 29, 2, 2);
+        ctx.fillStyle = '#8a6a3f';
+        ctx.fillRect(sx - 2, base - 30, 3, 5);
+        ctx.fillRect(sx + 39, base - 30, 3, 5);
+        break;
+      }
+
+      case 'degree': {
+        // a rolled certificate with a ribbon, on a stand
+        ctx.fillStyle = '#8e97a8'; ctx.fillRect(sx + 18, base - 26, 3, 26);
+        ctx.fillStyle = '#f7f2e2';
+        ctx.fillRect(sx + 2, base - 58, 36, 32);
+        ctx.fillStyle = '#d8cfb6'; ctx.fillRect(sx + 2, base - 58, 36, 3);
+        ctx.fillStyle = '#241b26';
+        for (let i = 0; i < 4; i++) ctx.fillRect(sx + 7, base - 50 + i * 5, 26, 1);
+        ctx.fillStyle = '#c8402f';
+        ctx.beginPath(); ctx.arc(sx + 20, base - 32, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ffcf4d';
+        ctx.beginPath(); ctx.arc(sx + 20, base - 32, 2.5, 0, Math.PI * 2); ctx.fill();
+        // a soft glow, because this is the moment she grows
+        const gl = ctx.createRadialGradient(sx + 20, base - 42, 4, sx + 20, base - 42, 46);
+        gl.addColorStop(0, 'rgba(255,236,170,.28)');
+        gl.addColorStop(1, 'rgba(255,236,170,0)');
+        ctx.fillStyle = gl;
+        ctx.fillRect(sx - 30, base - 90, 100, 96);
+        break;
+      }
+
+      case 'kotasign': {
+        ctx.fillStyle = '#8e97a8'; ctx.fillRect(sx + 14, base - 44, 3, 44);
+        ctx.fillStyle = '#2f6b8f'; ctx.fillRect(sx - 14, base - 60, 62, 16);
+        ctx.fillStyle = '#f4f1ea';
+        ctx.font = '6px "Press Start 2P", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('KOTA', sx + 17, base - 49);
+        ctx.textAlign = 'left';
+        // a milestone the way roads in Rajasthan have them
+        ctx.fillStyle = '#e8e2d4';
+        ctx.fillRect(sx + 34, base - 16, 14, 16);
+        ctx.fillStyle = '#c8402f'; ctx.fillRect(sx + 34, base - 16, 14, 5);
+        break;
+      }
+
+      case 'harmoniumspot': {
         drawCharacter(ctx, CHARACTERS.musicteacher, 'idle', 1, sx + 40, base,
                       Math.sin(performance.now() / 820) > 0 ? 0 : 1);
-        // a low table with harmonicas laid out on it
-        ctx.fillStyle = '#6b4a33'; ctx.fillRect(sx - 26, base - 15, 44, 4);
-        ctx.fillStyle = '#573b28';
-        ctx.fillRect(sx - 23, base - 11, 4, 11);
-        ctx.fillRect(sx + 11, base - 11, 4, 11);
-        for (let i = 0; i < 3; i++) {
-          const hx = sx - 22 + i * 14;
-          ctx.fillStyle = '#c9d0dc'; ctx.fillRect(hx, base - 19, 11, 4);
-          ctx.fillStyle = '#2b2f3a';
-          for (let k = 0; k < 4; k++) ctx.fillRect(hx + 1 + k * 2.6, base - 18, 1, 2);
-        }
+        // a harmonium sitting on the floor, lid up, bellows at the back
+        const hx = sx - 34;
+        ctx.fillStyle = '#6b4a33'; ctx.fillRect(hx, base - 20, 50, 20);
+        ctx.fillStyle = '#8a6242'; ctx.fillRect(hx, base - 24, 50, 4);
+        ctx.fillStyle = '#5a3d29'; ctx.fillRect(hx + 36, base - 38, 14, 18);
+        ctx.fillStyle = '#c9a227';
+        for (let i = 0; i < 3; i++) ctx.fillRect(hx + 38, base - 35 + i * 5, 10, 2);
+        ctx.fillStyle = '#fdf8ec'; ctx.fillRect(hx + 3, base - 18, 30, 6);
+        ctx.fillStyle = '#241b26';
+        for (let i = 0; i < 5; i++) ctx.fillRect(hx + 6 + i * 5.4, base - 18, 2, 4);
         // a music stand beside her
         ctx.fillStyle = '#8e97a8';
         ctx.fillRect(sx + 62, base - 40, 2, 40);
@@ -1826,7 +2175,11 @@ function update(dt) {
 
   // one-shot lines that fire when she walks into somewhere
   for (const tr of (level.meta.triggers || [])) {
-    if (!tr.done && player.x > tr.x * TILE) { tr.done = true; say(tr.lines); }
+    if (!tr.done && player.x > tr.x * TILE) {
+      tr.done = true;
+      if (tr.grow) growUp();
+      say(tr.lines);
+    }
   }
 
   // the uncle at the mango tree starts talking as she comes up
@@ -1850,6 +2203,14 @@ function update(dt) {
       Dialogue.start(npc.lines, () => { npc.done = true; });
       return;
     }
+  }
+
+  // her own desk: the night does not go in a straight line
+  const desk = level.meta.desk;
+  if (desk && !desk.done && player.x > desk.x * TILE) {
+    desk.done = true;
+    narrate(desk.lines);
+    return;
   }
 
   // the television: she stops, watches, then carries on
@@ -1899,6 +2260,7 @@ function render() {
   drawProps('front');
   drawPickups();
   drawPlayer();
+  drawGrowFlash();
   drawGuide(1);
   drawRain(1);
 

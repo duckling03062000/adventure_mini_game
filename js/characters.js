@@ -423,6 +423,34 @@ const MUSICT_LEGS_IDLE = [
   '....sss..sss....', '....fff..fff....', '...ffff..ffff...'
 ];
 
+/* --------------------------- LEVEL 5 · KOTA ----------------------- */
+/* Anam, who she meets on the hostel balcony. */
+const ANAM_TOP = [
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhhhhhhhhhhh..',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '..hh..ssss..hh..',
+  '..hh.dddddd.hh..',
+  '..hhsddddddshh..',
+  '..hhsddddddshh..',
+  '..hhsddddddshh..',
+  '...hsddddddsh...',
+  '....dddddddd....',
+  '....pppppppp....'
+];
+const ANAM_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
 /* --------------------------------------------------------------- */
 
 const CHARACTERS = {
@@ -554,6 +582,20 @@ const CHARACTERS = {
       h: '#2b2430', H: '#5a4f60',
       d: '#3f8f6a', D: '#2f6f52', p: '#3a3550', f: '#4a3f36',
       a: '#c9a227', b: '#4a3f36', c: '#3f8f6a'
+    }
+  },
+
+  anam: {
+    id: 'anam',
+    name: 'Anam',
+    era: 'level 5 · the hostel balcony',
+    note: 'Met on the balcony at some hour that was not really any hour.',
+    top: ANAM_TOP,
+    legs: still(ANAM_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      d: '#d1663f', D: '#ad4f2f', p: '#3f4a63', f: '#2f2a33',
+      b: '#2f2a33', c: '#d1663f', a: '#e8b93c'
     }
   },
 

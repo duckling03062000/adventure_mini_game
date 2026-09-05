@@ -314,49 +314,76 @@
 .piano-key.is-hit{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.35)}
 .piano-key.is-off{background:linear-gradient(#ffd7d7,#f0b3b3)}
 
-/* -------------------------- THE HARMONICA -------------------------- */
-.harp-strip{
+/* -------------------------- THE HARMONIUM -------------------------- */
+.harm-strip{
   display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center;
-  margin:0 auto 1.4rem;max-width:34rem;
+  margin:0 auto 1.3rem;max-width:34rem;
 }
-.harp-note{
+.harm-note{
   font-family:'Press Start 2P',monospace;
-  font-size:.5rem;
-  min-width:2.2rem;height:2rem;
-  display:flex;align-items:center;justify-content:center;gap:.15rem;
+  font-size:.55rem;
+  width:1.9rem;height:1.9rem;
+  display:grid;place-items:center;
   border:2px solid rgba(255,255,255,.18);
   border-radius:3px;color:#a294c4;
 }
-.harp-note b{font-size:.7rem;line-height:1}
-.harp-note.done{color:#8fe08f;border-color:rgba(143,224,143,.5)}
-.harp-note.now{color:#241b26;background:#ffcf4d;border-color:#ffcf4d;transform:translateY(-3px)}
+.harm-note.done{color:#8fe08f;border-color:rgba(143,224,143,.5)}
+.harm-note.now{color:#241b26;background:#ffcf4d;border-color:#ffcf4d;transform:translateY(-3px)}
 
-.harp-body{
-  max-width:30rem;margin:0 auto 1.2rem;
+.harm-body{
+  display:flex;align-items:stretch;gap:.7rem;
+  max-width:36rem;margin:0 auto 1.1rem;
   padding:.7rem;
-  background:linear-gradient(#d8dde6,#9aa4b3);
+  background:linear-gradient(#7c5333,#5b3b23);
   border:3px solid #241b26;
-  border-radius:6px;
+  border-radius:5px;
   box-shadow:0 6px 0 rgba(0,0,0,.4);
 }
-.harp-holes{display:flex;gap:.35rem}
-.harp-hole{
+.harm-keys{display:flex;gap:2px;flex:1 1 auto;min-width:0}
+.harm-key{
   flex:1 1 0;min-width:0;
-  aspect-ratio:1 / 1.5;
-  display:grid;place-items:center;
-  background:#2b2f3a;
-  border:2px solid #171a22;
-  border-radius:3px;
+  aspect-ratio:1 / 2.9;
+  display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+  gap:.3rem;padding:0 0 .45rem;
+  background:linear-gradient(#fffdf8,#e8e0cf);
+  border:2px solid #241b26;
+  border-radius:0 0 3px 3px;
   cursor:pointer;
   transition:transform .06s, background .1s;
 }
-.hh-n{font-family:'Press Start 2P',monospace;font-size:.5rem;color:#8d97a8}
-.harp-hole.is-next{background:#6b5a20}
-.harp-hole.is-blow{background:linear-gradient(#ffd977,#c99a2a)}
-.harp-hole.is-draw{background:linear-gradient(#8fd4ff,#3f8fc4)}
-.harp-hole.is-next .hh-n{color:#241b26}
-.harp-hole.is-hit{transform:translateY(3px)}
-.harp-hole.is-off{background:#8a3b3b}
+.hk-note{font-family:'Press Start 2P',monospace;font-size:.45rem;color:#6b5a7a}
+.hk-key{font-family:'Nunito',sans-serif;font-size:.58rem;color:#a9a094}
+.harm-key.is-next{background:linear-gradient(#fff2c0,#ffd977)}
+.harm-key.is-next .hk-note{color:#7a5a12}
+.harm-key.is-hit{transform:translateY(3px)}
+.harm-key.is-off{background:linear-gradient(#ffd7d7,#f0b3b3)}
+
+/* the bellows: the thing that makes it a harmonium */
+.harm-bellows{
+  flex:0 0 5.5rem;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  gap:.5rem;padding:.5rem;
+  background:repeating-linear-gradient(#4a2f1c,#4a2f1c 5px,#5f3d24 5px,#5f3d24 10px);
+  border:2px solid #241b26;border-radius:4px;
+  cursor:pointer;
+  transition:transform .1s;
+}
+.harm-bellows.is-pump{transform:scaleY(.93)}
+.harm-bellows.is-need{animation:needair .3s steps(2) 2}
+@keyframes needair{50%{background:#8a3b3b}}
+.harm-air{
+  width:100%;height:.7rem;
+  background:rgba(0,0,0,.45);
+  border:1px solid #241b26;border-radius:2px;overflow:hidden;
+}
+.harm-air-fill{
+  display:block;height:100%;width:100%;
+  background:linear-gradient(90deg,#63cfc0,#8fe08f);
+  transition:width .12s linear;
+}
+.harm-pump{font-family:'Press Start 2P',monospace;font-size:.45rem;color:#e8dcc4}
+.no-air .harm-air-fill{background:#8a3b3b}
+.no-air .harm-key{background:linear-gradient(#d9d4ca,#bdb7ab)}
 
 #note{
   position:absolute;

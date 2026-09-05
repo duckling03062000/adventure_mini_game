@@ -110,7 +110,7 @@ const MUSIC_TILES = {
 };
 
 /* --------------------------- SCENE 3 -----------------------------
-   Piano done, she carries on down the room to where the harmonicas
+   Piano done, she carries on down the room to where the harmonium
    are. The class bows before it starts, and she overdoes it.
 ------------------------------------------------------------------ */
 function buildAct4c() {
@@ -127,7 +127,7 @@ function buildAct4c() {
   b.prop('instrumentwall', b.x - 4);
   b.flat(6);
   const spotX = b.x;
-  b.prop('harmonicaspot', spotX);
+  b.prop('harmoniumspot', spotX);
   b.flat(10);
 
   return b.build({

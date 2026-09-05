@@ -173,7 +173,9 @@ function moveActor(a, level, dt) {
 
 /* Standard run + jump control, shared by both playable characters. */
 function controlActor(a, level, dt) {
-  const left = Input.held('left'), right = Input.held('right');
+  // an actor on auto walks itself; used by the growing-up interlude
+  const left = a.auto ? false : Input.held('left');
+  const right = a.auto ? true : Input.held('right');
   const dir = (right ? 1 : 0) - (left ? 1 : 0);
 
   if (dir !== 0) {
