@@ -41,8 +41,8 @@ dialogue, **M** mute.
 | 2 | **Let's go to school** — AECS Layout | Mango tree (climb for 3 mangoes), Ryan International, a guard who won't open the gate without them. |
 | 3 | **Let's go see our art tutor** | Four scenes: the walk, inside the house (Uncle, a TV playing Kid vs Kat), the balcony, a painting mini-game, the book. |
 | 4 | **Let's go to the music class** — Yelahanka | Jigyasa Centre. Piano lesson, a bow that goes too far, harmonium lesson. |
-| — | **Growing up** (interlude, no landing page) | She walks past Ryan → Mallya Aditi → piano → harmonium → flute → music degree → Kota, and **changes from child to teen at the degree**. |
-| 5 | **College entrance exams** — Kota | Allen, the hostel night, Anam, Friends Bazar, the Sunday test, home. |
+| — | **Growing up** (interlude, no landing page) | Ice cream → bakery → Ryan International → Mallya Aditi → music school → music degree. **She changes from child to teen at the degree**, then it simply ends. |
+| 5 | **College entrance exams** — Kota | Allen, a physics class and a projectile lesson, the hostel night, Anam, Friends Bazar, the Sunday test, home. |
 
 Next up (not built): **college**. Krishna ji's closing line in Level 5 sets
 it up — *"let's go to college now, and have a good time."*
@@ -105,6 +105,7 @@ js/
   dialogue.js     the dialogue box, portraits, locked lines
   game.js         CHAPTERS, scene flow, all props, all ending scenes
   art.js          Level 3's painting board
+  physics.js      Level 5's projectile lesson
   piano.js        Level 4's piano lesson
   harmonium.js    Level 4's harmonium lesson
   levels/
@@ -132,7 +133,7 @@ It's a data change. Append to `CHAPTERS` in `game.js`:
 ```
 
 Act flags: `seamless` (fade instead of a card), `autoWalk` (she walks
-herself), `type: 'art' | 'piano' | 'harmonium'` (a mini-game instead of a
+herself), `type: 'art' | 'piano' | 'harmonium' | 'physics'` (a mini-game instead of a
 playable scene).
 
 ### Building a map
@@ -249,6 +250,10 @@ purpose. **There is no failing anything in this game, only finishing it.**
 - **The harmonium** (Level 4) — the same idea plus bellows: air leaks
   away, and with none left the reeds go quiet and correct keys don't
   count. SPACE pumps.
+- **Projectile motion** (Level 5) — set angle and speed, land three shots
+  on the mark. The range equation printed under the sliders is the real
+  one, and the first problem is deliberately not 45° so that 45° being
+  the maximum is something she finds out.
 
 ---
 

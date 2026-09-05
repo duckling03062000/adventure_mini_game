@@ -70,11 +70,52 @@ function buildAct5a() {
 }
 
 /* --------------------------- SCENE 2 -----------------------------
-   The room, then the balcony. The night does not go in a straight
-   line: she studies, sleeps, wakes half an hour later, does one more
-   problem, sleeps again. Then, outside, Anam.
+   Inside Allen. Down the corridor and into the classroom, where sir
+   is already at the board.
 ------------------------------------------------------------------ */
 function buildAct5b() {
+  const b = makeBuilder();
+
+  b.indoors();
+  b.flat(6);
+  b.prop('noticeboard', b.x - 4);
+  b.flat(5);
+  b.crates(1, 1, 'C');
+  b.flat(5);
+  b.prop('doorway', b.x);
+  b.flat(5);
+  b.block(2, 1, 'C', 'examdesk');
+  b.flat(4);
+  b.block(2, 1, 'C', 'examdesk');
+  b.flat(4);
+  b.checkpoint();
+  b.flat(3);
+  const boardX = b.x;
+  b.prop('physicsclass', boardX);
+  b.flat(12);
+
+  return b.build({
+    goalX: (boardX - 2) * 16,
+    name: 'act5b', theme: 'morning',
+    interiorWall: { top: '#cdd3dc', bottom: '#b3bac6', skirt: '#8f97a5' },
+    tileStyles: CLASS_TILES
+  });
+}
+
+const CLASS_TILES = {
+  '#': { fill: '#9aa2b0', top: '#b0b8c4' },
+  'F': { fill: '#8e96a4', top: '#9aa2b0' },
+  'S': { fill: '#8f97a5', top: '#a5adb9' },
+  'C': { fill: '#c2a884', top: '#d8bd97' }
+};
+
+/* --------------------------- SCENE 3 -----------------------------
+   Out of the classroom and back to the hostel. The night does not go
+   in a straight line: she studies, sleeps, wakes half an hour later,
+   does a problem, sleeps, wakes again, does another. Then morning,
+   and out on the balcony, Anam.
+------------------------------------------------------------------ */
+function buildAct5hostel() {
   const b = makeBuilder();
 
   b.indoors();
@@ -91,7 +132,6 @@ function buildAct5b() {
   b.prop('doorway', b.x);
   b.flat(4);
 
-  /* the balcony */
   b.outdoors();
   b.flat(4);
   b.prop('railing', b.x - 4, { w: 16 });
@@ -102,18 +142,19 @@ function buildAct5b() {
 
   return b.build({
     goalX: (anamX - 2) * 16,
-    name: 'act5b', theme: 'afternoon',
+    name: 'act5hostel', theme: 'afternoon',
     interiorWall: HOSTEL_WALL,
     tileStyles: HOSTEL_TILES,
-    /* the study cycle, fired as she reaches her own desk */
     desk: {
       x: deskX + 2,
       lines: [
         { text: 'Eleven at night. One more chapter.' },
-        { text: 'Half past two. She falls asleep over the page.' },
-        { text: 'Three. Awake again, for no reason at all.' },
-        { text: 'One more problem.' },
-        { text: 'And then, finally, sleep.' }
+        { text: 'Half past twelve. She falls asleep over the page.' },
+        { text: 'One o\u2019clock. Awake again. One problem, then.' },
+        { text: 'Half past one. Asleep.' },
+        { text: 'Two o\u2019clock. Awake again. One more problem.' },
+        { text: 'And then, finally, sleep.' },
+        { text: 'Morning.' }
       ]
     }
   });

@@ -79,6 +79,31 @@
     </div>
   </div>
 
+  <div id="physics" class="artboard hidden">
+    <div class="art-inner">
+      <p class="art-eyebrow">physics class</p>
+      <h2 class="art-title">Projectile motion</h2>
+      <p class="art-sub phys-prompt"></p>
+      <canvas class="phys-canvas"></canvas>
+      <div class="phys-controls">
+        <label class="phys-row phys-row-angle">
+          <span>angle</span>
+          <input class="phys-angle" type="range" min="10" max="80" step="1">
+          <b class="phys-a-val"></b>
+        </label>
+        <label class="phys-row phys-row-speed">
+          <span>speed</span>
+          <input class="phys-speed" type="range" min="10" max="35" step="1">
+          <b class="phys-s-val"></b>
+        </label>
+      </div>
+      <p class="phys-eq">R = v&sup2; &middot; sin(2&theta;) / g &nbsp;=&nbsp;
+         <b class="phys-range"></b></p>
+      <button class="btn-start phys-fire" type="button">LAUNCH</button>
+      <p class="art-count phys-count"></p>
+    </div>
+  </div>
+
   <div id="fade"></div>
 
   <div id="dialogue" class="dialogue hidden">
@@ -115,6 +140,7 @@
 <script src="js/art.js"></script>
 <script src="js/piano.js"></script>
 <script src="js/harmonium.js"></script>
+<script src="js/physics.js"></script>
 <script src="js/game.js"></script>
 </body>
 </html>

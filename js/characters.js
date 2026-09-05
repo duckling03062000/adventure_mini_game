@@ -451,6 +451,32 @@ const ANAM_LEGS_IDLE = [
   '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
 ];
 
+/* The physics sir at Allen. */
+const PHYST_TOP = [
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhaaeaaeaaSh..',
+  '..hhssssssssSh..',
+  '..hhsshhhhssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const PHYST_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
 /* --------------------------------------------------------------- */
 
 const CHARACTERS = {
@@ -582,6 +608,21 @@ const CHARACTERS = {
       h: '#2b2430', H: '#5a4f60',
       d: '#3f8f6a', D: '#2f6f52', p: '#3a3550', f: '#4a3f36',
       a: '#c9a227', b: '#4a3f36', c: '#3f8f6a'
+    }
+  },
+
+  physicsteacher: {
+    id: 'physicsteacher',
+    name: 'Physics sir',
+    era: 'level 5 · Allen',
+    note: 'Chalk, glasses, and a moustache. Draws the parabola without looking.',
+    top: PHYST_TOP,
+    legs: still(PHYST_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#2b2620', H: '#4a423a',
+      d: '#dfe3e8', D: '#c2c7cd', p: '#3a4152', f: '#2a2620',
+      a: '#8a7a3a', b: '#2a2620', c: '#dfe3e8'
     }
   },
 

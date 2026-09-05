@@ -19,6 +19,7 @@ const fadeEl = document.getElementById('fade');
 const artEl = document.getElementById('artboard');
 const pianoEl = document.getElementById('piano');
 const harmEl = document.getElementById('harmonium');
+const physEl = document.getElementById('physics');
 
 /* The real cover, for the moment she is given it. */
 const BOOK_IMG = new Image();
@@ -55,7 +56,7 @@ const SCRIPT = {
   l4done:     [{ who: 'Krishna ji', char: 'krishna', text: 'Level 4 complete.' }],
 
   /* The growing-up interlude */
-  growEnd:    [{ text: 'And she was not little any more.', sweet: true }],
+  growEnd:    [],
 
   /* Level 5 */
   l5guide: [{ who: 'Krishna ji', char: 'krishna',
@@ -204,6 +205,19 @@ const CHAPTERS = [
         music: 'afternoon', hud: 'AYRISHA' },
       { intro: [], outro: [], seamless: true,
         build: buildAct5b, char: 'teen', tuning: TEEN_TUNING,
+        music: 'indoors', hud: 'AYRISHA · class',
+        goalLines: [
+          { who: 'Physics sir', char: 'physicsteacher',
+            text: 'Good morning. Projectile motion \u2014 open your books.' },
+          { who: 'Physics sir', char: 'physicsteacher',
+            text: 'Range equals v squared, sine two theta, over g. That is all it is.' },
+          { who: 'Physics sir', char: 'physicsteacher',
+            text: 'Ayrisha. Come to the board and land three of them.' },
+          { who: 'Ayrisha', char: 'teen', text: 'Yes sir.' }
+        ] },
+      { type: 'physics', intro: [], outro: [], seamless: true, music: 'indoors' },
+      { intro: [], outro: [], seamless: true,
+        build: buildAct5hostel, char: 'teen', tuning: TEEN_TUNING,
         music: 'indoors', hud: 'AYRISHA',
         goalLines: [
           { who: 'Anam', char: 'anam', text: 'You are up too. Every night, na?' },
@@ -215,7 +229,7 @@ const CHAPTERS = [
         ] },
       { intro: [], outro: [], seamless: true,
         build: buildAct5c, char: 'teen', tuning: TEEN_TUNING,
-        music: 'morning', hud: 'AYRISHA · with Anam',
+        music: 'morning', hud: 'AYRISHA \u00b7 with Anam',
         goalLines: [
           { who: 'Anam', char: 'anam', text: 'Two cold coffees, bhaiya. Big ones.' },
           { who: 'Ayrisha', char: 'teen',
@@ -225,7 +239,7 @@ const CHAPTERS = [
         ] },
       { intro: SCRIPT.l5test, outro: [], seamless: true,
         build: buildAct5d, char: 'teen', tuning: TEEN_TUNING,
-        music: 'careful', hud: 'AYRISHA · the test',
+        music: 'careful', hud: 'AYRISHA \u00b7 the test',
         goalLines: [
           { text: 'Three hours. Then the long walk back, and sleep.' }
         ] }
@@ -461,6 +475,7 @@ function showLevelCard(ch) {
   artEl.classList.add('hidden');
   pianoEl.classList.add('hidden');
   harmEl.classList.add('hidden');
+  physEl.classList.add('hidden');
   hudAct.textContent = '';
   hudCollect.textContent = '';
   levelCard.querySelector('.lc-num').textContent = `LEVEL ${ch.number}`;
@@ -513,6 +528,25 @@ function startChapter(i) {
 
 function startCurrentAct(skipIntro) {
   const a = CHAPTERS[chapterIdx].acts[actIdx];
+
+  if (a.type === 'physics') {
+    level = null;
+    player = null;
+    hudAct.textContent = 'AYRISHA · physics class';
+    hudCollect.textContent = '';
+    if (a.music) Sound.playMusic(a.music);
+    artEl.classList.add('hidden');
+    pianoEl.classList.add('hidden');
+    harmEl.classList.add('hidden');
+    physEl.classList.remove('hidden');
+    Physics.build(physEl, () => {
+      physEl.classList.add('hidden');
+      state = 'transition';
+      finishAct();
+    });
+    state = 'art';
+    return;
+  }
 
   if (a.type === 'harmonium') {
     level = null;
@@ -569,6 +603,7 @@ function startCurrentAct(skipIntro) {
   artEl.classList.add('hidden');
   pianoEl.classList.add('hidden');
   harmEl.classList.add('hidden');
+  physEl.classList.add('hidden');
   level = a.build();
   player = new Actor(a.char, 40, GROUND_Y * TILE, a.tuning);
   player.auto = !!a.autoWalk;
@@ -1188,8 +1223,10 @@ const FRONT_PROPS = new Set(['bus', 'auto', 'hospital', 'schoolfront', 'desk',
                              'instrumentwall', 'musicposter', 'piano',
                              'harmoniumspot', 'mallyasign', 'harmonium',
                              'flute', 'degree', 'kotasign', 'allenfront',
+                             'icecream', 'bakery', 'musicschool',
                              'hostelbed', 'studydesk', 'wallclock', 'anamspot',
-                             'coffeestall', 'examdesk', 'herexamdesk']);
+                             'coffeestall', 'examdesk', 'herexamdesk',
+                             'physicsclass']);
 
 function drawProps(layer) {
   const base = GROUND_Y * TILE - cam.y;
@@ -1681,6 +1718,30 @@ function drawProps(layer) {
         break;
       }
 
+      case 'physicsclass': {
+        drawCharacter(ctx, CHARACTERS.physicsteacher, 'idle', 1, sx + 66, base,
+                      Math.sin(performance.now() / 840) > 0 ? 0 : 1);
+        // blackboard with a parabola already on it
+        ctx.fillStyle = '#6b5334'; ctx.fillRect(sx - 6, base - 76, 108, 54);
+        ctx.fillStyle = '#2f3e33'; ctx.fillRect(sx - 2, base - 72, 100, 46);
+        ctx.strokeStyle = 'rgba(240,245,235,.75)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let i = 0; i <= 40; i++) {
+          const u2 = i / 40;
+          const px2 = sx + 6 + u2 * 60;
+          const py2 = base - 34 - Math.sin(u2 * Math.PI) * 26;
+          i ? ctx.lineTo(px2, py2) : ctx.moveTo(px2, py2);
+        }
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(sx + 6, base - 34); ctx.lineTo(sx + 70, base - 34);
+        ctx.moveTo(sx + 6, base - 34); ctx.lineTo(sx + 6, base - 66);
+        ctx.stroke();
+        ctx.fillStyle = '#e8e4d6'; ctx.fillRect(sx - 2, base - 26, 100, 4);
+        break;
+      }
+
       case 'anamspot': {
         drawCharacter(ctx, CHARACTERS.anam, 'idle', 1, sx + 10, base,
                       Math.sin(performance.now() / 780) > 0 ? 0 : 1);
@@ -1725,6 +1786,73 @@ function drawProps(layer) {
           ctx.fillRect(sx - 4, base - 42, w + 8, 28);
           ctx.restore();
         }
+        break;
+      }
+
+      case 'icecream': {
+        // a little parlour with a cone on the sign
+        ctx.fillStyle = '#f2b6c8'; ctx.fillRect(sx - 4, base - 48, 62, 48);
+        ctx.fillStyle = '#d9748f'; ctx.fillRect(sx - 8, base - 55, 70, 8);
+        ctx.fillStyle = '#fdf6ec'; ctx.fillRect(sx + 6, base - 40, 38, 16);
+        ctx.fillStyle = '#c8624b';
+        ctx.font = '5px "Press Start 2P", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('ICE CREAM', sx + 25, base - 30);
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#7c5a3a'; ctx.fillRect(sx + 18, base - 20, 14, 20);
+        // a cone above the door
+        ctx.fillStyle = '#e8b97a';
+        ctx.beginPath();
+        ctx.moveTo(sx + 50, base - 60); ctx.lineTo(sx + 58, base - 60);
+        ctx.lineTo(sx + 54, base - 48); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#f7dce6';
+        ctx.beginPath(); ctx.arc(sx + 54, base - 63, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#a8d8c0';
+        ctx.beginPath(); ctx.arc(sx + 54, base - 68, 3.6, 0, Math.PI * 2); ctx.fill();
+        break;
+      }
+
+      case 'bakery': {
+        ctx.fillStyle = '#e0c9a0'; ctx.fillRect(sx - 4, base - 50, 66, 50);
+        ctx.fillStyle = '#a8763f'; ctx.fillRect(sx - 8, base - 58, 74, 9);
+        // striped awning
+        for (let i = 0; i < 7; i++) {
+          ctx.fillStyle = i % 2 ? '#f4f1ea' : '#c8402f';
+          ctx.fillRect(sx - 6 + i * 10, base - 49, 10, 6);
+        }
+        ctx.fillStyle = '#fdf6ec'; ctx.fillRect(sx + 6, base - 40, 44, 14);
+        ctx.fillStyle = '#7c4f34';
+        ctx.font = '5px "Press Start 2P", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('BAKERY', sx + 28, base - 31);
+        ctx.textAlign = 'left';
+        // puffs and a marble cake in the window
+        ctx.fillStyle = '#d8a860';
+        ctx.fillRect(sx + 8, base - 22, 11, 6);
+        ctx.fillRect(sx + 22, base - 22, 11, 6);
+        ctx.fillStyle = '#f3e6cf'; ctx.fillRect(sx + 38, base - 24, 14, 8);
+        ctx.fillStyle = '#7c4f34';
+        ctx.fillRect(sx + 38, base - 22, 14, 2);
+        ctx.fillRect(sx + 38, base - 19, 14, 2);
+        break;
+      }
+
+      case 'musicschool': {
+        ctx.fillStyle = '#b47a9c'; ctx.fillRect(sx - 4, base - 56, 70, 56);
+        ctx.fillStyle = '#8e5f7c'; ctx.fillRect(sx - 8, base - 63, 78, 9);
+        ctx.fillStyle = 'rgba(255,240,200,.6)';
+        ctx.fillRect(sx + 6, base - 46, 12, 14);
+        ctx.fillRect(sx + 44, base - 46, 12, 14);
+        ctx.fillStyle = '#4a3040'; ctx.fillRect(sx + 22, base - 30, 20, 30);
+        ctx.fillStyle = '#ffdca0'; ctx.fillRect(sx + 24, base - 28, 16, 28);
+        // a clef on the wall
+        ctx.strokeStyle = '#f6e3a8';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(sx + 31, base - 56, 5, 0, Math.PI * 2);
+        ctx.moveTo(sx + 31, base - 61);
+        ctx.lineTo(sx + 34, base - 78);
+        ctx.stroke();
         break;
       }
 

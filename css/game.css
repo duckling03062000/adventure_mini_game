@@ -385,6 +385,38 @@
 .no-air .harm-air-fill{background:#8a3b3b}
 .no-air .harm-key{background:linear-gradient(#d9d4ca,#bdb7ab)}
 
+/* --------------------------- THE PHYSICS --------------------------- */
+.phys-canvas{
+  width:min(100%, 40rem);height:auto;
+  border:3px solid #241b26;border-radius:4px;
+  box-shadow:0 6px 0 rgba(0,0,0,.35);
+  margin:0 auto 1.1rem;display:block;
+}
+.phys-controls{
+  max-width:26rem;margin:0 auto .8rem;
+  display:flex;flex-direction:column;gap:.6rem;
+}
+.phys-row{
+  display:grid;grid-template-columns:4rem 1fr 4.5rem;
+  align-items:center;gap:.7rem;
+}
+.phys-row span{
+  font-family:'Press Start 2P',monospace;font-size:.5rem;color:#a294c4;
+}
+.phys-row b{
+  font-family:'Press Start 2P',monospace;font-size:.5rem;color:#ffcf4d;
+  text-align:right;
+}
+.phys-row input{width:100%;accent-color:#ff9ec4;cursor:pointer}
+.phys-row.locked{opacity:.4}
+.phys-row.locked input{cursor:not-allowed}
+.phys-eq{
+  font-family:'Nunito',sans-serif;font-size:.9rem;color:#c9bde4;
+  margin:0 0 1.1rem;
+}
+.phys-eq b{color:#8fe08f}
+.phys-fire{margin-bottom:1rem}
+
 #note{
   position:absolute;
   left:0;right:0;bottom:42%;
@@ -562,6 +594,38 @@
 .harp-hole.is-next .hh-n{color:#241b26}
 .harp-hole.is-hit{transform:translateY(3px)}
 .harp-hole.is-off{background:#8a3b3b}
+
+/* --------------------------- THE PHYSICS --------------------------- */
+.phys-canvas{
+  width:min(100%, 40rem);height:auto;
+  border:3px solid #241b26;border-radius:4px;
+  box-shadow:0 6px 0 rgba(0,0,0,.35);
+  margin:0 auto 1.1rem;display:block;
+}
+.phys-controls{
+  max-width:26rem;margin:0 auto .8rem;
+  display:flex;flex-direction:column;gap:.6rem;
+}
+.phys-row{
+  display:grid;grid-template-columns:4rem 1fr 4.5rem;
+  align-items:center;gap:.7rem;
+}
+.phys-row span{
+  font-family:'Press Start 2P',monospace;font-size:.5rem;color:#a294c4;
+}
+.phys-row b{
+  font-family:'Press Start 2P',monospace;font-size:.5rem;color:#ffcf4d;
+  text-align:right;
+}
+.phys-row input{width:100%;accent-color:#ff9ec4;cursor:pointer}
+.phys-row.locked{opacity:.4}
+.phys-row.locked input{cursor:not-allowed}
+.phys-eq{
+  font-family:'Nunito',sans-serif;font-size:.9rem;color:#c9bde4;
+  margin:0 0 1.1rem;
+}
+.phys-eq b{color:#8fe08f}
+.phys-fire{margin-bottom:1rem}
 
 #note{
   position:absolute;
