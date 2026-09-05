@@ -34,6 +34,8 @@ canvas{display:block;image-rendering:pixelated}
   align-items:center;
   overflow:hidden;
   isolation:isolate;
+  /* leave room for the ground strip so the title centres above it */
+  padding-bottom:210px;
 }
 .hero-sky{position:absolute;inset:0;width:100%;height:100%;z-index:-2}
 .hero-inner{
@@ -98,10 +100,10 @@ canvas{display:block;image-rendering:pixelated}
 }
 @keyframes float{50%{transform:translateY(6px)}}
 .hero-scene{
-  position:relative;
+  position:absolute;
+  left:0;right:0;bottom:0;
   width:100%;
   height:210px;
-  margin-top:auto;
 }
 
 /* ----------------------------- SECTIONS ---------------------------- */
