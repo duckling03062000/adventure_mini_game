@@ -32,9 +32,10 @@ function buildLevel2() {
   b.checkpoint();
   b.flat(3);
 
-  /* --- the mango tree --- */
+  /* --- the mango tree, and the uncle who owns it --- */
   const treeX = b.x;
   b.mangoTree(8);
+  b.prop('mangouncle', treeX + 1);
   b.flat(6);
 
   b.steps(2);                     // kerb up
@@ -49,9 +50,12 @@ function buildLevel2() {
   b.checkpoint();
   b.flat(3);
 
-  /* --- the school gate: shut until she has all three mangoes --- */
+  /* --- the school gate, and the guard on it --- */
   const gateX = b.x;
   b.prop('schoolgate');
+  // declared after the gate so he draws in front of its bars, and
+  // placed just past where she is stopped so he is facing her
+  b.prop('guardpost', gateX + 1);
   b.flat(8);
   b.prop('flagpole', b.x - 3);
   b.block(2, 1, 'C', 'bench');
@@ -91,8 +95,35 @@ function buildLevel2() {
     goalX: herDesk * 16,
     name: 'level2',
     treeX,
-    gateX,                    // the gate will not open without the mangoes
-    gateNote: 'Not without the mangoes!',
+    /* The uncle starts talking when she comes up to his tree. */
+    uncle: {
+      x: treeX - 4,
+      lines: [
+        { who: 'Uncle', char: 'mangouncle', text: 'Hey Ayrisha, good morning!' },
+        { who: 'Ayrisha', char: 'child', text: 'Good morning, uncle.' },
+        { who: 'Uncle', char: 'mangouncle',
+          text: 'Let\u2019s take these ripe mangoes to school.' },
+        { who: 'Ayrisha', char: 'child', text: 'Sure, I\u2019ll get them.' }
+      ]
+    },
+    /* The guard asks before he opens anything. */
+    gate: {
+      x: gateX,
+      note: 'The mangoes first.',
+      linesYes: [
+        { who: 'Guard', char: 'guard',
+          text: 'Hey Ayrisha, good morning. Did you bring those mangoes?' },
+        { who: 'Ayrisha', char: 'child', text: 'Yes, I got them!' },
+        { who: 'Guard', char: 'guard', text: 'Good girl. In you go.' }
+      ],
+      linesNo: [
+        { who: 'Guard', char: 'guard',
+          text: 'Hey Ayrisha, good morning. Did you bring those mangoes?' },
+        { who: 'Ayrisha', char: 'child', text: 'Not yet\u2026' },
+        { who: 'Guard', char: 'guard',
+          text: 'Then off you go and get them. All three.' }
+      ]
+    },
     theme: 'morning',
     deskRow,
     tileStyles: {

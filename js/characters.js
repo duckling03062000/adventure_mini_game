@@ -338,6 +338,62 @@ const KRISHNA_LEGS_IDLE = [
   '....kkk..kkk....', '...kkkk..kkkk...'
 ];
 
+/* ------------------------- LEVEL 2 · NEIGHBOURS ------------------- */
+/* The uncle who owns the mango tree, and the guard on the school gate. */
+const MUNCLE_TOP = [
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsshhhhssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const MUNCLE_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+const GUARD_TOP = [
+  '....cccccccc....',
+  '...cccccccccc...',
+  '..cccccccccccc..',
+  '..aaaaaaaaaaaa..',
+  '..hhssssssssSh..',
+  '..hhssssssssSh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsshhhhssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '...aaddddddaa...',
+  '...sdddddddds...',
+  '...sdddddddds...',
+  '...sdddddddds...',
+  '...sbbbbbbbbs...',
+  '....dddddddd....',
+  '....pppppppp....'
+];
+const GUARD_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....fff..fff....', '....fff..fff....', '....fff..fff....',
+  '...ffff..ffff...'
+];
+
 /* --------------------------------------------------------------- */
 
 const CHARACTERS = {
@@ -424,6 +480,36 @@ const CHARACTERS = {
       h: '#8f8a84', H: '#aaa49e',
       d: '#dfe3e8', D: '#c2c7cd', p: '#4a4f5c', f: '#2a2620',
       a: '#8a7a3a', b: '#2a2620', c: '#dfe3e8'
+    }
+  },
+
+  mangouncle: {
+    id: 'mangouncle',
+    name: 'Uncle',
+    era: 'level 2 · the mango tree',
+    note: 'Owns the tree, and is happy for the mangoes to go to school.',
+    top: MUNCLE_TOP,
+    legs: still(MUNCLE_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#2b2620', H: '#4a423a',
+      d: '#5d7fa8', D: '#465f80', p: '#4a4136', f: '#2a2620',
+      b: '#2a2620', c: '#5d7fa8'
+    }
+  },
+
+  guard: {
+    id: 'guard',
+    name: 'Guard',
+    era: 'level 2 · the school gate',
+    note: 'Khaki, peaked cap, and a very good memory for who owes him what.',
+    top: GUARD_TOP,
+    legs: still(GUARD_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#241f1a', H: '#3d352c',
+      d: '#a89666', D: '#8a7a4e', p: '#8a7a4e', f: '#2a2620',
+      b: '#3a3026', c: '#8a7a4e', a: '#c9a227'
     }
   },
 

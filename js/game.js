@@ -39,7 +39,6 @@ const SCRIPT = {
                { who: 'Krishna ji', char: 'krishna', text: 'Level 1 complete.' }],
 
   /* Level 2 */
-  l2mango:    [{ text: 'Three ripe mangoes up there. Take all of them.' }],
   l2done1:    [{ text: 'You made it to the class!' }],
   l2done:     [{ text: 'Have a great day at school.', sweet: true }],
 
@@ -90,12 +89,14 @@ const CHAPTERS = [
   {
     id: 'level3',
     number: 3,
-    title: 'Let\u2019s go to art tutor!',
+    title: 'Let\u2019s go see our art tutor',
     subtitle: '',
     blurb: '',
-    objectives: ['Let\u2019s do art.'],   // nothing here gives away what she gets
+    objectives: [],          // nothing here gives away what she gets
     acts: [
-      { intro: [], outro: [], seamless: true,
+      { intro: [{ who: 'Krishna ji', char: 'krishna',
+                  text: 'Let\u2019s catch up with the art tutor.' }],
+        outro: [], seamless: true,
         build: buildAct3a, char: 'child', tuning: CHILD_TUNING,
         music: 'afternoon', hud: 'AYRISHA' },
       { intro: [], outro: [], seamless: true,
@@ -323,9 +324,6 @@ function startCurrentAct(skipIntro) {
 
   artEl.classList.add('hidden');
   level = a.build();
-  if (level.meta.treeX !== undefined) {
-    level.meta.triggers = [{ x: level.meta.treeX - 4, lines: SCRIPT.l2mango }];
-  }
   player = new Actor(a.char, 40, GROUND_Y * TILE, a.tuning);
   spawnX = player.x;
   cam = new Camera(level);
@@ -819,7 +817,7 @@ const FRONT_PROPS = new Set(['bus', 'auto', 'hospital', 'schoolfront', 'desk',
                              'noticeboard', 'streetsign', 'mangotree',
                              'housefront', 'housegate', 'deskpc', 'bookshelf',
                              'painting', 'doorway', 'railing', 'plantpot',
-                             'easel', 'rug']);
+                             'easel', 'rug', 'mangouncle', 'guardpost']);
 
 function drawProps(layer) {
   const base = GROUND_Y * TILE - cam.y;
@@ -946,7 +944,7 @@ function drawProps(layer) {
       }
 
       case 'schoolgate': {
-        const open = allCollected();
+        const open = !!(level.meta.gate && level.meta.gate.opened);
         ctx.fillStyle = '#7a8493';
         ctx.fillRect(sx - 2, base - 52, 8, 52);
         ctx.fillRect(sx + 42, base - 52, 8, 52);
@@ -984,6 +982,22 @@ function drawProps(layer) {
         ctx.fillStyle = '#5b4a3a'; ctx.fillRect(dx - 2, base - 46, 36, 46);
         ctx.fillStyle = '#f6e8c8'; ctx.fillRect(dx, base - 43, 32, 43);
         ctx.fillStyle = '#c8b48c'; ctx.fillRect(dx + 15, base - 43, 2, 43);
+        break;
+      }
+
+      case 'mangouncle':
+        drawCharacter(ctx, CHARACTERS.mangouncle, 'idle', 1, sx + 8, base,
+                      Math.sin(performance.now() / 850) > 0 ? 0 : 1);
+        break;
+
+      case 'guardpost': {
+        drawCharacter(ctx, CHARACTERS.guard, 'idle', 1, sx + 8, base,
+                      Math.sin(performance.now() / 900) > 0 ? 0 : 1);
+        // his stool, off to one side, so the post looks lived in
+        ctx.fillStyle = '#6b5334';
+        ctx.fillRect(sx + 20, base - 9, 12, 3);
+        ctx.fillRect(sx + 21, base - 6, 2, 6);
+        ctx.fillRect(sx + 29, base - 6, 2, 6);
         break;
       }
 
@@ -1296,15 +1310,32 @@ function allCollected() {
   return list.every(p => p.got);
 }
 
-/* The school gate stays shut until the mangoes are in. Enforced as a
-   soft wall so she is stopped rather than teleported. */
+/* The guard on the gate. He asks, she answers, and only then does it
+   open — so being turned away is a conversation, not a silent wall. */
 function enforceGate() {
-  if (level.meta.gateX === undefined || allCollected()) return;
-  const limit = level.meta.gateX * TILE + 8;
+  const gate = level.meta.gate;
+  if (!gate || gate.opened) return;
+
+  const limit = gate.x * TILE + 8;
   if (player.x > limit) {
     player.x = limit;
     if (player.vx > 0) player.vx = 0;
-    showNote(level.meta.gateNote || 'Not yet!');
+  }
+  if (Dialogue.active || player.x < limit - 46) return;
+
+  if (allCollected()) {
+    if (!gate.askedYes) {
+      gate.askedYes = true;
+      Dialogue.start(gate.linesYes, () => {
+        gate.opened = true;
+        Sound.play('pickup');
+      });
+    }
+  } else if (!gate.askedNo) {
+    gate.askedNo = true;
+    Dialogue.start(gate.linesNo);
+  } else {
+    showNote(gate.note || 'Not yet.');
   }
 }
 
@@ -1388,7 +1419,15 @@ function update(dt) {
 
   // one-shot lines that fire when she walks into somewhere
   for (const tr of (level.meta.triggers || [])) {
-    if (!tr.done && player.x > tr.x * TILE) { tr.done = true; narrate(tr.lines); }
+    if (!tr.done && player.x > tr.x * TILE) { tr.done = true; say(tr.lines); }
+  }
+
+  // the uncle at the mango tree starts talking as she comes up
+  const unc = level.meta.uncle;
+  if (unc && !unc.done && player.x > unc.x * TILE) {
+    unc.done = true;
+    Dialogue.start(unc.lines);
+    return;
   }
 
   // someone standing in the way until she says hello
