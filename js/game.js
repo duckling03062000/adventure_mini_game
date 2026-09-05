@@ -18,6 +18,7 @@ const levelCard = document.getElementById('levelcard');
 const fadeEl = document.getElementById('fade');
 const artEl = document.getElementById('artboard');
 const pianoEl = document.getElementById('piano');
+const harpEl = document.getElementById('harmonica');
 
 /* The real cover, for the moment she is given it. */
 const BOOK_IMG = new Image();
@@ -144,9 +145,25 @@ const CHAPTERS = [
             text: 'Okay, let\u2019s start with our piano lessons.' },
           { who: 'Ayrisha', char: 'child', text: 'Yes, let\u2019s go!' }
         ] },
-      { type: 'piano', intro: [], outro: [], seamless: true, music: 'indoors' }
+      { type: 'piano', intro: [], outro: [], seamless: true, music: 'indoors' },
+      { intro: [], outro: [], seamless: true,
+        build: buildAct4c, char: 'child', tuning: CHILD_TUNING,
+        music: 'indoors', hud: 'AYRISHA',
+        goalLines: [
+          { who: 'Teacher', char: 'musicteacher', text: 'Everyone, bow down.' },
+          /* she bows here, and does not stop in time */
+          { who: 'Ayrisha', char: 'child', text: 'Namaste, teacher!',
+            lock: true, wait: 3000, on() { startPlayerBow(); } },
+          { who: 'Ayrisha', char: 'child',
+            text: 'Oh! I hit the ground when I bowed down.' },
+          { who: 'Teacher', char: 'musicteacher',
+            text: 'So cutely you bow down! Gently next time.' },
+          { who: 'Teacher', char: 'musicteacher',
+            text: 'Now \u2014 let us start the harmonica.' }
+        ] },
+      { type: 'harmonica', intro: [], outro: [], seamless: true, music: 'indoors' }
     ],
-    ending: 'bow',
+    ending: 'musicdone',
     close: SCRIPT.l4done
   }
 ];
@@ -163,13 +180,58 @@ let ending = null;
 let endingT = 0;
 let endingDone = false;
 let bookGiven = false;
-let bowT = 0;
-let bowing = false;
-let bowHit = false;
-let bowDone = false;
+let musicDone = false;
 let bookT = 0;
 let skyline = [];
 let rain = [];
+
+/* ============================ THE BOW =============================
+   She folds forward from the feet and puts her head in the floor. It
+   happens in the room she is standing in rather than in a cutaway.
+------------------------------------------------------------------ */
+const pbow = { on: false, t: 0, hit: false };
+
+function startPlayerBow() {
+  pbow.on = true;
+  pbow.t = 0;
+  pbow.hit = false;
+}
+
+function drawPlayer() {
+  if (!pbow.on) { drawActor(ctx, player, cam); return; }
+
+  pbow.t += 1 / 60;
+  const bend = Math.min(1, pbow.t / 0.5);
+  const back = pbow.t > 2.0 ? Math.min(1, (pbow.t - 2.0) / 0.6) : 0;
+  const angle = (bend - back) * 1.42;      // ~81 degrees, forward
+
+  const sx = Math.round(player.x - cam.x);
+  const sy = Math.round(player.y - cam.y);
+  ctx.save();
+  ctx.translate(sx, sy);
+  ctx.rotate(angle);
+  drawCharacter(ctx, player.char, 'idle', 1, 0, 0, 0);
+  ctx.restore();
+
+  if (pbow.t > 0.5 && pbow.t < 1.4) {
+    if (!pbow.hit) { pbow.hit = true; Sound.play('land'); }
+    const p = Math.min(1, (pbow.t - 0.5) / 0.6);
+    ctx.save();
+    ctx.globalAlpha = 1 - p;
+    ctx.strokeStyle = '#ffcf4d';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 6; i++) {
+      const a = -0.3 - i * 0.45;
+      const r0 = 7 + p * 8, r1 = 16 + p * 14;
+      ctx.beginPath();
+      ctx.moveTo(sx + 24 + Math.cos(a) * r0, sy - 7 + Math.sin(a) * r0);
+      ctx.lineTo(sx + 24 + Math.cos(a) * r1, sy - 7 + Math.sin(a) * r1);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  if (back >= 1) pbow.on = false;
+}
 
 /* ============================== GUIDE =============================
    Krishna ji appears at the start of a level to say what it is about.
@@ -302,6 +364,7 @@ function showLevelCard(ch) {
   state = 'levelcard';
   artEl.classList.add('hidden');
   pianoEl.classList.add('hidden');
+  harpEl.classList.add('hidden');
   hudAct.textContent = '';
   hudCollect.textContent = '';
   levelCard.querySelector('.lc-num').textContent = `LEVEL ${ch.number}`;
@@ -338,12 +401,31 @@ function startChapter(i) {
   level = null;
   guide.on = false;
   guide.fade = 0;
+  pbow.on = false;
   Sound.stopMusic();
   showLevelCard(CHAPTERS[i]);
 }
 
 function startCurrentAct(skipIntro) {
   const a = CHAPTERS[chapterIdx].acts[actIdx];
+
+  if (a.type === 'harmonica') {
+    level = null;
+    player = null;
+    hudAct.textContent = 'AYRISHA · harmonica';
+    hudCollect.textContent = '';
+    if (a.music) Sound.playMusic(a.music);
+    artEl.classList.add('hidden');
+    pianoEl.classList.add('hidden');
+    harpEl.classList.remove('hidden');
+    Harmonica.build(harpEl, () => {
+      harpEl.classList.add('hidden');
+      state = 'transition';
+      finishAct();
+    });
+    state = 'art';
+    return;
+  }
 
   if (a.type === 'piano') {
     level = null;
@@ -352,6 +434,7 @@ function startCurrentAct(skipIntro) {
     hudCollect.textContent = '';
     if (a.music) Sound.playMusic(a.music);
     artEl.classList.add('hidden');
+    harpEl.classList.add('hidden');
     pianoEl.classList.remove('hidden');
     Piano.build(pianoEl, () => {
       pianoEl.classList.add('hidden');
@@ -380,6 +463,7 @@ function startCurrentAct(skipIntro) {
 
   artEl.classList.add('hidden');
   pianoEl.classList.add('hidden');
+  harpEl.classList.add('hidden');
   level = a.build();
   player = new Actor(a.char, 40, GROUND_Y * TILE, a.tuning);
   spawnX = player.x;
@@ -397,7 +481,7 @@ function finishAct() {
   const ch = CHAPTERS[chapterIdx];
   const a = ch.acts[actIdx];
   const last = actIdx === ch.acts.length - 1;
-  if (a.type !== 'art' && a.type !== 'piano') Sound.play('clear');
+  if (!a.type) Sound.play('clear');
 
   const next = last ? startEnding : () => { actIdx++; startCurrentAct(); };
   // speak the closing line over the scene it belongs to, then fade
@@ -405,8 +489,7 @@ function finishAct() {
 }
 
 function startEnding() {
-  bowDone = false;
-  bowHit = false;
+  musicDone = false;
   const ch = CHAPTERS[chapterIdx];
   ending = ENDINGS[ch.ending];
   endingT = 0;
@@ -638,33 +721,26 @@ const ENDINGS = {
     }
   },
 
-  /* ----------------------- level 4: the bow ----------------------- */
-  bow: {
+  /* --------------------- level 4: the music room ------------------ */
+  musicdone: {
     music: 'lullaby',
     enter() {
-      bowT = 0;
-      bowing = false;
+      musicDone = false;
       Dialogue.start([
         { who: 'Teacher', char: 'musicteacher',
           text: 'Oh wow, you did so great. You will make a very good musician!' },
-        /* she bows on this line, and bumps her head doing it */
-        { who: 'Ayrisha', char: 'child', text: 'Thank you!',
-          lock: true, wait: 2600,
-          on() { bowing = true; bowT = 0; } },
-        { who: 'Teacher', char: 'musicteacher', text: 'So cutely you bow down!' },
-        { who: 'Ayrisha', char: 'child', text: 'Yeah!' }
-      ], () => { bowDone = true; });
+        { who: 'Ayrisha', char: 'child', text: 'Thank you, teacher!' }
+      ], () => { musicDone = true; });
     },
-    done() { return bowDone; },
+    done() { return musicDone; },
     draw(t) {
-      const FLOOR = 132;   // clear of the dialogue box, so the bump shows
+      const FLOOR = 148;
       const g = ctx.createLinearGradient(0, 0, 0, VIEW_H);
       g.addColorStop(0, '#c8b6d4');
       g.addColorStop(1, '#a692b4');
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, VIEW_W, VIEW_H);
 
-      // window and a poster, so the room is somewhere
       ctx.fillStyle = '#8b769c'; ctx.fillRect(24, 26, 60, 46);
       ctx.fillStyle = '#bfe3ff'; ctx.fillRect(28, 30, 52, 38);
       ctx.fillStyle = '#8b769c';
@@ -674,49 +750,26 @@ const ENDINGS = {
       ctx.fillStyle = '#3f8f6a';
       for (let i = 0; i < 5; i++) ctx.fillRect(239 + i * 7, 40, 3, 14);
 
-      // floor
       ctx.fillStyle = '#7d6a8c'; ctx.fillRect(0, FLOOR, VIEW_W, VIEW_H - FLOOR);
       ctx.fillStyle = '#8e7a9c'; ctx.fillRect(0, FLOOR, VIEW_W, 3);
 
-      // the upright piano she has just been playing
       drawUpright(ctx, 96, FLOOR);
 
-      const bobT = Math.sin(t * 2) > 0 ? 0 : 1;
-      drawCharacter(ctx, CHARACTERS.musicteacher, 'idle', 1, 74, FLOOR, bobT);
+      const bob = Math.sin(t * 2) > 0 ? 0 : 1;
+      drawCharacter(ctx, CHARACTERS.musicteacher, 'idle', 1, 74, FLOOR, bob);
+      drawCharacter(ctx, CHARACTERS.child, 'idle', 1, 186, FLOOR, bob);
 
-      // her bow: she folds forward from the feet, and does not stop in time
-      if (bowing) bowT += 1 / 60;
-      // down in half a second, held while she realises, then back up
-      const bend = bowing ? Math.min(1, bowT / 0.5) : 0;
-      const back = bowing && bowT > 1.9 ? Math.min(1, (bowT - 1.9) / 0.6) : 0;
-      const angle = (bend - back) * 1.42;   // ~81 degrees over
-
-      ctx.save();
-      ctx.translate(196, FLOOR);
-      ctx.rotate(-angle);
-      drawCharacter(ctx, CHARACTERS.child, 'idle', 1, 0, 0, bowing ? 0 : bobT);
-      ctx.restore();
-
-      // the bump
-      const bump = bowing && bowT > 0.5 && bowT < 1.3;
-      if (bump) {
-        if (!bowHit) { bowHit = true; Sound.play('land'); }
-        const p = Math.min(1, (bowT - 0.5) / 0.6);
-        ctx.save();
-        ctx.globalAlpha = 1 - p;
-        ctx.strokeStyle = '#ffcf4d';
-        ctx.lineWidth = 2;
-        for (let i = 0; i < 6; i++) {
-          const a = -0.25 - i * 0.45;
-          const r0 = 7 + p * 8, r1 = 16 + p * 14;
-          ctx.beginPath();
-          // where her head actually ends up once she is folded over
-          ctx.moveTo(171 + Math.cos(a) * r0, FLOOR - 7 + Math.sin(a) * r0);
-          ctx.lineTo(171 + Math.cos(a) * r1, FLOOR - 7 + Math.sin(a) * r1);
-          ctx.stroke();
-        }
-        ctx.restore();
+      // a few notes hanging in the air after the lesson
+      for (let i = 0; i < 8; i++) {
+        const a = t * 0.6 + i * 0.8;
+        ctx.globalAlpha = 0.3 + 0.3 * Math.sin(t * 2 + i);
+        ctx.fillStyle = '#ffe9a8';
+        const nx = Math.round(150 + Math.cos(a) * (26 + (i % 3) * 10));
+        const ny = Math.round(FLOOR - 58 + Math.sin(a * 1.3) * 16);
+        ctx.fillRect(nx, ny, 2, 5);
+        ctx.fillRect(nx - 2, ny + 5, 4, 2);
       }
+      ctx.globalAlpha = 1;
     }
   },
 
@@ -965,7 +1018,8 @@ const FRONT_PROPS = new Set(['bus', 'auto', 'hospital', 'schoolfront', 'desk',
                              'housefront', 'housegate', 'deskpc', 'bookshelf',
                              'painting', 'doorway', 'railing', 'plantpot',
                              'easel', 'rug', 'mangouncle', 'guardpost', 'tv', 'musicfront', 'musicgate',
-                             'instrumentwall', 'musicposter', 'piano']);
+                             'instrumentwall', 'musicposter', 'piano',
+                             'harmonicaspot']);
 
 function drawProps(layer) {
   const base = GROUND_Y * TILE - cam.y;
@@ -1396,6 +1450,30 @@ function drawProps(layer) {
         break;
       }
 
+      case 'harmonicaspot': {
+        drawCharacter(ctx, CHARACTERS.musicteacher, 'idle', 1, sx + 40, base,
+                      Math.sin(performance.now() / 820) > 0 ? 0 : 1);
+        // a low table with harmonicas laid out on it
+        ctx.fillStyle = '#6b4a33'; ctx.fillRect(sx - 26, base - 15, 44, 4);
+        ctx.fillStyle = '#573b28';
+        ctx.fillRect(sx - 23, base - 11, 4, 11);
+        ctx.fillRect(sx + 11, base - 11, 4, 11);
+        for (let i = 0; i < 3; i++) {
+          const hx = sx - 22 + i * 14;
+          ctx.fillStyle = '#c9d0dc'; ctx.fillRect(hx, base - 19, 11, 4);
+          ctx.fillStyle = '#2b2f3a';
+          for (let k = 0; k < 4; k++) ctx.fillRect(hx + 1 + k * 2.6, base - 18, 1, 2);
+        }
+        // a music stand beside her
+        ctx.fillStyle = '#8e97a8';
+        ctx.fillRect(sx + 62, base - 40, 2, 40);
+        ctx.fillRect(sx + 56, base - 2, 14, 2);
+        ctx.fillStyle = '#f7f2e2'; ctx.fillRect(sx + 52, base - 52, 22, 14);
+        ctx.fillStyle = '#241b26';
+        for (let i = 0; i < 3; i++) ctx.fillRect(sx + 55, base - 48 + i * 4, 16, 1);
+        break;
+      }
+
       case 'musicposter': {
         ctx.fillStyle = '#5f4128'; ctx.fillRect(sx, base - 58, 42, 30);
         ctx.fillStyle = '#f7f2e2'; ctx.fillRect(sx + 3, base - 55, 36, 24);
@@ -1820,7 +1898,7 @@ function render() {
   drawTiles(ctx, level, cam);
   drawProps('front');
   drawPickups();
-  drawActor(ctx, player, cam);
+  drawPlayer();
   drawGuide(1);
   drawRain(1);
 

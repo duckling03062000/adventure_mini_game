@@ -98,11 +98,43 @@ function buildAct4b() {
     name: 'act4b',
     theme: 'morning',
     interiorWall: { top: '#c8b6d4', bottom: '#ad97bd', skirt: '#8b769c' },
-    tileStyles: {
-      '#': { fill: '#8e7a9c', top: '#a692b4' },
-      'F': { fill: '#7d6a8c', top: '#8e7a9c' },
-      'S': { fill: '#8b769c', top: '#a08cb0' },
-      'C': { fill: '#c2a884', top: '#d8bd97' }
-    }
+    tileStyles: MUSIC_TILES
+  });
+}
+
+const MUSIC_TILES = {
+  '#': { fill: '#8e7a9c', top: '#a692b4' },
+  'F': { fill: '#7d6a8c', top: '#8e7a9c' },
+  'S': { fill: '#8b769c', top: '#a08cb0' },
+  'C': { fill: '#c2a884', top: '#d8bd97' }
+};
+
+/* --------------------------- SCENE 3 -----------------------------
+   Piano done, she carries on down the room to where the harmonicas
+   are. The class bows before it starts, and she overdoes it.
+------------------------------------------------------------------ */
+function buildAct4c() {
+  const b = makeBuilder();
+
+  b.indoors();
+  b.flat(5);
+  b.prop('piano', 1);               // the one she has just finished at
+  b.flat(6);
+  b.prop('musicposter', b.x - 4);
+  b.flat(5);
+  b.crates(1, 1, 'C');
+  b.flat(5);
+  b.prop('instrumentwall', b.x - 4);
+  b.flat(6);
+  const spotX = b.x;
+  b.prop('harmonicaspot', spotX);
+  b.flat(10);
+
+  return b.build({
+    goalX: (spotX - 2) * 16,
+    name: 'act4c',
+    theme: 'morning',
+    interiorWall: { top: '#c8b6d4', bottom: '#ad97bd', skirt: '#8b769c' },
+    tileStyles: MUSIC_TILES
   });
 }
