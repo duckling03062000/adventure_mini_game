@@ -136,6 +136,31 @@ const Sound = (() => {
       const t = ctx.currentTime;
       tone(n('A3'), t, 0.14, { type: 'sawtooth', gain: 0.38, slideTo: n('D3') });
     },
+    /* the hostel alarm clock: a hard little two-tone, six times over */
+    alarm() {
+      const t = ctx.currentTime;
+      for (let i = 0; i < 6; i++) {
+        const a = t + i * 0.16;
+        tone(n('A5'), a, 0.07, { type: 'square', gain: 0.42 });
+        tone(n('E5'), a + 0.08, 0.07, { type: 'square', gain: 0.42 });
+      }
+    },
+    /* three knuckles on a hostel door */
+    knock() {
+      const t = ctx.currentTime;
+      for (let i = 0; i < 3; i++) {
+        noise(t + i * 0.17, 0.06, { gain: 0.4, freq: 220, type: 'lowpass' });
+        tone(n('A2'), t + i * 0.17, 0.07, { type: 'triangle', gain: 0.24 });
+      }
+    },
+    /* a train pulling out */
+    train() {
+      const t = ctx.currentTime;
+      tone(n('D3'), t, 0.9, { type: 'sawtooth', gain: 0.3, release: 0.4 });
+      tone(n('A3'), t, 0.9, { type: 'triangle', gain: 0.22, release: 0.4 });
+      for (let i = 0; i < 8; i++)
+        noise(t + 0.25 + i * 0.16, 0.1, { gain: 0.16, freq: 620, type: 'bandpass', q: 1.1 });
+    },
     checkpoint() {
       const t = ctx.currentTime;
       ['D5', 'F#5', 'A5'].forEach((nn, i) =>

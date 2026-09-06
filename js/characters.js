@@ -477,6 +477,386 @@ const PHYST_LEGS_IDLE = [
   '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
 ];
 
+/* The man at the ice cream parlour. Paper cap, striped shirt. */
+const ICEMAN_TOP = [
+  '....aaaaaaaa....',
+  '...aaaaaaaaaa...',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdddddds....',
+  '....sDDDDDDs....',
+  '....sdddddds....',
+  '....sDDDDDDs....',
+  '....sdddddds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const ICEMAN_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* The man at the bakery. Tall white hat, apron, moustache. */
+const BAKER_TOP = [
+  '....gggggggg....',
+  '....gggggggg....',
+  '...gggggggggg...',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsshhhhssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdggggds....',
+  '....sdggggds....',
+  '....sdggggds....',
+  '....sdggggds....',
+  '.....gggggg.....',
+  '.....pppppp.....'
+];
+const BAKER_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* The man at the cold coffee stall in Friends Bazar. */
+const COFFEEMAN_TOP = [
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsshhhhssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '....ggdddddd....',
+  '...sggdddddds...',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const COFFEEMAN_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* Shantanu. College, and then most of the rest of it. */
+const SHANTANU_TOP = [
+  '....hhhhhhhh....',
+  '...hhhhhhhhhh...',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sddDDdds....',
+  '....sddDDdds....',
+  '....sddDDdds....',
+  '....sddDDdds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const SHANTANU_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* Akash. Glasses, and never without a cap. */
+const AKASH_TOP = [
+  '...aaaaaaaaaa...',
+  '..aaaaaaaaaaaa..',
+  '..aaaaaaaaaaaaa.',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhaeeaaeeaSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const AKASH_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* The girl behind the counter at the fried chicken place. */
+const COUNTER_TOP = [
+  '....aaaaaaaa....',
+  '...ahhhhhhhha...',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '..hhssssssssSh..',
+  '..hhhhssssHhhh..',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdgggggd....',
+  '....sdgggggd....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '.....dddddd.....',
+  '.....pppppp.....',
+  '.....pppppp.....'
+];
+const COUNTER_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* Behind the counter in the college cafeteria. */
+const CAFEMAN_TOP = [
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsshhhhssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdgggggd....',
+  '....sdgggggd....',
+  '....sdgggggd....',
+  '....sdddddds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const CAFEMAN_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* Two of the people from the year, met at last in a corridor. */
+const CLASSMATE_A_TOP = [
+  '....hhhhhhhh....',
+  '...hhhhhhhhhh...',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '..hhssssssssSh..',
+  '..hhhhssssHhhh..',
+  '...hhssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const CLASSMATE_B_TOP = [
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdddddds....',
+  '....sdDDDDds....',
+  '....sdddddds....',
+  '....sdDDDDds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const CLASSMATE_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* Her friend from the Moodle project. He is not named, because
+   nobody remembers writing his name down. */
+const MFRIEND_TOP = [
+  '....hhhhhhhh....',
+  '...hhhhhhhhhh...',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sdddgddds...',
+  '....sdddgddds...',
+  '....sdddgddds...',
+  '....sdddgddds...',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const MFRIEND_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* The head of the incubator cell. Grey, glasses, and a jacket. */
+const HEAD_TOP = [
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhaeeaaeeaSh..',
+  '..hhssssssssSh..',
+  '..hhsshhhhssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '....DDdggdDD....',
+  '...sDDdggdDDs...',
+  '...sDDdggdDDs...',
+  '...sDDdggdDDs...',
+  '...sDDdggdDDs...',
+  '....DDDggDDD....',
+  '.....pppppp.....'
+];
+const HEAD_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* The man at the juice corner outside the college gate. */
+const JUICEMAN_TOP = [
+  '.....hhhhhh.....',
+  '...hhhhhhhhhh...',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsshhhhssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '....gddddddg....',
+  '...sgddddddgs...',
+  '....sdddddds....',
+  '....sdddddds....',
+  '....sdddddds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const JUICEMAN_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* The one who was sitting with them in the back row. Not named,
+   because what he was is a good friend. */
+const GOODFRIEND_TOP = [
+  '...hhhhhhhhhh...',
+  '..hhhhhhhhhhhh..',
+  '..hhhhhhhhhhhh..',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhseesseesSh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '...hhssssssSh...',
+  '....hssssssh....',
+  '......ssss......',
+  '.....dddddd.....',
+  '....sddDDdds....',
+  '....sdddddds....',
+  '....sddDDdds....',
+  '....sdddddds....',
+  '.....dddddd.....',
+  '.....pppppp.....'
+];
+const GOODFRIEND_LEGS_IDLE = [
+  '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+  '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+];
+
+/* Noida, and the first day of the job. Same person, same hair. A bucket
+   hat, a crop top, jeans, and a pair of sunglasses she does not take off
+   for anybody, including the man selling the coffee. */
+const NOIDA_TOP = [
+  '....aaaaaaaa....',
+  '....aaaaaaaa....',
+  '..aaaaaaaaaaaa..',
+  '.AAAAAAAAAAAAAA.',
+  '..hhssssssssHh..',
+  '..hhssssssssHh..',
+  '..hhGGGGGGGGhh..',
+  '..hhwggGGggwhh..',
+  '..hhssssssssSh..',
+  '..hhsssmmsssSh..',
+  '..hhssssssssSh..',
+  '...hhssssssSh...',
+  '..hh..ssss..hh..',
+  '..hh.dddddd.hh..',
+  '..hhsddddddshh..',
+  '..hhsddddddshh..',
+  '...hsddddddsh...',
+  '....ssssssss....',
+  '.....pppppp.....',
+  '....pppppppp....',
+  '....pppppppp....',
+  '.....pppppp.....'
+];
+const NOIDA_LEGS = {
+  idle: [
+    '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....', '....ppp..ppp....',
+    '....ppp..ppp....', '....fff..fff....', '...ffff..ffff...'
+  ],
+  stride: [
+    '...ppp..ppp.....', '..ppp....ppp....', '..ppp....ppp....', '..ppp....ppp....',
+    '..ppp....ppp....', '..fff....ff.....', '.ffff....fff....'
+  ],
+  pass: [
+    '....ppp.ppp.....', '....ppp.ppp.....', '....ppp.ppp.....', '.....pp.pp......',
+    '.....pp.pp......', '.....ff.ff......', '....fff.fff.....'
+  ],
+  jump: [
+    '...ppp....ppp...', '..ppp......ppp..', '..ppp......pp...', '..ppp......ppp..',
+    '.ppp.......ppp..', '.fff.......fff..', 'ffff.......ffff.'
+  ]
+};
+
 /* --------------------------------------------------------------- */
 
 const CHARACTERS = {
@@ -637,6 +1017,213 @@ const CHARACTERS = {
       ...BASE,
       d: '#d1663f', D: '#ad4f2f', p: '#3f4a63', f: '#2f2a33',
       b: '#2f2a33', c: '#d1663f', a: '#e8b93c'
+    }
+  },
+
+  icemanshop: {
+    id: 'icemanshop',
+    name: 'Ice cream man',
+    era: 'growing up \u00b7 the parlour on the way home',
+    note: 'Paper cap, striped shirt, and never has to ask her twice.',
+    top: ICEMAN_TOP,
+    legs: still(ICEMAN_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#2b2620', H: '#4a423a',
+      a: '#f4f7fa', d: '#eef2f6', D: '#f2b6c8',
+      p: '#3a4152', f: '#2a2620'
+    }
+  },
+
+  baker: {
+    id: 'baker',
+    name: 'Baker',
+    era: 'growing up \u00b7 the bakery two doors down',
+    note: 'Tall white hat and an apron with the afternoon\u2019s flour still on it.',
+    top: BAKER_TOP,
+    legs: still(BAKER_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#241f1a', H: '#3d352c',
+      g: '#f4f1ea', d: '#c8402f', D: '#a53223',
+      p: '#4a4136', f: '#2a2620'
+    }
+  },
+
+  coffeeman: {
+    id: 'coffeeman',
+    name: 'Cold coffee man',
+    era: 'level 5 \u00b7 Friends Bazar',
+    note: 'Moustache, and a towel over one shoulder that never comes off.',
+    top: COFFEEMAN_TOP,
+    legs: still(COFFEEMAN_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#241f1a', H: '#3d352c',
+      d: '#5f8f7a', D: '#487060', g: '#e8e2d2',
+      p: '#3a3a44', f: '#2a2620'
+    }
+  },
+
+  shantanu: {
+    id: 'shantanu',
+    name: 'Shantanu',
+    era: 'college \u00b7 and most of what came after',
+    note: 'Met in the first week. Orders the biryani, every time.',
+    top: SHANTANU_TOP,
+    legs: still(SHANTANU_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#231d19', H: '#3d332b',
+      d: '#3f6f9c', D: '#2f5578', p: '#33384a', f: '#241f1a'
+    }
+  },
+
+  akash: {
+    id: 'akash',
+    name: 'Akash',
+    era: 'college \u00b7 the incubator cell',
+    note: 'Cap on backwards, glasses, and the good chair in the lab.',
+    top: AKASH_TOP,
+    legs: still(AKASH_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#241f1a', H: '#3d352c',
+      a: '#c8402f', d: '#4f7a52', D: '#3c6040',
+      p: '#3a3f4e', f: '#2a2620'
+    }
+  },
+
+  counter: {
+    id: 'counter',
+    name: 'At the counter',
+    era: 'college \u00b7 the fried chicken place',
+    note: 'Red cap, red apron, and asks what you want before you reach the till.',
+    top: COUNTER_TOP,
+    legs: still(COUNTER_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#2b2620', H: '#4a423a',
+      a: '#c8402f', d: '#c8402f', D: '#a33225', g: '#f4f1ea',
+      p: '#3a3a44', f: '#2a2620'
+    }
+  },
+
+  cafeman: {
+    id: 'cafeman',
+    name: 'Cafeteria',
+    era: 'college \u00b7 the cafeteria',
+    note: 'Keeps the chocolate cake at the near end of the counter on purpose.',
+    top: CAFEMAN_TOP,
+    legs: still(CAFEMAN_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#2b2620', H: '#4a423a',
+      d: '#4a5f7a', D: '#374a60', g: '#e8e2d2',
+      p: '#3a3a44', f: '#2a2620'
+    }
+  },
+
+  classmateA: {
+    id: 'classmateA',
+    name: 'Someone from the year',
+    era: 'college \u00b7 the first morning',
+    note: 'A face off a screen, with the rest of a person attached to it.',
+    top: CLASSMATE_A_TOP,
+    legs: still(CLASSMATE_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#2e2321', H: '#4a3a34',
+      d: '#c2699a', D: '#a04d7c', p: '#3a4152', f: '#2a2620'
+    }
+  },
+
+  classmateB: {
+    id: 'classmateB',
+    name: 'Someone else from the year',
+    era: 'college \u00b7 the first morning',
+    note: 'Striped shirt. Waved at absolutely everybody that day.',
+    top: CLASSMATE_B_TOP,
+    legs: still(CLASSMATE_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#241f1a', H: '#3d352c',
+      d: '#e0dbcf', D: '#4f6f9c', p: '#3a3a44', f: '#2a2620'
+    }
+  },
+
+  moodlefriend: {
+    id: 'moodlefriend',
+    name: 'Friend from Moodle',
+    era: 'college \u00b7 the incubator cell',
+    note: 'Friend from the incubator cell. Hears everything before anyone else does.',
+    top: MFRIEND_TOP,
+    legs: still(MFRIEND_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#2b2118', H: '#453729',
+      d: '#5a6f4a', D: '#44553a', g: '#e0dbcf',
+      p: '#3a3f4e', f: '#2a2620'
+    }
+  },
+
+  incubhead: {
+    id: 'incubhead',
+    name: 'Head of the incubator',
+    era: 'college \u00b7 the auditorium',
+    note: 'Grey, glasses, and a reputation. Turned out to like the project.',
+    top: HEAD_TOP,
+    legs: still(HEAD_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#8e8a84', H: '#a8a49e',
+      a: '#8a7a3a', d: '#3a4152', D: '#2b3040', g: '#e8e4da',
+      p: '#2b3040', f: '#1f2333'
+    }
+  },
+
+  juiceman: {
+    id: 'juiceman',
+    name: 'Juice corner',
+    era: 'college \u00b7 the road outside the gate',
+    note: 'Mosambi, watermelon, anything. Gave her the ice for free and asked no questions.',
+    top: JUICEMAN_TOP,
+    legs: still(JUICEMAN_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#241f1a', H: '#3d352c',
+      d: '#e8dfc8', D: '#c9bfa4', g: '#5f9a3d',
+      p: '#3a3a44', f: '#2a2620'
+    }
+  },
+
+  goodfriend: {
+    id: 'goodfriend',
+    name: 'A good friend',
+    era: 'college \u00b7 the back row',
+    note: 'Sat with them in the dark and could not keep his voice down.',
+    top: GOODFRIEND_TOP,
+    legs: still(GOODFRIEND_LEGS_IDLE),
+    palette: {
+      ...BASE,
+      h: '#2b2620', H: '#463c31',
+      d: '#8a6fb5', D: '#6d5594', p: '#33384a', f: '#2a2620'
+    }
+  },
+
+  noida: {
+    id: 'noida',
+    name: 'Ayrisha, first day',
+    era: 'noida \u00b7 the first morning of the job',
+    note: 'Bucket hat, crop top, jeans, and the sunglasses stay on.',
+    top: NOIDA_TOP,
+    legs: NOIDA_LEGS,
+    palette: {
+      ...BASE,
+      d: '#f2f0ea', D: '#d8d5cc',
+      a: '#2b2733', A: '#3d3849',          // the hat, and its brim
+      g: '#17141c', G: '#5a5266', w: '#cfe0ee',   // lens, frame, and the glint
+      p: '#3f5a86', f: '#f4f1ea'
     }
   },
 

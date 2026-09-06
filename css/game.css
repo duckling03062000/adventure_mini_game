@@ -709,3 +709,323 @@
 }
 .story-more b{color:#ffcf4d}
 @keyframes blink{50%{opacity:.35}}
+
+/* ------------------------- the test paper -------------------------
+   One question at a time. A wrong option greys out and the paper
+   waits: there is no mark and nothing to fail.
+------------------------------------------------------------------ */
+.test-options{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.75rem;margin:1.6rem auto 0;max-width:38rem;
+}
+@media (max-width:640px){.test-options{grid-template-columns:1fr}}
+.test-option{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.85rem 1rem;text-align:left;
+  background:rgba(255,255,255,.06);
+  border:2px solid rgba(255,255,255,.14);
+  border-radius:.6rem;color:#f3ecff;
+  font-family:'Nunito',system-ui,sans-serif;
+  font-size:1rem;font-weight:600;cursor:pointer;
+  transition:background .12s,border-color .12s,transform .12s;
+}
+.test-option:hover:not(:disabled){
+  background:rgba(255,255,255,.12);border-color:#ffcf4d;transform:translateY(-2px);
+}
+.test-letter{
+  flex:0 0 auto;width:1.7rem;height:1.7rem;display:grid;place-items:center;
+  border-radius:.35rem;background:rgba(0,0,0,.3);
+  font-family:'Press Start 2P',monospace;font-size:.55rem;color:#c3b4e8;
+}
+.test-text{min-width:0}
+.test-option.is-wrong{
+  opacity:.32;cursor:not-allowed;border-color:rgba(255,255,255,.08);
+}
+.test-option.is-right{
+  border-color:#8fe08f;background:rgba(143,224,143,.16);
+}
+.test-option.is-right .test-letter{background:#3f8f4a;color:#eafbea}
+.test-note{
+  margin:1.1rem 0 0;color:#8fe08f;
+  font-family:'Nunito',system-ui,sans-serif;font-size:.95rem;
+}
+.test-q{min-height:3.2rem}
+.test-count{margin-top:1.4rem}
+
+/* --------------------------- the jigsaw ---------------------------
+   Pick a piece from the floor, click the space it goes in. A wrong
+   space nudges and keeps the piece in her hand.
+------------------------------------------------------------------ */
+.jig-board{
+  display:grid;gap:2px;margin:1rem auto 0;
+  /* sized off the stage height: the tray underneath has to fit too */
+  width:min(21rem,80vw,44vh);
+  padding:6px;border-radius:.5rem;
+  background:rgba(0,0,0,.35);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);
+  transition:box-shadow .4s;
+}
+.jig-board.is-done{box-shadow:inset 0 0 0 2px #ffcf4d,0 0 26px rgba(255,207,77,.35)}
+.jig-slot{
+  border:0;padding:0;border-radius:2px;cursor:pointer;
+  background:rgba(255,255,255,.05) center/100% 100% no-repeat;
+  transition:background-color .12s,transform .12s;
+}
+.jig-slot:hover:not(.is-filled){background-color:rgba(255,255,255,.13)}
+.jig-slot.is-filled{cursor:default}
+.jig-slot.is-nope{animation:jignope .26s}
+@keyframes jignope{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.jig-tray{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.35rem;
+  margin:.85rem auto 0;width:min(32rem,92vw);min-height:2.6rem;
+}
+.jig-piece{
+  width:3.1rem;border:2px solid transparent;padding:0;border-radius:3px;
+  cursor:pointer;background:center/100% 100% no-repeat;
+  transition:transform .12s,border-color .12s;
+}
+.jig-piece:hover{transform:translateY(-3px)}
+.jig-piece.is-picked{border-color:#ffcf4d;transform:translateY(-5px) scale(1.06)}
+
+/* -------------------------- the code board ------------------------
+   The body of a function, in the wrong order. Click a line, click the
+   slot. Wrong slot nudges and keeps the line in her hand.
+------------------------------------------------------------------ */
+.code-wrap{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:1rem;margin:1rem auto 0;max-width:46rem;text-align:left;
+}
+@media (max-width:720px){.code-wrap{grid-template-columns:1fr}}
+.code-slots,.code-bank{
+  margin:0;padding:.6rem;list-style:none;border-radius:.5rem;
+  background:rgba(0,0,0,.34);box-shadow:inset 0 0 0 2px rgba(255,255,255,.07);
+  min-height:9rem;transition:box-shadow .4s;
+}
+.code-slots.is-done{box-shadow:inset 0 0 0 2px #8fe08f,0 0 22px rgba(143,224,143,.28)}
+.code-sig,.code-slot,.code-chip{
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  font-size:.82rem;line-height:1.5;white-space:pre;
+  display:block;width:100%;padding:.3rem .5rem;margin:0 0 .28rem;
+  border-radius:.28rem;color:#e9e2ff;text-align:left;
+}
+.code-sig{background:rgba(255,255,255,.10);color:#ffcf4d}
+.code-slot{
+  background:rgba(255,255,255,.05);min-height:1.9rem;cursor:pointer;
+  border:0;transition:background .12s,transform .12s;
+}
+.code-slot:hover:not(.is-filled){background:rgba(255,255,255,.13)}
+.code-slot.is-filled{background:rgba(143,224,143,.14);cursor:default;color:#dff5df}
+.code-slot.is-nope{animation:jignope .24s}
+.code-chip{
+  background:rgba(255,255,255,.09);border:2px solid transparent;cursor:pointer;
+  transition:transform .12s,border-color .12s,background .12s;
+}
+.code-chip:hover{background:rgba(255,255,255,.15);transform:translateX(3px)}
+.code-chip.is-picked{border-color:#ffcf4d;transform:translateX(5px)}
+.code-count{margin-top:1rem}
+
+/* ---------------------------- the tray ---------------------------- */
+.tray-menu{
+  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:.5rem;margin:1rem auto 0;max-width:40rem;
+}
+@media (max-width:640px){.tray-menu{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.tray-item{
+  display:grid;justify-items:center;gap:.2rem;padding:.5rem .25rem;
+  background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);
+  border-radius:.5rem;cursor:pointer;color:#f3ecff;
+  font-family:'Nunito',system-ui,sans-serif;font-size:.78rem;font-weight:600;
+  transition:transform .12s,border-color .12s,background .12s,opacity .2s;
+}
+.tray-item canvas{width:3rem;height:3rem;image-rendering:pixelated}
+.tray-item:hover:not(:disabled){transform:translateY(-3px);border-color:#ffcf4d}
+.tray-item.is-on{opacity:.35;border-color:rgba(143,224,143,.5);cursor:default}
+.tray-item.is-nope{animation:jignope .3s;border-color:#c8402f}
+.tray-plate{
+  display:flex;justify-content:center;align-items:flex-end;gap:.6rem;
+  margin:1.1rem auto 0;width:min(26rem,86vw);min-height:5.4rem;
+  padding:.5rem .5rem .7rem;border-radius:.4rem;
+  background:linear-gradient(#8a3f34,#6d3129);
+  box-shadow:inset 0 0 0 3px rgba(0,0,0,.25);transition:box-shadow .4s;
+}
+.tray-plate.is-done{box-shadow:inset 0 0 0 3px #ffcf4d,0 0 24px rgba(255,207,77,.32)}
+.tray-on canvas{width:2.6rem;height:2.6rem;image-rendering:pixelated}
+
+/* ---------------------------- the range --------------------------- */
+.fps-arena{
+  position:relative;margin:1rem auto 0;
+  width:min(34rem,88vw);height:min(15rem,34vh);
+  border-radius:.5rem;cursor:crosshair;overflow:hidden;
+  background:radial-gradient(circle at 50% 40%,#3b3350,#1d1830 70%);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);
+}
+.fps-arena.is-miss{box-shadow:inset 0 0 0 2px rgba(200,64,47,.7)}
+.fps-cross{
+  position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;
+  pointer-events:none;opacity:.85;
+  background:
+    linear-gradient(#ffcf4d,#ffcf4d) center/2px 16px no-repeat,
+    linear-gradient(#ffcf4d,#ffcf4d) center/16px 2px no-repeat;
+}
+.fps-target{
+  position:absolute;transform:translate(-50%,-50%);
+  border:0;padding:0;border-radius:50%;cursor:crosshair;
+  background:radial-gradient(circle at 38% 34%,#fff 0 14%,#c8402f 14% 42%,#f4f1ea 42% 62%,#c8402f 62%);
+  box-shadow:0 0 12px rgba(200,64,47,.55);
+  animation:fpspop .14s ease-out;
+  transition:transform .2s,opacity .2s;
+}
+@keyframes fpspop{from{transform:translate(-50%,-50%) scale(.3)}}
+.fps-target.is-hit{transform:translate(-50%,-50%) scale(1.7);opacity:0}
+.fps-target.is-gone{transform:translate(-50%,-50%) scale(.4);opacity:0}
+.fps-count{margin-top:1rem}
+
+/* --------------------------- the Moodle ---------------------------
+   The site on the left, empty to begin with; the step on the right.
+   Each right answer turns another part of the site on.
+------------------------------------------------------------------ */
+.moo-wrap{
+  display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);
+  gap:1rem;margin:1rem auto 0;max-width:48rem;align-items:start;
+}
+@media (max-width:760px){.moo-wrap{grid-template-columns:1fr}}
+
+.moo-site{
+  border-radius:.5rem;overflow:hidden;text-align:left;
+  background:#f4f6f9;color:#25303f;min-height:13rem;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.10);transition:box-shadow .4s;
+  font-family:'Nunito',system-ui,sans-serif;
+}
+.moo-site.is-done{box-shadow:0 0 0 2px #ffcf4d,0 0 26px rgba(255,207,77,.35)}
+.moo-bar{
+  display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;
+  background:#5a6b86;color:#fff;min-height:2rem;
+  opacity:.25;transition:opacity .3s;
+}
+.moo-bar.is-on{opacity:1}
+.moo-logo{
+  width:1.3rem;height:1.3rem;border-radius:.25rem;background:#f2913a;
+  display:grid;place-items:center;font-weight:700;font-size:.9rem;color:#fff;
+}
+.moo-title{font-weight:700;font-size:.95rem}
+.moo-nav{
+  display:flex;gap:.9rem;padding:.4rem .6rem;background:#e3e8ef;
+  border-bottom:1px solid #d0d7e0;min-height:1.7rem;
+  opacity:.25;transition:opacity .3s;
+}
+.moo-nav.is-on{opacity:1}
+.moo-nav span{font-size:.72rem;color:#4a5b74;font-weight:600}
+.moo-body{display:grid;grid-template-columns:minmax(0,1fr) 8rem;gap:.5rem;padding:.6rem}
+@media (max-width:520px){.moo-body{grid-template-columns:1fr}}
+.moo-cards{display:grid;gap:.35rem;min-height:6rem;opacity:.25;transition:opacity .3s}
+.moo-cards.is-on{opacity:1}
+.moo-card{
+  display:grid;grid-template-columns:4rem minmax(0,1fr);gap:.4rem;align-items:center;
+  padding:.34rem .45rem;background:#fff;border-left:3px solid #f2913a;
+  border-radius:.2rem;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.moo-card b{font-size:.66rem;color:#7a879c}
+.moo-card span{font-size:.76rem;font-weight:600}
+.moo-att{
+  padding:.5rem;background:#fff;border-radius:.3rem;
+  box-shadow:0 1px 2px rgba(0,0,0,.08);min-height:6rem;
+  opacity:.25;transition:opacity .3s;
+}
+.moo-att.is-on{opacity:1}
+.moo-att p{margin:0 0 .35rem;font-size:.7rem;color:#7a879c;font-weight:700;text-transform:uppercase}
+.moo-bar-track{display:block;height:.5rem;border-radius:.25rem;background:#e3e8ef;overflow:hidden}
+.moo-bar-track span{display:block;height:100%;width:0;background:#3f8f4a;transition:width .8s ease-out}
+.moo-att b{display:block;margin-top:.3rem;font-size:1.25rem;color:#3f8f4a}
+.moo-att small{color:#7a879c;font-size:.68rem}
+
+.moo-task{text-align:left}
+.moo-ask{
+  margin:0 0 .7rem;font-family:'Nunito',system-ui,sans-serif;
+  font-size:.95rem;color:#f3ecff;min-height:2.6rem;
+}
+.moo-opts{display:grid;gap:.4rem}
+.moo-opt{
+  padding:.5rem .6rem;text-align:left;
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:.78rem;
+  background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.14);
+  border-radius:.4rem;color:#e9e2ff;cursor:pointer;
+  transition:background .12s,border-color .12s,transform .12s,opacity .2s;
+}
+.moo-opt:hover:not(:disabled){background:rgba(255,255,255,.14);border-color:#ffcf4d;transform:translateX(3px)}
+.moo-opt.is-wrong{opacity:.3;cursor:not-allowed;border-color:rgba(255,255,255,.08)}
+.moo-opt.is-right{border-color:#8fe08f;background:rgba(143,224,143,.16)}
+.moo-why{
+  margin:.7rem 0 0;min-height:1.3rem;color:#8fe08f;
+  font-family:'Nunito',system-ui,sans-serif;font-size:.86rem;
+}
+.moo-count{margin-top:.9rem}
+
+/* ---------------------------- the blocks --------------------------
+   A plan and an empty plot side by side, and a hotbar under them.
+------------------------------------------------------------------ */
+.mc-wrap{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);
+  gap:1.2rem;margin:1rem auto 0;max-width:40rem;align-items:end;
+}
+@media (max-width:640px){.mc-wrap{grid-template-columns:1fr}}
+.mc-side p{
+  margin:0 0 .3rem;font-family:'Press Start 2P',monospace;
+  font-size:.5rem;color:#c3b4e8;letter-spacing:.08em;
+}
+.mc-plan,.mc-plot{
+  display:grid;gap:1px;padding:3px;border-radius:.3rem;
+  background:linear-gradient(#3d5a7a,#6f92b4);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.10);transition:box-shadow .4s;
+}
+.mc-plot.is-done{box-shadow:inset 0 0 0 2px #ffcf4d,0 0 24px rgba(255,207,77,.35)}
+.mc-pcell,.mc-cell{aspect-ratio:1;border-radius:1px}
+.mc-cell{cursor:pointer}
+.mc-cell:not([data-done]):hover{background:rgba(255,255,255,.22)}
+.mc-cell.is-set{animation:mcpop .16s ease-out}
+@keyframes mcpop{from{transform:scale(.55)}}
+.mc-cell.is-nope{animation:jignope .2s}
+.mc-bar{
+  display:flex;justify-content:center;gap:.4rem;margin:1rem auto 0;
+  padding:.35rem;border-radius:.4rem;background:rgba(0,0,0,.35);
+  width:max-content;max-width:100%;flex-wrap:wrap;
+}
+.mc-slot{
+  display:grid;justify-items:center;gap:.2rem;padding:.3rem .45rem;
+  background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.14);
+  border-radius:.3rem;cursor:pointer;color:#f3ecff;
+}
+.mc-slot span{display:block;width:1.5rem;height:1.5rem;border-radius:2px}
+.mc-slot i{font-style:normal;font-family:'Nunito',system-ui,sans-serif;font-size:.66rem;font-weight:600}
+.mc-slot:hover{border-color:rgba(255,207,77,.6)}
+.mc-slot.is-on{border-color:#ffcf4d;transform:translateY(-2px)}
+.mc-count{margin-top:.9rem}
+
+/* ------------------------- the cat in the tree -------------------- */
+.cat-canvas{
+  display:block;margin:.8rem auto 0;image-rendering:pixelated;
+  width:min(22rem,74vw);height:auto;border-radius:.4rem;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);
+}
+.cat-ask{
+  margin:.8rem auto 0;max-width:34rem;min-height:2.4rem;
+  font-family:'Nunito',system-ui,sans-serif;font-size:.95rem;color:#f3ecff;
+}
+.cat-opts{
+  display:flex;justify-content:center;flex-wrap:wrap;gap:.45rem;
+  margin:.2rem auto 0;max-width:38rem;
+}
+.cat-opt{
+  padding:.5rem .8rem;
+  background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.14);
+  border-radius:.45rem;color:#f3ecff;cursor:pointer;
+  font-family:'Nunito',system-ui,sans-serif;font-size:.9rem;font-weight:600;
+  transition:background .12s,border-color .12s,transform .12s,opacity .2s;
+}
+.cat-opt:hover:not(:disabled){background:rgba(255,255,255,.14);border-color:#ffcf4d;transform:translateY(-2px)}
+.cat-opt.is-wrong{opacity:.3;cursor:not-allowed;border-color:rgba(255,255,255,.08)}
+.cat-opt.is-right{border-color:#8fe08f;background:rgba(143,224,143,.16)}
+.cat-why{
+  margin:.6rem 0 0;min-height:1.2rem;color:#8fe08f;
+  font-family:'Nunito',system-ui,sans-serif;font-size:.86rem;
+}
+.cat-count{margin-top:.5rem}

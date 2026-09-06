@@ -172,10 +172,15 @@ function moveActor(a, level, dt) {
 }
 
 /* Standard run + jump control, shared by both playable characters. */
-function controlActor(a, level, dt) {
+/* `forced` drives an actor from code rather than from the keyboard: -1,
+   0 or 1. It is how a companion follows and how a scripted beat walks
+   her across a room. A driven actor jumps when something sets `a.jump`,
+   never off the keyboard, so a companion can still get over a crate. */
+function controlActor(a, level, dt, forced) {
+  const driven = forced != null;
   // an actor on auto walks itself; used by the growing-up interlude
-  const left = a.auto ? false : Input.held('left');
-  const right = a.auto ? true : Input.held('right');
+  const left = driven ? forced < 0 : a.auto ? false : Input.held('left');
+  const right = driven ? forced > 0 : a.auto ? true : Input.held('right');
   const dir = (right ? 1 : 0) - (left ? 1 : 0);
 
   if (dir !== 0) {
@@ -189,8 +194,9 @@ function controlActor(a, level, dt) {
 
   // coyote time + jump buffering: both make the jump feel fair
   a.coyote = a.onGround ? 6 : Math.max(0, a.coyote - dt);
-  if (Input.tapped('jump')) a.jumpBuffer = 8;
+  if (driven ? a.jump : Input.tapped('jump')) a.jumpBuffer = 8;
   else a.jumpBuffer = Math.max(0, a.jumpBuffer - dt);
+  a.jump = false;
 
   if (a.jumpBuffer > 0 && a.coyote > 0) {
     a.vy = a.jumpV;
@@ -200,7 +206,7 @@ function controlActor(a, level, dt) {
     Sound.play('jump');
   }
   // variable jump height — let go early, rise less
-  if (a.vy < 0 && !Input.held('jump')) a.vy += a.gravity * 1.6 * dt;
+  if (a.vy < 0 && !(driven ? a.holdJump : Input.held('jump'))) a.vy += a.gravity * 1.6 * dt;
 
   a.vy = Math.min(a.maxFall, a.vy + a.gravity * dt);
 
@@ -211,7 +217,7 @@ function controlActor(a, level, dt) {
   // footsteps, paced to the walk animation
   if (a.onGround && Math.abs(a.vx) > 0.25) {
     a.stepPhase += Math.abs(a.vx) * dt;
-    if (a.stepPhase > 14) { a.stepPhase = 0; Sound.play('step'); }
+    if (a.stepPhase > 14) { a.stepPhase = 0; if (!a.quiet) Sound.play('step'); }
   } else {
     a.stepPhase = 0;
   }

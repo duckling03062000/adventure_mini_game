@@ -1,14 +1,20 @@
 /* ------------------------------------------------------------------
-   LEVEL 5 — COLLEGE ENTRANCE EXAMS
+   LEVEL 5 — KOTA
 
-   Kota, Rajasthan. Teen Ayrisha, coaching at Allen.
+   Teen Ayrisha, coaching at Allen, for two years.
 
      1. the walk to Allen              (outdoor, desert light)
-     2. the hostel room and the balcony — study, sleep, wake, study
-        again, and Anam
-     3. Friends Bazar, and a cold coffee
-     4. Sunday. The test.
-     5. home                           (the ending)
+     2. the classroom, and the board
+     3. projectile motion              (mini-game)
+     4. the hostel: study, sleep, the alarm, study, sleep, the alarm,
+        and then morning on the balcony, and Anam
+     5. Friends Bazar, with Anam behind her, and a cold coffee each
+     6. Sunday. The test.              (mini-game)
+     7. outside afterwards, with Anam
+     8. the train out, and the flight home  (cutscenes)
+     9. the jigsaw in her room         (mini-game)
+    10. the dining table, and Papa     (cutscene)
+    11. the flight to college          (the ending)
 ------------------------------------------------------------------- */
 
 const KOTA_TILES = {
@@ -120,6 +126,7 @@ function buildAct5hostel() {
 
   b.indoors();
   b.flat(5);
+  const bedX = 2;
   b.prop('hostelbed', 1);
   b.flat(6);
   const deskX = b.x;
@@ -140,28 +147,42 @@ function buildAct5hostel() {
   b.prop('anamspot', anamX);
   b.flat(10);
 
+  /* The night, played out rather than described. Desk, bed, alarm,
+     desk, bed, alarm, desk, and finally the bed for good. Then the sun
+     comes up on her there, and the whole day happens: six o'clock, out
+     to class, five in the evening, and back again. */
+  const desk = deskX + 2, bed = bedX + 1;
+  const night = [
+    { to: desk, say: [{ text: 'Eleven at night. One more chapter.' }] },
+    { to: bed,  say: [{ text: 'Half past twelve. She cannot keep her eyes open.' }] },
+    { sleep: 1.7 },
+    { alarm: true, say: [{ text: 'One o\u2019clock.' }] },
+    { to: desk, say: [{ text: 'One problem, then. Just the one.' }] },
+    { to: bed },
+    { sleep: 1.6 },
+    { alarm: true, say: [{ text: 'Two o\u2019clock.' }] },
+    { to: desk, say: [{ text: 'One more problem.' }] },
+    { to: bed,  say: [{ text: 'And then, finally, sleep.' }] },
+    { sleep: 2.6 },
+    { dawn: 2.6, stayAsleep: true },
+    { alarm: true, say: [{ text: 'Six in the morning.' }] },
+    { say: [{ text: 'Up, ready, and out to class.' }] },
+    { say: [{ text: 'Five in the evening. Back again.' }] }
+  ];
+
   return b.build({
     goalX: (anamX - 2) * 16,
     name: 'act5hostel', theme: 'afternoon',
     interiorWall: HOSTEL_WALL,
     tileStyles: HOSTEL_TILES,
-    desk: {
-      x: deskX + 2,
-      lines: [
-        { text: 'Eleven at night. One more chapter.' },
-        { text: 'Half past twelve. She falls asleep over the page.' },
-        { text: 'One o\u2019clock. Awake again. One problem, then.' },
-        { text: 'Half past one. Asleep.' },
-        { text: 'Two o\u2019clock. Awake again. One more problem.' },
-        { text: 'And then, finally, sleep.' },
-        { text: 'Morning.' }
-      ]
-    }
+    night: { x: deskX, steps: night }
   });
 }
 
-/* --------------------------- SCENE 3 ----------------------------- */
-/* Friends Bazar, with Anam, for a cold coffee. */
+/* --------------------------- SCENE 5 -----------------------------
+   Friends Bazar. Anam walks it with her, and there is a man at the
+   stall who asks them both what they want.
+------------------------------------------------------------------ */
 function buildAct5c() {
   const b = makeBuilder();
 
@@ -180,12 +201,110 @@ function buildAct5c() {
   b.flat(6);
   const cafeX = b.x;
   b.prop('coffeestall', cafeX);
+  b.prop('coffeeman', cafeX + 2);
   b.flat(12);
 
   return b.build({
-    goalX: (cafeX - 2) * 16,
+    goalX: (cafeX - 3) * 16,
     name: 'act5c', theme: 'afternoon',
-    tileStyles: KOTA_TILES
+    tileStyles: KOTA_TILES,
+    companion: { char: 'anam', tuning: TEEN_TUNING }
+  });
+}
+
+/* --------------------------- SCENE 7 -----------------------------
+   Outside the hall afterwards. Nothing in the way: the whole point is
+   that for once there is nothing left to do today.
+------------------------------------------------------------------ */
+function buildAct5out() {
+  const b = makeBuilder();
+
+  b.flat(10);
+  b.prop('allenfront', 0, { w: 6, doorX: 3 });
+  b.flat(6);
+  b.block(2, 1, 'C', 'bench');
+  b.flat(8);
+  b.prop('streetlight', b.x - 4);
+  b.flat(10);
+  const meet = b.x;
+  b.flat(10);
+
+  return b.build({
+    goalX: meet * 16,
+    name: 'act5out', theme: 'afternoon',
+    tileStyles: KOTA_TILES,
+    companion: { char: 'anam', tuning: TEEN_TUNING, carry: 'coldcoffee' }
+  });
+}
+
+/* --------------------------- SCENE 9 -----------------------------
+   Home. The street she grew up on, and the door of her own house. The
+   only word for where this is is on the sign, as always.
+------------------------------------------------------------------ */
+const HOME_TILES = {
+  '#': { fill: '#8f8a76', top: '#a8a28c' },
+  'B': { fill: '#9a9482', top: '#b2ab97' },
+  'C': { fill: '#cbb894', top: '#e0cfab' },
+  'S': { fill: '#b4794f', top: '#c9906a' }
+};
+
+function buildAct5home() {
+  const b = makeBuilder();
+
+  b.flat(8);
+  b.prop('streetsign', 6, { text: 'RAJAJINAGAR' });
+  b.flat(5);
+  b.prop('tree', b.x - 2);
+  b.flat(5);
+  b.prop('home', b.x);
+  b.flat(8);
+  b.block(2, 1, 'C', 'bench');
+  b.flat(5);
+  b.prop('streetlight', b.x - 3);
+  b.flat(6);
+  b.prop('home', b.x);
+  b.flat(9);
+  const goal = b.frontage(9, 'S', 'housefront', { doorOffset: 7, openAll: true });
+  b.flat(4);
+
+  return b.build({
+    goalX: goal.goalX, name: 'act5home', theme: 'afternoon',
+    tileStyles: HOME_TILES
+  });
+}
+
+/* --------------------------- SCENE 10 ----------------------------
+   Her own room, exactly as she left it, and a box on the floor she
+   has not opened in two years.
+------------------------------------------------------------------ */
+function buildAct5room() {
+  const b = makeBuilder();
+
+  b.indoors();
+  b.flat(4);
+  b.prop('hostelbed', 1);
+  b.flat(7);
+  b.prop('bookshelf', b.x - 3);
+  b.flat(5);
+  b.block(2, 1, 'C', 'herdesk');
+  b.flat(6);
+  b.prop('plantpot', b.x - 3);
+  b.flat(5);
+  const boxX = b.x;
+  b.prop('puzzlebox', boxX);
+  b.flat(9);
+
+  return b.build({
+    goalX: (boxX - 2) * 16,
+    name: 'act5room', theme: 'afternoon',
+    box: { open: false },
+    interiorWall: { top: '#d3c2d8', bottom: '#bda6c4', skirt: '#9a82a4' },
+    tileStyles: {
+      '#': { fill: '#a08fa8', top: '#b8a4be' },
+      'F': { fill: '#96859e', top: '#a08fa8' },
+      'S': { fill: '#9a82a4', top: '#b09aba' },
+      'C': { fill: '#c2a884', top: '#d8bd97' }
+    }
   });
 }
 
