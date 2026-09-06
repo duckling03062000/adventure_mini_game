@@ -1,14 +1,11 @@
+/* ------------------------------------------------------------------
+   The title screen, and the START button the game pages borrow.
+------------------------------------------------------------------- */
 :root{
   --ink:#241b26;
   --paper:#fff6ee;
-  --paper-2:#ffeadd;
-  --pink:#ff9ec4;
   --pink-deep:#e0789f;
-  --teal:#63cfc0;
-  --purple:#8f7ad9;
-  --gold:#ffcf4d;
   --night:#2b2140;
-  --shadow:0 6px 0 rgba(36,27,38,.18);
   --px:'Press Start 2P', ui-monospace, monospace;
   --body:'Nunito', system-ui, -apple-system, sans-serif;
 }
@@ -44,13 +41,6 @@ canvas{display:block;image-rendering:pixelated}
   padding:0 1.5rem;
   max-width:52rem;
 }
-.kicker{
-  font-family:var(--px);
-  font-size:.62rem;
-  letter-spacing:.14em;
-  color:#8a6ea8;
-  margin:0 0 1.6rem;
-}
 .title{margin:0;line-height:1}
 .title-line{
   display:block;
@@ -63,13 +53,6 @@ canvas{display:block;image-rendering:pixelated}
   font-size:clamp(1.7rem,7.4vw,4rem);
   margin-top:.7em;
   color:#3a2b56;
-}
-.tagline{
-  margin:2rem auto 2.4rem;
-  font-size:clamp(1rem,2.1vw,1.2rem);
-  line-height:1.7;
-  color:#5b4a6b;
-  max-width:34rem;
 }
 .hero .btn-start{margin-top:3rem}
 .btn-start{
@@ -104,152 +87,6 @@ canvas{display:block;image-rendering:pixelated}
   left:0;right:0;bottom:0;
   width:100%;
   height:210px;
-}
-
-/* ----------------------------- SECTIONS ---------------------------- */
-.section{padding:5.5rem 1.5rem}
-.section--alt{background:var(--paper-2)}
-.section-head{max-width:44rem;margin:0 auto 3rem;text-align:center}
-.section-head h2{
-  font-family:var(--px);
-  font-size:clamp(.95rem,2.6vw,1.35rem);
-  line-height:1.6;
-  margin:0 0 1.1rem;
-  color:var(--night);
-}
-.section-head p{margin:0;color:#6b5a7a;line-height:1.75;font-size:1.02rem}
-
-/* ------------------------------ CARDS ------------------------------ */
-.cards{
-  display:grid;
-  gap:1.6rem;
-  grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr));
-  max-width:64rem;
-  margin:0 auto;
-}
-.card{
-  background:#fff;
-  border:3px solid var(--ink);
-  border-radius:4px;
-  box-shadow:0 8px 0 rgba(36,27,38,.15);
-  padding:1.3rem;
-  display:flex;
-  flex-direction:column;
-  min-width:0;
-}
-.card-stage{
-  border-radius:3px;
-  border:2px solid rgba(36,27,38,.12);
-  overflow:hidden;
-  margin-bottom:1.1rem;
-}
-.card-stage canvas{width:100%;height:auto}
-.card h3{
-  font-family:var(--px);
-  font-size:.78rem;
-  margin:0 0 .6rem;
-  color:var(--night);
-}
-.card .era{
-  font-size:.83rem;
-  color:#8b7a9a;
-  margin:0 0 .7rem;
-  line-height:1.6;
-}
-.card .note{
-  font-size:.92rem;
-  color:#5b4a6b;
-  line-height:1.65;
-  margin:0 0 1.1rem;
-  flex:1;
-}
-.poses{display:flex;gap:.4rem;margin-bottom:1.1rem;flex-wrap:wrap}
-.chip{
-  font-family:var(--px);
-  font-size:.5rem;
-  letter-spacing:.04em;
-  padding:.55rem .7rem;
-  border:2px solid var(--ink);
-  border-radius:2px;
-  background:#fff;
-  color:var(--ink);
-  cursor:pointer;
-  transition:background .12s, color .12s;
-}
-.chip:hover{background:var(--paper-2)}
-.chip.is-on{background:var(--night);color:#fff}
-
-
-/* --------------------------- LAB EXTRAS --------------------------- */
-.spoiler-bar{
-  background:#3a2b56;
-  color:#ffd9e8;
-  font-size:.88rem;
-  line-height:1.6;
-  padding:.9rem 1.4rem;
-  text-align:center;
-}
-.spoiler-bar strong{color:#ffcf4d}
-.spoiler-bar code{
-  background:rgba(255,255,255,.12);
-  padding:.1em .4em;border-radius:3px;
-}
-.stage-no{
-  font-family:var(--px);
-  font-size:.45rem;
-  letter-spacing:.1em;
-  color:#b3a3c4;
-  margin:0 0 .55rem;
-}
-
-/* ------------------------------ GROWTH ----------------------------- */
-.growth-wrap{max-width:60rem;margin:0 auto;text-align:center}
-.growth{
-  width:100%;height:auto;
-  background:#fff;
-  border:3px solid var(--ink);
-  border-radius:4px;
-  box-shadow:0 8px 0 rgba(36,27,38,.15);
-}
-.growth-controls{display:flex;gap:.5rem;justify-content:center;margin-top:1.4rem;flex-wrap:wrap}
-
-/* ------------------------------ NEXT ------------------------------- */
-.next-list{
-  list-style:none;
-  max-width:38rem;
-  margin:0 auto;
-  padding:0;
-  counter-reset:step;
-}
-.next-list li{
-  display:flex;
-  align-items:center;
-  gap:1rem;
-  padding:1rem 1.1rem;
-  border:2px solid rgba(36,27,38,.14);
-  border-radius:4px;
-  margin-bottom:.7rem;
-  background:#fff;
-  line-height:1.5;
-}
-.next-list li span{
-  flex:0 0 auto;
-  font-family:var(--px);
-  font-size:.6rem;
-  background:var(--gold);
-  border:2px solid var(--ink);
-  width:2rem;height:2rem;
-  display:grid;place-items:center;
-  border-radius:2px;
-}
-.next-list li:first-child{background:#f4ffee;border-color:var(--teal)}
-
-.foot{
-  text-align:center;
-  padding:3rem 1.5rem 4rem;
-  color:#9b8aab;
-  font-size:.9rem;
-  border-top:2px dashed rgba(36,27,38,.12);
 }
 
 @media (prefers-reduced-motion:reduce){

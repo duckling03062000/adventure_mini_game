@@ -26,7 +26,6 @@ one sends `no-store`.
 |---|---|
 | `/` | Title screen → the whole game |
 | `/game.html?level=N` | Jump straight to a level (1-based, testing only) |
-| `/character-lab.html` | **Spoilers.** Every sprite, for review. Never share this. |
 
 Controls: **← →** move, **SPACE** jump / pump the bellows, **ENTER** advance
 dialogue, **M** mute.
@@ -125,8 +124,7 @@ scenes — he covered the family at the birth.
 story-card overlay was removed entirely.
 
 **Keep the surprise.** `index.html` shows only the child sprite and never
-hints that she grows. `character-lab.html` is the only place the whole
-cast appears, and it carries a spoiler warning.
+hints that she grows. Nothing outside the game shows the later ones.
 
 ---
 
@@ -135,7 +133,6 @@ cast appears, and it carries a spoiler warning.
 ```
 index.html          title screen
 game.html           the game — loads every script, holds every overlay
-character-lab.html  internal sprite review page
 
 js/
   characters.js   every sprite, as 16-wide pixel row strings
